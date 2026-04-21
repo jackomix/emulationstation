@@ -101,7 +101,7 @@ bool GridGameListView::input(InputConfig* config, Input input)
 		if (idx != nullptr && idx->hasRelevency())
 			return true;
 
-		Sound::getFromTheme(mTheme, getName(), "menuOpen")->play();
+		Sound::getFromTheme(mTheme.get(), getName(), "menuOpen")->play();
 		mWindow->pushGui(new GuiGamelistOptions(mWindow, this, this->mRoot->getSystem(), true));
 		return true;
 

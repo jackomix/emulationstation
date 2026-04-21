@@ -231,7 +231,7 @@ void ISimpleGameListView::goBack()
 		{
 			populateList(folder->getChildrenListToDisplay());
 			setCursor(top);
-			Sound::getFromTheme(getTheme(), getName(), "back")->play();
+			Sound::getFromTheme(getTheme().get(), getName(), "back")->play();
 		}
 	}
 	else if (mPopupSelfReference)
@@ -344,7 +344,7 @@ void ISimpleGameListView::showGamelistOptions()
 	if (idx != nullptr && idx->hasRelevency())
 		return;
 
-	Sound::getFromTheme(mTheme, getName(), "menuOpen")->play();
+	Sound::getFromTheme(mTheme.get(), getName(), "menuOpen")->play();
 	mWindow->pushGui(new GuiGamelistOptions(mWindow, this, this->mRoot->getSystem()));	
 }
 
@@ -355,7 +355,7 @@ void ISimpleGameListView::showSelectedGameOptions()
 	if (cursor == nullptr)
 		return;
 
-	Sound::getFromTheme(mTheme, getName(), "menuOpen")->play();
+	Sound::getFromTheme(mTheme.get(), getName(), "menuOpen")->play();
 	mWindow->pushGui(new GuiGameOptions(mWindow, cursor));
 }
 
@@ -376,11 +376,11 @@ void ISimpleGameListView::showSelectedGameSaveSnapshots()
 
 	if (SaveStateRepository::isEnabled(cursor))
 	{
-		Sound::getFromTheme(mTheme, getName(), "menuOpen")->play();
+		Sound::getFromTheme(mTheme.get(), getName(), "menuOpen")->play();
 
 		mWindow->pushGui(new GuiSaveState(mWindow, cursor, [this, cursor](SaveState* state)
 		{
-			Sound::getFromTheme(getTheme(), getName(), "game_launch")->play();
+			Sound::getFromTheme(getTheme().get(), getName(), "game_launch")->play();
 
 			LaunchGameOptions options;
 			options.saveStateInfo = state;
@@ -410,7 +410,7 @@ void ISimpleGameListView::launchSelectedGame()
 
 		populateList(folder->getChildrenListToDisplay());
 		setCursor(top);
-		Sound::getFromTheme(getTheme(), getName(), "back")->play();
+		Sound::getFromTheme(getTheme().get(), getName(), "back")->play();
 	}
 	else
 	{
@@ -421,7 +421,7 @@ void ISimpleGameListView::launchSelectedGame()
 			{
 				mWindow->pushGui(new GuiSaveState(mWindow, cursor, [this, cursor](SaveState* state)
 				{
-					Sound::getFromTheme(getTheme(), getName(), "game_launch")->play();
+					Sound::getFromTheme(getTheme().get(), getName(), "game_launch")->play();
 
 					LaunchGameOptions options;
 					options.saveStateInfo = state;
@@ -431,7 +431,7 @@ void ISimpleGameListView::launchSelectedGame()
 			}
 			else
 			{
-				Sound::getFromTheme(getTheme(), getName(), "game_launch")->play();
+				Sound::getFromTheme(getTheme().get(), getName(), "game_launch")->play();
 				launch(cursor);
 			}
 		}

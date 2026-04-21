@@ -253,20 +253,13 @@ void AudioManager::playThematicSound(const std::string& name)
 	std::shared_ptr<Sound> s = nullptr;
 
 	if (mCurrentTheme)
-		s = Sound::getFromTheme(mCurrentTheme, "all", name);
+		s = Sound::getFromTheme(mCurrentTheme.get(), "all", name);
 
 	if (s == nullptr || !s->hasSample())
 	{
-		auto menuTheme = ThemeData::getMenuTheme();
+		auto menuTheme = ThemeData::getDefaultTheme();
 		if (menuTheme)
-		{
-			// Convert menuTheme (ThemeData*) to shared_ptr carefully
-			// Since getMenuTheme returns a raw pointer that is managed elsewhere (static),
-			// we should ideally have a version of getFromTheme that takes a raw pointer.
-			// But for now, let's see if we can use a temporary shared_ptr with a null deleter.
-			std::shared_ptr<ThemeData> menuThemePtr(menuTheme, [](ThemeData*) {});
-			s = Sound::getFromTheme(menuThemePtr, "all", name);
-		}
+			s = Sound::getFromTheme(menuTheme, "all", name);
 	}
 
 	if (s)
