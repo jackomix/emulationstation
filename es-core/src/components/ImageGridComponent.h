@@ -9,6 +9,7 @@
 #include "animations/LambdaAnimation.h"
 #include "Settings.h"
 #include "Sound.h"
+#include "AudioManager.h"
 #include <algorithm>
 #include "LocaleES.h"
 #include "components/ScrollbarComponent.h"

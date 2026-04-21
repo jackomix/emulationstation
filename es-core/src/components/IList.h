@@ -8,6 +8,7 @@
 #include "PowerSaver.h"
 #include "ThemeData.h"
 #include "Settings.h"
+#include "AudioManager.h"
 #include <vector>
 
 enum CursorState
