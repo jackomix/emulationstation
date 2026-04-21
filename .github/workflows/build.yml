@@ -42,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: emulationstation-bin
-          path: build/es-app/emulationstation
+          path: emulationstation
