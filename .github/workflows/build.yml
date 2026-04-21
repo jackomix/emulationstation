@@ -31,7 +31,7 @@ jobs:
                 libfreetype6-dev libcurl4-openssl-dev rapidjson-dev \
                 libasound2-dev libvlc-dev libvlccore-dev vlc-bin \
                 libsdl2-mixer-dev libboost-all-dev libeigen3-dev \
-                libgl1-mesa-dev libglu1-mesa-dev libcec-dev libudev-dev gettext &&
+                libgles2-mesa-dev libcec-dev libudev-dev gettext &&
               cd /src &&
               mkdir -p build &&
               cd build &&
