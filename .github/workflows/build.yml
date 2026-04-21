@@ -21,9 +21,9 @@ jobs:
 
       - name: Build in ARM64 Container
         run: |
-          docker run --rm --privileged \
+          docker run --rm --privileged --platform linux/arm64 \
             -v ${{ github.workspace }}:/src \
-            arm64v8/ubuntu:20.04 bash -c "
+            ubuntu:20.04 bash -c "
               export DEBIAN_FRONTEND=noninteractive &&
               apt-get update &&
               apt-get install -y \
