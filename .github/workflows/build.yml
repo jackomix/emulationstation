@@ -1,4 +1,4 @@
-name: Build EmulationStation (ARM64)
+name: Build EmulationStation (R36S ARM64)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-arm64:
+  build-r36s:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,7 +35,14 @@ jobs:
               cd /src &&
               mkdir -p build &&
               cd build &&
-              cmake -DCMAKE_BUILD_TYPE=Release -DGLES2=ON -DENABLE_AMBERELEC=1 -DRG351P=1 .. &&
+              cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DGLES2=ON \
+                -DGLES=OFF \
+                -DGL=OFF \
+                -DENABLE_AMBERELEC=ON \
+                -DRG351P=ON \
+                .. &&
               make -j$(nproc) &&
               cd /src &&
               strip emulationstation
@@ -44,5 +51,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: emulationstation-arm64
+          name: emulationstation-r36s
           path: emulationstation
