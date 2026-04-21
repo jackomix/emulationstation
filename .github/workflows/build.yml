@@ -35,14 +35,18 @@ jobs:
               cd /src &&
               mkdir -p build &&
               cd build &&
-              cmake -DENABLE_AMBERELEC=1 .. &&
+              cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_AMBERELEC=1 .. &&
               make -j$(nproc) &&
               cd /src &&
-              strip emulationstation
+              find . -name emulationstation -type f -exec strip {} +
             "
+
+      - name: Locate and Rename Artifact
+        run: |
+          find . -name emulationstation -type f -exec cp {} ./emulationstation-r36s \;
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: emulationstation-arm64
-          path: emulationstation
+          path: emulationstation-r36s
