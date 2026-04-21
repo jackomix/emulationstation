@@ -52,11 +52,9 @@ private:
 	void openUISettings();
 	void openUpdatesSettings();
 
-#ifdef _ENABLEAMBERELEC
 	static void openDangerZone(Window* mWindow, std::string configName);
 	static void openPerformanceSettingsConfiguration(Window* mWindow, std::string configName, int selectItem = -1);
 	static void openDecorationConfiguration(Window *mWindow, std::string configName, std::vector<DecorationSetInfo> sets);
-#endif
 
 	void openSystemSettings();
 	void openGamesSettings();

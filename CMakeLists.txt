@@ -97,31 +97,31 @@ LIST(APPEND CMAKE_MODULE_PATH
 )
 
 # AmberELEC
-if("${ENABLE_AMBERELEC}" STREQUAL "1")
+if(ENABLE_AMBERELEC)
   add_definitions(-D_ENABLEAMBERELEC)
 endif()
 
-if("${RG351P}" STREQUAL "1")
+if(RG351P)
   add_definitions(-DRG351P)
 endif()
 
-if("${RG351V}" STREQUAL "1")
+if(RG351V)
   add_definitions(-DRG351V)
 endif()
 
-if("${RG351MP}" STREQUAL "1")
+if(RG351MP)
   add_definitions(-DRG351MP)
 endif()
 
-if("${RG552}" STREQUAL "1")
+if(RG552)
   add_definitions(-DRG552)
 endif()
 
-if("${RG353}" STREQUAL "1")
+if(RG353)
   add_definitions(-DRG353)
 endif()
 
-if("${RG503}" STREQUAL "1")
+if(RG503)
   add_definitions(-DRG503)
 endif()
 
