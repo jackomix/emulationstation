@@ -13,6 +13,7 @@
 #include "SystemData.h"
 #include "ThemeData.h"
 #include "LocaleES.h"
+#include "AudioManager.h"
 #include <pugixml/src/pugixml.hpp>
 #include <fstream>
 #include "Gamelist.h"
@@ -671,7 +672,6 @@ bool CollectionSystemManager::toggleGameInCollection(FileData* file, const std::
 			adding = false;
 			sourceFile->setMetadata(MetaDataId::Favorite, "false");
 			AudioManager::getInstance()->playThematicSound("favorite_remove");
-		}
 		}
 
 		sourceSystem->addToIndex(sourceFile);
