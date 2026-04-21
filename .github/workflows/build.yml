@@ -23,23 +23,21 @@ jobs:
         run: |
           docker run --rm --privileged --platform linux/arm64 \
             -v ${{ github.workspace }}:/src \
-            ubuntu:22.04 bash -c "
+            ubuntu:20.04 bash -c "
               export DEBIAN_FRONTEND=noninteractive &&
               apt-get update &&
-              apt-get install -y \
+              apt-get install -y --no-install-recommends \
                 build-essential cmake git libsdl2-dev libsdl2-mixer-dev libfreeimage-dev \
                 libfreetype6-dev libcurl4-openssl-dev rapidjson-dev \
                 libasound2-dev libvlc-dev libvlccore-dev vlc-bin \
                 libboost-all-dev libeigen3-dev \
-                libgles2-mesa-dev libcec-dev libudev-dev gettext &&
+                libgles2-mesa-dev libcec-dev libudev-dev gettext ca-certificates &&
               cd /src &&
               mkdir -p build &&
               cd build &&
               cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DGLES2=ON \
-                -DGLES=OFF \
-                -DGL=OFF \
                 -DENABLE_AMBERELEC=ON \
                 -DRG351P=ON \
                 .. &&
