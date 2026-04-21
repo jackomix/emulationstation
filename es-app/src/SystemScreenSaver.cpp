@@ -32,8 +32,10 @@
 void setBacklight(int power_value) {
     FILE *power_file;
     power_file = fopen("/sys/class/backlight/backlight/bl_power", "w");
-    fprintf(power_file, "%d", power_value);
-    fclose(power_file);
+    if (power_file != nullptr) {
+        fprintf(power_file, "%d", power_value);
+        fclose(power_file);
+    }
 }
 
 SystemScreenSaver::SystemScreenSaver(Window* window) :
@@ -300,7 +302,7 @@ void SystemScreenSaver::renderScreenSaver()
 		std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
 
 		Renderer::setMatrix(Transform4x4f::Identity());
-		unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;
+		unsigned char color = 0x000000FF; // Always black to avoid crashes on R36S
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
 	}
 }

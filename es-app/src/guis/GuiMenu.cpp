@@ -22,6 +22,7 @@
 #include "guis/GuiSystemInformation.h"
 #include "guis/GuiScraperSettings.h"
 #include "guis/GuiControllersSettings.h"
+#include "guis/GuiTools.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
@@ -297,6 +298,8 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 #endif
 
 		addEntry(_("SCRAPER").c_str(), true, [this] { openScraperSettings(); }, "iconScraper");
+
+		addEntry(_("OPTIONS"), true, [this, window] { window->pushGui(new GuiTools(window)); }, "iconOptions");
 
 		addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
 
@@ -5238,6 +5241,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 		integerscaleoverscale_enabled->addRange({ { _("AUTO"), "auto" },{ _("ON") , "1" },{ _("OFF"), "0" } }, SystemConf::getInstance()->get(configName + ".integerscaleoverscale"));
 		systemConfiguration->addWithLabel(_("INTEGER SCALING (OVERSCALE)"), integerscaleoverscale_enabled);
 		systemConfiguration->addSaveFunc([integerscaleoverscale_enabled, configName] { SystemConf::getInstance()->set(configName + ".integerscaleoverscale", integerscaleoverscale_enabled->getSelected()); });
+#endif
 	}
 
 #else

@@ -184,10 +184,8 @@ namespace Utils
 		{
 #ifdef WIN32 // windows
 			return system("shutdown -s -t 0");
-#elif defined (_ENABLEAMBERELEC)
-			return system("show_splash.sh ; sync ; systemctl poweroff");
-#else // osx / linux	
-			return system("shutdown -h now");
+#else // non-WIN32
+			return system("sudo shutdown -h now");
 #endif
 		}
 
@@ -195,10 +193,8 @@ namespace Utils
 		{
 #ifdef WIN32 // windows	
 			return system("shutdown -r -t 0");
-#elif defined (_ENABLEAMBERELEC)
-			return system("show_splash.sh ; sync ; systemctl reboot");
-#else // osx / linux	
-			return system("shutdown -r now");
+#else // non-WIN32
+			return system("sudo shutdown -r now");
 #endif
 		}
 
@@ -556,25 +552,21 @@ namespace Utils
 		}
 #endif
 
-#ifdef _ENABLEAMBERELEC
-/* < emuelec */
-std::string getShOutput(const std::string& mStr)
-{
-    std::string result, file;
-    FILE* pipe{popen(mStr.c_str(), "r")};
-    char buffer[256];
+		std::string getShOutput(const std::string& mStr)
+		{
+			std::string result, file;
+			FILE* pipe{ popen(mStr.c_str(), "r") };
+			char buffer[256];
 
-    while(fgets(buffer, sizeof(buffer), pipe) != NULL)
-    {
-        file = buffer;
-        result += file.substr(0, file.size() - 1);
-    }
+			while (fgets(buffer, sizeof(buffer), pipe) != NULL)
+			{
+				file = buffer;
+				result += file.substr(0, file.size() - 1);
+			}
 
-    pclose(pipe);
-    return result;
-}
-/* emuelec >*/
-#endif
+			pclose(pipe);
+			return result;
+		}
 
 		std::string getArchString()
 		{

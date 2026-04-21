@@ -40,6 +40,7 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGeneralScreensaverOptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiDecorationOptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenu.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiTools.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperStart.h	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperSettings.h
@@ -146,6 +147,7 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGeneralScreensaverOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiDecorationOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenu.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiTools.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperStart.cpp	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperSettings.cpp	
