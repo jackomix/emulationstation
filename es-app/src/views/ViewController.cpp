@@ -520,7 +520,6 @@ bool ViewController::checkLaunchOptions(FileData* game, LaunchGameOptions option
 
 	return true;
 }
-
 void ViewController::launch(FileData* game, LaunchGameOptions options, Vector3f center, bool allowCheckLaunchOptions)
 {
 	if (allowCheckLaunchOptions && !checkLaunchOptions(game, options, center))
@@ -528,10 +527,13 @@ void ViewController::launch(FileData* game, LaunchGameOptions options, Vector3f 
 
 	if(game->getType() != GAME)
 	{
-		LOG(LogError) << "tried to launch something that isn't a game";
+		LOG(LogError) << "Tried to launch something that isn't a game";
 		return;
 	}
 
+	AudioManager::getInstance()->playThematicSound("game_launch");
+
+	mLockInput = true;
 	if (game->getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER))
 	{
 		auto ext = Utils::String::toLower(Utils::FileSystem::getExtension(game->getPath()));
