@@ -201,6 +201,9 @@ void ViewController::goToSystemView(SystemData* system, bool forceImmediate)
 
 	systemList->goToSystem(dest, false);
 
+	if (AudioManager::isInitialized())
+		AudioManager::getInstance()->changePlaylist(dest->getTheme());
+
 	mCurrentView = systemList;
 
 	playViewTransition(forceImmediate);

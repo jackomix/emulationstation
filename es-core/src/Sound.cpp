@@ -35,42 +35,6 @@ std::shared_ptr<Sound> Sound::getFromTheme(const std::shared_ptr<ThemeData>& the
 	if (!elem || !elem->has("path"))
 		elem = theme->getElement("all", element, "sound");
 
-	// Fallback for renamed sounds
-	if (!elem || !elem->has("path"))
-	{
-		std::string fallback;
-		if (element == "game_launch") fallback = "launch";
-		else if (element == "menu_open") fallback = "menuopen";
-		else if (element == "menu_back") fallback = "back";
-		else if (element == "system_move") fallback = "systembrowse";
-		else if (element == "gamelist_move") fallback = "scroll";
-		else if (element == "gamelist_wrap") fallback = "listscroll";
-		else if (element == "favorite_add") fallback = "favorite";
-		else if (element == "system_to_gamelist") fallback = "select";
-
-		if (!fallback.empty())
-		{
-			elem = theme->getElement(view, fallback, "sound");
-			if (!elem || !elem->has("path"))
-				elem = theme->getElement("all", fallback, "sound");
-		}
-		
-		// secondary fallbacks
-		if (!elem || !elem->has("path"))
-		{
-			fallback = "";
-			if (element == "menu_open") fallback = "menuOpen";
-			else if (element == "gamelist_move") fallback = "menu_move";
-			
-			if (!fallback.empty())
-			{
-				elem = theme->getElement(view, fallback, "sound");
-				if (!elem || !elem->has("path"))
-					elem = theme->getElement("all", fallback, "sound");
-			}
-		}
-	}
-
 	if (!elem || !elem->has("path"))
 	{
 		LOG(LogInfo) << "   (missing)";

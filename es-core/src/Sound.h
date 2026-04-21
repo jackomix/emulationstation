@@ -30,6 +30,8 @@ public:
 	bool isPlaying() const;
 	void stop();
 
+	inline bool hasSample() const { return mSampleData != nullptr; }
+
 private:
 	Sound(const std::string & path = "");
 	static std::map< std::string, std::shared_ptr<Sound> > sMap;
