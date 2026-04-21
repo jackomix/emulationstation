@@ -5182,7 +5182,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 				openDecorationConfiguration(mWindow, configName, sets); });
 			}
 	}
-#else
+#endif
 
 	// Shaders preset
 	auto installedShaders = ApiSystem::getInstance()->getShaderList(systemData->getName(), currentEmulator, currentCore);
@@ -5202,8 +5202,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 
 		systemConfiguration->addWithLabel(_("SHADER SET"), shaders_choices);
 		systemConfiguration->addSaveFunc([configName, shaders_choices] { SystemConf::getInstance()->set(configName + ".shaderset", shaders_choices->getSelected()); });
-
-#endif
+	}
 
 	// Video Filters preset
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::VIDEOFILTERS) &&
@@ -5244,7 +5243,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 #endif
 	}
 
-#else
 	// decorations
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS) && systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::decoration))
 	{
@@ -5315,7 +5313,6 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
 #endif
 		}
 	}
-#endif
 	if (systemData->isFeatureSupported(currentEmulator, currentCore, EmulatorFeatures::latency_reduction))
 		systemConfiguration->addEntry(_("LATENCY REDUCTION"), true, [mWindow, configName] { openLatencyReductionConfiguration(mWindow, configName); });
 
