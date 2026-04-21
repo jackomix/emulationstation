@@ -35,18 +35,14 @@ jobs:
               cd /src &&
               mkdir -p build &&
               cd build &&
-              cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_AMBERELEC=1 .. &&
+              cmake -DCMAKE_BUILD_TYPE=Release -DGLES2=ON -DENABLE_AMBERELEC=1 -DRG351P=1 .. &&
               make -j$(nproc) &&
               cd /src &&
-              find . -name emulationstation -type f -exec strip {} +
+              strip emulationstation
             "
-
-      - name: Locate and Rename Artifact
-        run: |
-          find . -name emulationstation -type f -exec cp {} ./emulationstation-r36s \;
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: emulationstation-arm64
-          path: emulationstation-r36s
+          path: emulationstation
