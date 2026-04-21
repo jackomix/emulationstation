@@ -1,4 +1,4 @@
-name: Build EmulationStation
+name: Build EmulationStation (ARM64)
 
 on:
   push:
@@ -8,38 +8,42 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
+  build-arm64:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential cmake git libsdl2-dev libfreeimage-dev \
-            libfreetype6-dev libcurl4-openssl-dev rapidjson-dev \
-            libasound2-dev libvlc-dev libvlccore-dev vlc-bin \
-            libsdl2-mixer-dev libboost-all-dev libeigen3-dev \
-            libgl1-mesa-dev libglu1-mesa-dev libcec-dev libudev-dev gettext
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: Configure CMake
+      - name: Build in ARM64 Container
         run: |
-          mkdir build
-          cd build
-          cmake -DENABLE_AMBERELEC=1 ..
-
-      - name: Build
-        run: |
-          cd build
-          make -j$(nproc)
+          docker run --rm --privileged \
+            -v ${{ github.workspace }}:/src \
+            arm64v8/ubuntu:20.04 bash -c "
+              export DEBIAN_FRONTEND=noninteractive &&
+              apt-get update &&
+              apt-get install -y \
+                build-essential cmake git libsdl2-dev libfreeimage-dev \
+                libfreetype6-dev libcurl4-openssl-dev rapidjson-dev \
+                libasound2-dev libvlc-dev libvlccore-dev vlc-bin \
+                libsdl2-mixer-dev libboost-all-dev libeigen3-dev \
+                libgl1-mesa-dev libglu1-mesa-dev libcec-dev libudev-dev gettext &&
+              cd /src &&
+              mkdir -p build &&
+              cd build &&
+              cmake -DENABLE_AMBERELEC=1 .. &&
+              make -j$(nproc) &&
+              cd /src &&
+              cp build/es-app/emulationstation . &&
+              strip emulationstation
+            "
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: emulationstation-bin
+          name: emulationstation-arm64
           path: emulationstation
