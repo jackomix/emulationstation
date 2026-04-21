@@ -127,9 +127,10 @@ void ISimpleGameListView::moveToFolder(FolderData* folder)
 {
 	if (folder == nullptr || folder->getChildren().size() == 0)
 		return;
-	
-	mCursorStack.push(folder);
-	populateList(folder->getChildrenListToDisplay());
+
+	AudioManager::getInstance()->playThematicSound("folder_open");
+
+	mCursorStack.push(folder);	populateList(folder->getChildrenListToDisplay());
 	
 	FileData* cursor = getCursor();
 	if (cursor != nullptr)
@@ -217,6 +218,8 @@ void ISimpleGameListView::goBack()
 {
 	if (mCursorStack.size())
 	{
+		AudioManager::getInstance()->playThematicSound("folder_close");
+
 		auto top = mCursorStack.top();
 		mCursorStack.pop();
 
@@ -377,7 +380,7 @@ void ISimpleGameListView::showSelectedGameSaveSnapshots()
 
 		mWindow->pushGui(new GuiSaveState(mWindow, cursor, [this, cursor](SaveState* state)
 		{
-			Sound::getFromTheme(getTheme(), getName(), "launch")->play();
+			Sound::getFromTheme(getTheme(), getName(), "game_launch")->play();
 
 			LaunchGameOptions options;
 			options.saveStateInfo = state;
@@ -418,7 +421,7 @@ void ISimpleGameListView::launchSelectedGame()
 			{
 				mWindow->pushGui(new GuiSaveState(mWindow, cursor, [this, cursor](SaveState* state)
 				{
-					Sound::getFromTheme(getTheme(), getName(), "launch")->play();
+					Sound::getFromTheme(getTheme(), getName(), "game_launch")->play();
 
 					LaunchGameOptions options;
 					options.saveStateInfo = state;
@@ -428,7 +431,7 @@ void ISimpleGameListView::launchSelectedGame()
 			}
 			else
 			{
-				Sound::getFromTheme(getTheme(), getName(), "launch")->play();
+				Sound::getFromTheme(getTheme(), getName(), "game_launch")->play();
 				launch(cursor);
 			}
 		}
@@ -529,6 +532,8 @@ void ISimpleGameListView::moveToLetterByOffset(int offset)
 	std::vector<std::string> letters = getEntriesLetters();
 	if (letters.empty())
 		return;
+
+	AudioManager::getInstance()->playThematicSound("letter_jump");
 
 	FileData* game = getCursor();
 	if (game == nullptr)

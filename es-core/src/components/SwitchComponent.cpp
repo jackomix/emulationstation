@@ -41,6 +41,8 @@ bool SwitchComponent::input(InputConfig* config, Input input)
 {
 	if(config->isMappedTo(BUTTON_OK, input) && input.value)
 	{
+		AudioManager::getInstance()->playThematicSound("menu_click");
+
 		if(mHasAuto) {
 			if(mAutoState) {
 				mAutoState = false;

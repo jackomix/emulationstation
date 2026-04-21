@@ -299,6 +299,8 @@ public:
 					if (mEntries.size() == 0)
 						return true;
 
+					AudioManager::getInstance()->playThematicSound("menu_click");
+
 					// move selection to previous
 					unsigned int i = getSelectedId();
 					int next = (int)i - 1;
@@ -314,6 +316,8 @@ public:
 				{
 					if (mEntries.size() == 0)
 						return true;
+
+					AudioManager::getInstance()->playThematicSound("menu_click");
 
 					// move selection to next
 					unsigned int i = getSelectedId();

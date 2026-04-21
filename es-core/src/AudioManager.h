@@ -35,6 +35,7 @@ private:
 
 	bool		mInitialized;
 	std::string	mPlayingSystemThemeSong;
+	std::shared_ptr<ThemeData> mCurrentTheme;
 
 public:
 	static AudioManager* getInstance();
@@ -52,6 +53,8 @@ public:
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);
 	
+	void playThematicSound(const std::string& name);
+
 	inline const std::string getSongName() const { return mCurrentSong; }
 
 	bool songNameChanged() { return mSongNameChanged; }

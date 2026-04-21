@@ -82,6 +82,7 @@ bool GuiSettings::input(InputConfig* config, Input input)
 {
 	if(config->isMappedTo(BUTTON_BACK, input) && input.value != 0)
 	{
+		AudioManager::getInstance()->playThematicSound("menu_back");
 		close();
 		return true;
 	}

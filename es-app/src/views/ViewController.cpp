@@ -162,6 +162,9 @@ void ViewController::goToSystemView(std::string& systemName, bool forceImmediate
 
 void ViewController::goToSystemView(SystemData* system, bool forceImmediate)
 {
+	if (mState.viewing == GAME_LIST)
+		AudioManager::getInstance()->playThematicSound("gamelist_to_system");
+
 	SystemData* dest = system;
 
 	int systemId = getSystemId(dest);
@@ -235,6 +238,9 @@ void ViewController::goToGameList(SystemData* system, bool forceImmediate)
 {
 	if (system == nullptr)
 		return;
+
+	if (mState.viewing == SYSTEM_SELECT)
+		AudioManager::getInstance()->playThematicSound("system_to_gamelist");
 
 	SystemData* destinationSystem = system;
 	FolderData* collectionFolder = nullptr;

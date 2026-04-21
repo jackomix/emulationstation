@@ -62,6 +62,7 @@ struct ComponentListRow
 		{
 			if(config->isMappedTo(BUTTON_OK, input) && (onButtonRelease ? input.value == 0 : input.value != 0)) 
 			{
+				AudioManager::getInstance()->playThematicSound("menu_click");
 				func();
 				return true;
 			}

@@ -33,6 +33,25 @@ std::shared_ptr<Sound> Sound::getFromTheme(const std::shared_ptr<ThemeData>& the
 
 	const ThemeData::ThemeElement* elem = theme->getElement(view, element, "sound");
 	if (!elem || !elem->has("path"))
+		elem = theme->getElement("all", element, "sound");
+
+	// Fallback for renamed sounds
+	if (!elem || !elem->has("path"))
+	{
+		std::string fallback;
+		if (element == "game_launch") fallback = "launch";
+		else if (element == "menu_open") fallback = "menuOpen";
+		else if (element == "menu_back") fallback = "back";
+
+		if (!fallback.empty())
+		{
+			elem = theme->getElement(view, fallback, "sound");
+			if (!elem || !elem->has("path"))
+				elem = theme->getElement("all", fallback, "sound");
+		}
+	}
+
+	if (!elem || !elem->has("path"))
 	{
 		LOG(LogInfo) << "   (missing)";
 		return get("");

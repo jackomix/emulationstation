@@ -121,6 +121,8 @@ bool SliderComponent::input(InputConfig* config, Input input)
 	{
 		if (input.value)
 		{
+			AudioManager::getInstance()->playThematicSound("menu_click");
+
 			if (mIsAutoMode && getAuto())
 			{
 				// If currently at AUTO, do nothing
@@ -154,6 +156,8 @@ bool SliderComponent::input(InputConfig* config, Input input)
 	{
 		if (input.value)
 		{
+			AudioManager::getInstance()->playThematicSound("menu_click");
+
 			if (mIsAutoMode && getAuto())
 			{
 				// If at AUTO, move to min

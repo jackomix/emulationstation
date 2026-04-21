@@ -644,6 +644,9 @@ void TextListComponent<T>::onCursorChanged(const CursorState& state)
 
 	if (mLastCursor != mCursor || mLastCursorState != state)
 	{
+		if (mLastCursor != mCursor && mScrollSound.empty())
+			AudioManager::getInstance()->playThematicSound("gamelist_move");
+
 		if (mCursor >= 0 && mCursor < mEntries.size())
 		{
 			typename IList<TextListData, T>::Entry& entry = mEntries.at(mCursor);

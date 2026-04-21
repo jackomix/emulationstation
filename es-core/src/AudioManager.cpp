@@ -248,6 +248,12 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 	mPlayingSystemThemeSong = "";
 }
 
+void AudioManager::playThematicSound(const std::string& name)
+{
+	if (mCurrentTheme)
+		Sound::getFromTheme(mCurrentTheme, "all", name)->play();
+}
+
 void AudioManager::playMusic(std::string path)
 {
 	if (!mInitialized)
@@ -493,6 +499,8 @@ void AudioManager::changePlaylist(const std::shared_ptr<ThemeData>& theme, bool 
 {
 	if (theme == nullptr)
 		return;
+
+	mCurrentTheme = theme;
 
 	if (!force && mSystemName == theme->getSystemThemeFolder())
 		return;

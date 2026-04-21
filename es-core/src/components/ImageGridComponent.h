@@ -1061,6 +1061,8 @@ void ImageGridComponent<T>::onCursorChanged(const CursorState& state)
 		return;
 	}
 
+	AudioManager::getInstance()->playThematicSound("gamelist_move");
+
 	mScrollbar.onCursorChanged();
 
 	bool direction = mCursor >= mLastCursor;

@@ -664,12 +664,14 @@ bool CollectionSystemManager::toggleGameInCollection(FileData* file, const std::
 		sourceSystem->removeFromIndex(sourceFile);
 		
 		std::string value = sourceFile->getMetadata(MetaDataId::Favorite);
-		if (value != "true")
+		if (value != "true") {
 			sourceFile->setMetadata(MetaDataId::Favorite, "true");
-		else
-		{
+			AudioManager::getInstance()->playThematicSound("favorite_add");
+		} else {
 			adding = false;
 			sourceFile->setMetadata(MetaDataId::Favorite, "false");
+			AudioManager::getInstance()->playThematicSound("favorite_remove");
+		}
 		}
 
 		sourceSystem->addToIndex(sourceFile);

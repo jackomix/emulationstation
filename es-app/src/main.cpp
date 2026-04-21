@@ -636,6 +636,8 @@ int main(int argc, char* argv[])
 	else
 		AudioManager::getInstance()->playRandomMusic();
 
+	AudioManager::getInstance()->playThematicSound("es_startup");
+
 
 #ifdef WIN32	
 	DWORD displayFrequency = 60;

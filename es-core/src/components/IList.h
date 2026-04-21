@@ -69,6 +69,8 @@ public:
 
 protected:
 	int mCursor;
+	int mLastCursor;
+	CursorState mLastCursorState;
 
 	int mScrollTier;
 	int mScrollVelocity;
@@ -91,6 +93,8 @@ public:
 		mGradient(window), mTierList(tierList), mLoopType(loopType)
 	{
 		mCursor = 0;
+		mLastCursor = 0;
+		mLastCursorState = CURSOR_STOPPED;
 		mScrollTier = 0;
 		mScrollVelocity = 0;
 		mScrollTierAccumulator = 0;
@@ -398,10 +402,20 @@ protected:
 				mScrollTier = 0;
 			}
 		}else{
+			bool wrapped = false;
 			while(cursor < 0)
+			{
 				cursor += size();
+				wrapped = true;
+			}
 			while(cursor >= size())
+			{
 				cursor -= size();
+				wrapped = true;
+			}
+
+			if (wrapped)
+				AudioManager::getInstance()->playThematicSound("gamelist_wrap");
 		}
 
 		if (amt != 0)
