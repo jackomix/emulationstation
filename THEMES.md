@@ -1357,6 +1357,47 @@ BATOCERA 5.24 - controllerActivity element must be defined in screen view
   
 
 
+### UI Sound Effects
+
+EmulationStation supports various UI sound effects that can be customized in your theme. These sounds are defined using the `<sound>` element.
+
+#### Global Sounds (`view name="all"`)
+
+You can define sounds that apply to all views by using the special view name `all`. If a sound is not defined in a specific view, EmulationStation will automatically check the `all` view as a fallback. This is the recommended way to define common UI sounds.
+
+Example:
+```xml
+<view name="all">
+    <sound name="system_move">
+        <path>./core/sounds/system_move.wav</path>
+    </sound>
+    <sound name="gamelist_move">
+        <path>./core/sounds/scroll.wav</path>
+    </sound>
+</view>
+```
+
+#### Supported Sound Names
+
+*   `es_startup`: Triggered when EmulationStation is launched.
+*   `es_return`: Triggered when returning from a game.
+*   `game_launch`: Triggered the moment a game is selected to start. (Falls back to `launch`)
+*   `gamelist_move`: Triggered when moving the cursor between games in a list or grid.
+*   `gamelist_wrap`: Triggered when the cursor hits the end of a list and loops back.
+*   `system_move`: Triggered when moving between systems in the carousel.
+*   `system_to_gamelist`: Triggered when entering a system's game list.
+*   `gamelist_to_system`: Triggered when backing out of a game list.
+*   `favorite_add`: Triggered when marking a game as a favorite.
+*   `favorite_remove`: Triggered when removing a game from favorites.
+*   `folder_open`: Triggered when entering a directory.
+*   `folder_close`: Triggered when exiting a directory.
+*   `letter_jump`: Triggered when jumping to the next/previous letter in a list.
+*   `menu_open`: Triggered when opening a menu. (Falls back to `menuOpen`)
+*   `menu_close`: Triggered when closing a menu.
+*   `menu_move`: Triggered when navigating through menu options.
+*   `menu_click`: Triggered when confirming a setting or toggle in a menu.
+*   `menu_back`: Triggered when moving back one level in the settings tree. (Falls back to `back`)
+
 Animating elements using Storyboards
 =========
 
