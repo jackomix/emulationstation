@@ -3,6 +3,7 @@
 #include "resources/Font.h"
 #include "LocaleES.h"
 #include "Window.h"
+#include "AudioManager.h"
 #include "utils/HtmlColor.h"
 
 #define MOVE_REPEAT_DELAY 500

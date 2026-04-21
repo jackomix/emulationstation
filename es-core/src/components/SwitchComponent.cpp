@@ -2,6 +2,7 @@
 
 #include "resources/Font.h"
 #include "LocaleES.h"
+#include "AudioManager.h"
 
 SwitchComponent::SwitchComponent(Window* window, bool state, bool hasAuto, bool autoState) : GuiComponent(window), mImage(window), mState(state), mInitialState(state), mHasAuto(hasAuto), mAutoState(autoState), mInitialAutoState(autoState)
 {
