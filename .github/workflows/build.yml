@@ -1,0 +1,45 @@
+name: Build EmulationStation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake git libsdl2-dev libfreeimage-dev \
+            libfreetype6-dev libcurl4-openssl-dev rapidjson-dev \
+            libasound2-dev libvlc-dev libvlccore-dev vlc-bin \
+            libsdl2-mixer-dev libboost-all-dev libeigen3-dev \
+            libgl1-mesa-dev libglu1-mesa-dev libcec-dev libudev-dev gettext
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+
+      - name: Build
+        run: |
+          cd build
+          make -j$(nproc)
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulationstation-bin
+          path: build/es-app/emulationstation
