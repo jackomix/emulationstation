@@ -3,6 +3,7 @@
 #include "Settings.h"
 #include "LocaleES.h"
 #include "ThemeData.h"
+#include "AudioManager.h"
 
 using namespace GridFlags;
 
