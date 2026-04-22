@@ -7,6 +7,7 @@
 #include "LocaleES.h"
 #include "VolumeControl.h"
 #include "Window.h"
+#include "AudioManager.h"
 
 #define PADDING_PX			(Renderer::getScreenWidth()*0.006)
 #define PADDING_BAR			(Renderer::isSmallScreen() ? Renderer::getScreenWidth()*0.02 : Renderer::getScreenWidth()*0.006)
