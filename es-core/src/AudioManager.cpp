@@ -266,13 +266,6 @@ void AudioManager::playThematicSound(const std::string& name)
 
 	if (s == nullptr || !s->hasSample())
 	{
-		auto menuTheme = ThemeData::getMenuTheme();
-		if (menuTheme)
-			s = Sound::getFromTheme(menuTheme.get(), "all", name);
-	}
-
-	if (s == nullptr || !s->hasSample())
-	{
 		auto defaultTheme = ThemeData::getDefaultTheme();
 		if (defaultTheme)
 			s = Sound::getFromTheme(defaultTheme, "all", name);
