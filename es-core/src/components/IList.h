@@ -68,7 +68,11 @@ public:
 		EntryData data;
 	};
 
+	virtual void onFocusGained() override { mFocused = true; }
+	virtual void onFocusLost() override { mFocused = false; }
+
 protected:
+	bool mFocused = false;
 	int mCursor;
 	int mLastCursor;
 	CursorState mLastCursorState;
@@ -418,7 +422,7 @@ protected:
 				wrapped = true;
 			}
 
-			if (wrapped && mPlayWrapSound)
+			if (mFocused && wrapped && mPlayWrapSound)
 			{
 				AudioManager::getInstance()->playThematicSound("gamelist_wrap");
 				AudioManager::getInstance()->skipNextMoveSound();

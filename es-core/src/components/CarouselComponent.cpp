@@ -220,10 +220,13 @@ void CarouselComponent::onCursorChanged(const CursorState& state)
 	if (mLastCursor == mCursor)
 		return;
 
-	if (!mScrollSound.empty())
-		Sound::get(mScrollSound)->play();
-	else
-		AudioManager::getInstance()->playThematicSound("system_move");
+	if (mFocused)
+	{
+		if (!mScrollSound.empty())
+			Sound::get(mScrollSound)->play();
+		else
+			AudioManager::getInstance()->playThematicSound("system_move");
+	}
 
 	int oldCursor = mLastCursor;
 	
