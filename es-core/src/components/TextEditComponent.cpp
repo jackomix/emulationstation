@@ -167,6 +167,7 @@ bool TextEditComponent::input(InputConfig* config, Input input)
 
 	if((config->isMappedTo(BUTTON_OK, input) || (config->getDeviceId() == DEVICE_KEYBOARD && input.id == SDLK_RETURN)) && mFocused && !mEditing)
 	{
+		AudioManager::getInstance()->playThematicSound("menu_click");
 		startEditing();
 		return true;
 	}
@@ -181,6 +182,7 @@ bool TextEditComponent::input(InputConfig* config, Input input)
 			}
 			else
 			{
+				AudioManager::getInstance()->playThematicSound("menu_click");
 				stopEditing();
 				return false;
 			}

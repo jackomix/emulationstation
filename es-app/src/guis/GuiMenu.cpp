@@ -492,9 +492,6 @@ bool GuiMenu::input(InputConfig* config, Input input)
 
 	if((config->isMappedTo(BUTTON_BACK, input) || config->isMappedTo("start", input)) && input.value != 0)
 	{
-		if (config->isMappedTo(BUTTON_BACK, input) && mWindow->getGuiStackSize() > 2)
-			AudioManager::getInstance()->playThematicSound("menu_back");
-
 		delete this;
 		return true;
 	}

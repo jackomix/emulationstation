@@ -447,6 +447,9 @@ void ComponentGrid::textInput(const char* text)
 
 void ComponentGrid::onCursorMoved(Vector2i from, Vector2i to)
 {
+	if (from != to)
+		AudioManager::getInstance()->playThematicSound("menu_move");
+
 	const GridEntry* cell = getCellAt(from);
 	if(cell)
 		cell->component->onFocusLost();

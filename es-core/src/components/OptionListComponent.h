@@ -288,7 +288,10 @@ public:
 			if(config->isMappedTo(BUTTON_OK, input))
 			{
 				if (mEntries.size() > 0)
+				{
+					AudioManager::getInstance()->playThematicSound("menu_click");
 					open();
+				}
 
 				return true;
 			}

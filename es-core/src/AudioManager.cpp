@@ -257,6 +257,7 @@ void AudioManager::playThematicSound(const std::string& name)
 	if (mSkipNextMoveSound && isMove)
 	{
 		LOG(LogDebug) << "  (suppressed)";
+		mSkipNextMoveSound = false;
 		return;
 	}
 
