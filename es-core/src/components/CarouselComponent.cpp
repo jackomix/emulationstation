@@ -32,6 +32,7 @@ CarouselComponent::CarouselComponent(Window* window) :
 	mScreensaverActive = false;
 	mDisable = false;		
 	mLastCursor = 0;
+	mLastCursorState = CursorState::CURSOR_STOPPED;
 		
 	mPressedPoint = Vector2i(-1, -1);
 	mPressedCursor = -1;

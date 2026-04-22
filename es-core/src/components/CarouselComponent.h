@@ -143,8 +143,6 @@ private:
 	std::string					mThemeElementName;
 	std::string					mThemeClass;
 
-	int mLastCursor;	
-
 	CarouselType			mType;
 	CarouselImageSource		mImageSource;
 

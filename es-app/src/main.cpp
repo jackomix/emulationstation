@@ -637,6 +637,7 @@ int main(int argc, char* argv[])
 		AudioManager::getInstance()->playRandomMusic();
 
 	AudioManager::getInstance()->playThematicSound("es_startup");
+	AudioManager::getInstance()->skipNextMoveSound();
 
 
 #ifdef WIN32	

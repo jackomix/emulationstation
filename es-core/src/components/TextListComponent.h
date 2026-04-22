@@ -140,9 +140,6 @@ private:
 
 	int mLineCount;
 
-	int mLastCursor;
-	CursorState mLastCursorState;
-
 	Alignment mAlignment;
 	float mHorizontalMargin;
 
@@ -209,7 +206,7 @@ TextListComponent<T>::TextListComponent(Window* window) :
 	mMarqueeOffset = 0;
 	mMarqueeOffset2 = 0;
 	mMarqueeTime = 0;
-	mLastCursor = -1;
+	mLastCursor = 0;
 	mLastCursorState = CursorState::CURSOR_STOPPED;
 
 	mHorizontalMargin = 0;

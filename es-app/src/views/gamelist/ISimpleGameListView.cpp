@@ -232,7 +232,6 @@ void ISimpleGameListView::goBack()
 		{
 			populateList(folder->getChildrenListToDisplay());
 			setCursor(top);
-			Sound::getFromTheme(getTheme().get(), getName(), "back")->play();
 		}
 	}
 	else if (mPopupSelfReference)
@@ -413,7 +412,6 @@ void ISimpleGameListView::launchSelectedGame()
 		setCursor(top);
 
 		AudioManager::getInstance()->playThematicSound("folder_close");
-		Sound::getFromTheme(getTheme().get(), getName(), "back")->play();
 	}
 	else
 	{

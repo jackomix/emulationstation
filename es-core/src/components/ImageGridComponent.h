@@ -154,9 +154,6 @@ private:
 
 	bool mEntriesDirty;
 
-	int mLastCursor;
-	CursorState mLastCursorState;
-
 	std::string mDefaultGameTexture;
 	std::string mDefaultFolderTexture;
 	std::string mDefaultLogoBackgroundTexture;
@@ -448,7 +445,7 @@ ImageGridComponent<T>::ImageGridComponent(Window* window) : IList<ImageGridData,
 	mStartPosition = 0;
 	mEntriesDirty = true;
 
-	mLastCursor = -1;
+	mLastCursor = 0;
 	mLastCursorState = CursorState::CURSOR_STOPPED;
 
 	mDefaultGameTexture = ":/cartridge.svg";
