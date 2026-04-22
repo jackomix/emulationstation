@@ -252,12 +252,16 @@ void AudioManager::playThematicSound(const std::string& name)
 {
 	LOG(LogDebug) << "playThematicSound(\"" << name << "\")";
 
-	if (mSkipNextMoveSound && (name == "gamelist_move" || name == "system_move" || name == "menu_move"))
+	bool isMove = (name == "gamelist_move" || name == "system_move" || name == "menu_move");
+
+	if (mSkipNextMoveSound && isMove)
 	{
 		LOG(LogDebug) << "  (suppressed)";
-		mSkipNextMoveSound = false;
 		return;
 	}
+
+	if (!isMove)
+		mSkipNextMoveSound = false;
 
 	std::shared_ptr<Sound> s = nullptr;
 
