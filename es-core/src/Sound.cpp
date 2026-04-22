@@ -103,7 +103,7 @@ void Sound::play()
 	if (!Settings::getInstance()->getBool("EnableSounds"))
 		return;
 
-	int linearVolume = Settings::getInstance()->getInt("SoundVolume");
+	int linearVolume = Settings::getInstance()->getInt("SystemVolume");
 	Mix_VolumeChunk(mSampleData, (linearVolume * 128) / 100);
 
 	mPlayingChannel = Mix_PlayChannel(-1, mSampleData, 0);
