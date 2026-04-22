@@ -5,6 +5,7 @@
 #include "TextToSpeech.h"
 #include "Settings.h"
 #include "Window.h"
+#include "AudioManager.h"
 #include "utils/HtmlColor.h"
 
 #define TEXT_PADDING Math::max(12, Renderer::getScreenWidth() * 0.014)
@@ -51,8 +52,13 @@ bool ButtonComponent::input(InputConfig* config, Input input)
 {
 	if (config->isMappedTo(BUTTON_OK, input) && input.value != 0)
 	{
-		if (mPressedFunc && mEnabled)
-			mPressedFunc();
+		if (mEnabled)
+		{
+			AudioManager::getInstance()->playThematicSound("menu_click");
+
+			if (mPressedFunc)
+				mPressedFunc();
+		}
 
 		return true;
 	}
@@ -212,8 +218,13 @@ bool ButtonComponent::onMouseClick(int button, bool pressed, int x, int y)
 
 			if (mIsMouseOver)
 			{
-				if (mPressedFunc && mEnabled)
-					mPressedFunc();
+				if (mEnabled)
+				{
+					AudioManager::getInstance()->playThematicSound("menu_click");
+
+					if (mPressedFunc)
+						mPressedFunc();
+				}
 			}
 		}
 

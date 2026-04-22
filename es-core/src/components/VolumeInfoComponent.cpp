@@ -96,14 +96,6 @@ void VolumeInfoComponent::update(int deltaTime)
 	{
 		bool firstTime = (mVolume < 0);
 
-		if (!firstTime)
-		{
-			if (volume > mVolume)
-				AudioManager::getInstance()->playThematicSound("volume_up");
-			else if (volume < mVolume)
-				AudioManager::getInstance()->playThematicSound("volume_down");
-		}
-
 		mVolume = volume;
 
 		if (mVolume == 0)

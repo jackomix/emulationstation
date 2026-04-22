@@ -1381,7 +1381,7 @@ Example:
 
 *   `es_startup`: Triggered when EmulationStation is launched.
 *   `es_return`: Triggered when returning from a game.
-*   `game_launch`: Triggered the moment a game is selected to start. (Falls back to `launch`)
+*   `game_launch`: Triggered the moment a game is selected to start.
 *   `gamelist_move`: Triggered when moving the cursor between games in a list or grid.
 *   `gamelist_wrap`: Triggered when the cursor hits the end of a list and loops back.
 *   `system_move`: Triggered when moving between systems in the carousel.
@@ -1392,11 +1392,13 @@ Example:
 *   `folder_open`: Triggered when entering a directory.
 *   `folder_close`: Triggered when exiting a directory.
 *   `letter_jump`: Triggered when jumping to the next/previous letter in a list.
-*   `menu_open`: Triggered when opening a menu. (Falls back to `menuOpen`)
+*   `menu_open`: Triggered when opening a menu.
 *   `menu_close`: Triggered when closing a menu.
 *   `menu_move`: Triggered when navigating through menu options.
 *   `menu_click`: Triggered when confirming a setting or toggle in a menu.
-*   `menu_back`: Triggered when moving back one level in the settings tree. (Falls back to `back`)
+*   `menu_back`: Triggered when moving back one level in the settings tree.
+*   `volume_up`: Triggered when increasing the system volume.
+*   `volume_down`: Triggered when decreasing the system volume.
 
 Animating elements using Storyboards
 =========

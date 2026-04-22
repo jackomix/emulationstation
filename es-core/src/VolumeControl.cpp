@@ -3,6 +3,7 @@
 #include "math/Misc.h"
 #include "Log.h"
 #include "Settings.h"
+#include "AudioManager.h"
 
 #ifdef WIN32
 #include <mmdeviceapi.h>
@@ -575,6 +576,8 @@ int VolumeControl::getVolume() const
 
 void VolumeControl::setVolume(int volume)
 {
+	int oldVolume = getVolume();
+
 	//clamp to 0-100 range
 	if (volume < 0)
 	{
@@ -584,6 +587,12 @@ void VolumeControl::setVolume(int volume)
 	{
 		volume = 100;
 	}
+
+	if (volume > oldVolume)
+		AudioManager::getInstance()->playThematicSound("volume_up");
+	else if (volume < oldVolume)
+		AudioManager::getInstance()->playThematicSound("volume_down");
+
 	//store values in internal variables
 	internalVolume = volume;
 #if defined (__APPLE__)

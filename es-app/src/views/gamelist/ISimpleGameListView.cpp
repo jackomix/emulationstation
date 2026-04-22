@@ -344,7 +344,7 @@ void ISimpleGameListView::showGamelistOptions()
 	if (idx != nullptr && idx->hasRelevency())
 		return;
 
-	Sound::getFromTheme(mTheme.get(), getName(), "menuOpen")->play();
+	Sound::getFromTheme(mTheme.get(), getName(), "menu_open")->play();
 	mWindow->pushGui(new GuiGamelistOptions(mWindow, this, this->mRoot->getSystem()));	
 }
 
@@ -355,7 +355,7 @@ void ISimpleGameListView::showSelectedGameOptions()
 	if (cursor == nullptr)
 		return;
 
-	Sound::getFromTheme(mTheme.get(), getName(), "menuOpen")->play();
+	Sound::getFromTheme(mTheme.get(), getName(), "menu_open")->play();
 	mWindow->pushGui(new GuiGameOptions(mWindow, cursor));
 }
 
@@ -376,7 +376,7 @@ void ISimpleGameListView::showSelectedGameSaveSnapshots()
 
 	if (SaveStateRepository::isEnabled(cursor))
 	{
-		Sound::getFromTheme(mTheme.get(), getName(), "menuOpen")->play();
+		Sound::getFromTheme(mTheme.get(), getName(), "menu_open")->play();
 
 		mWindow->pushGui(new GuiSaveState(mWindow, cursor, [this, cursor](SaveState* state)
 		{

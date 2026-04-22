@@ -250,8 +250,11 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 
 void AudioManager::playThematicSound(const std::string& name)
 {
+	LOG(LogDebug) << "playThematicSound(\"" << name << "\")";
+
 	if (mSkipNextMoveSound && (name == "gamelist_move" || name == "system_move" || name == "menu_move"))
 	{
+		LOG(LogDebug) << "  (suppressed)";
 		mSkipNextMoveSound = false;
 		return;
 	}
@@ -263,13 +266,27 @@ void AudioManager::playThematicSound(const std::string& name)
 
 	if (s == nullptr || !s->hasSample())
 	{
-		auto menuTheme = ThemeData::getDefaultTheme();
+		auto menuTheme = ThemeData::getMenuTheme();
 		if (menuTheme)
-			s = Sound::getFromTheme(menuTheme, "all", name);
+			s = Sound::getFromTheme(menuTheme.get(), "all", name);
 	}
 
-	if (s)
+	if (s == nullptr || !s->hasSample())
+	{
+		auto defaultTheme = ThemeData::getDefaultTheme();
+		if (defaultTheme)
+			s = Sound::getFromTheme(defaultTheme, "all", name);
+	}
+
+	if (s && s->hasSample())
+	{
+		LOG(LogDebug) << "  (playing)";
 		s->play();
+	}
+	else
+	{
+		LOG(LogDebug) << "  (missing or no sample)";
+	}
 }
 
 void AudioManager::playMusic(std::string path)
