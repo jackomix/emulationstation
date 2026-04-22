@@ -178,7 +178,10 @@ void ViewController::goToSystemView(SystemData* system, bool forceImmediate)
 
 	// Tell any current view it's about to be hidden
 	if (mCurrentView)
+	{
 		mCurrentView->onHide();
+		mCurrentView->onFocusLost();
+	}
 
 	// Realign system view
 	auto systemList = getSystemListView();
@@ -343,7 +346,10 @@ void ViewController::goToGameList(SystemData* system, bool forceImmediate)
 	if (forceImmediate || Settings::TransitionStyle() == "fade")
 	{
 		if (mCurrentView)
+		{
 			mCurrentView->onHide();
+			mCurrentView->onFocusLost();
+		}
 
 		mCurrentView = view;
 		playViewTransition(forceImmediate);
@@ -358,7 +364,10 @@ void ViewController::goToGameList(SystemData* system, bool forceImmediate)
 void ViewController::playViewTransition(bool forceImmediate)
 {
 	if (mCurrentView)
+	{
 		mCurrentView->onShow();
+		mCurrentView->onFocusGained();
+	}
 
 	Vector3f target(Vector3f::Zero());
 	if(mCurrentView)
@@ -485,7 +494,10 @@ bool ViewController::checkLaunchOptions(FileData* game, LaunchGameOptions option
 {
 #ifdef _RPI_
 	if (Settings::getInstance()->getBool("VideoOmxPlayer") && mCurrentView)
+	{
 		mCurrentView->onHide();
+		mCurrentView->onFocusLost();
+	}
 #endif
 
 	if (!game->isExtensionCompatible())
@@ -820,6 +832,7 @@ std::shared_ptr<IGameListView> ViewController::getGameListView(SystemData* syste
 		if (mCurrentView)
 		{
 			mCurrentView->onHide();
+		mCurrentView->onFocusLost();
 			view->setPosition(mCurrentView->getPosition());
 		}
 
@@ -954,7 +967,10 @@ void ViewController::update(int deltaTime)
 	if (mDeferPlayViewTransitionTo != nullptr)
 	{
 		if (mCurrentView)
+		{
 			mCurrentView->onHide();
+			mCurrentView->onFocusLost();
+		}
 
 		mCurrentView = mDeferPlayViewTransitionTo;
 		mDeferPlayViewTransitionTo = nullptr;
@@ -1065,6 +1081,7 @@ void ViewController::reloadGameListView(IGameListView* view)
 	if (isCurrent)
 	{
 		mCurrentView->onHide();
+		mCurrentView->onFocusLost();
 		mCurrentView = nullptr;
 	}
 
@@ -1152,6 +1169,7 @@ void ViewController::reloadAll(Window* window, bool reloadTheme)
 			simpleView->closePopupContext();
 
 		mCurrentView->onHide();
+		mCurrentView->onFocusLost();
 	}
 	
 	ThemeData::setDefaultTheme(nullptr);
@@ -1324,6 +1342,18 @@ void ViewController::onShow()
 		mCurrentView->onShow();
 }
 
+void ViewController::onFocusGained()
+{
+	if (mCurrentView)
+		mCurrentView->onFocusGained();
+}
+
+void ViewController::onFocusLost()
+{
+	if (mCurrentView)
+		mCurrentView->onFocusLost();
+}
+
 void ViewController::onScreenSaverActivate()
 {
 	GuiComponent::onScreenSaverActivate();
@@ -1393,10 +1423,12 @@ void ViewController::setActiveView(std::shared_ptr<GuiComponent> view)
 	{
 		mCurrentView->topWindow(false);
 		mCurrentView->onHide();
+		mCurrentView->onFocusLost();
 	}
 
 	mCurrentView = view;
 	mCurrentView->onShow();
+	mCurrentView->onFocusGained();
 	mCurrentView->topWindow(true);
 }
 

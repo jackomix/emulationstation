@@ -103,6 +103,8 @@ public:
 	void onThemeChanged(const std::shared_ptr<ThemeData>& theme);
 
 	virtual void onShow() override;
+	virtual void onFocusGained() override;
+	virtual void onFocusLost() override;
 	virtual void onScreenSaverActivate();
 	virtual void onScreenSaverDeactivate();
 

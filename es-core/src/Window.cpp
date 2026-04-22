@@ -73,12 +73,14 @@ void Window::pushGui(GuiComponent* gui)
 	if (mGuiStack.size() > 0)
 	{
 		auto& top = mGuiStack.back();
-		top->topWindow(false);		
+		top->topWindow(false);
+		top->onFocusLost();
 	}
 
 	hitTest(-1, -1);
 
 	gui->onShow();
+	gui->onFocusGained();
 	mGuiStack.push_back(gui);
 	gui->updateHelpPrompts();
 }
@@ -95,6 +97,8 @@ void Window::removeGui(GuiComponent* gui)
 		if(*i == gui)
 		{						
 			gui->onHide();
+			gui->onFocusLost();
+
 			i = mGuiStack.erase(i);
 
 			if (mGuiStack.size() == 1)
@@ -106,6 +110,7 @@ void Window::removeGui(GuiComponent* gui)
 			{
 				mGuiStack.back()->updateHelpPrompts();
 				mGuiStack.back()->topWindow(true);
+				mGuiStack.back()->onFocusGained();
 			}
 
 			return;

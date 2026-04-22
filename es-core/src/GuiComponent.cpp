@@ -934,6 +934,18 @@ HelpStyle GuiComponent::getHelpStyle()
 	return style;
 }
 
+void GuiComponent::onFocusGained()
+{
+	for (auto child : mChildren)
+		child->onFocusGained();
+}
+
+void GuiComponent::onFocusLost()
+{
+	for (auto child : mChildren)
+		child->onFocusLost();
+}
+
 void GuiComponent::onShow()
 {
 	mShowing = true;
