@@ -129,6 +129,7 @@ void ISimpleGameListView::moveToFolder(FolderData* folder)
 		return;
 
 	AudioManager::getInstance()->playThematicSound("folder_open");
+	AudioManager::getInstance()->skipNextMoveSound();
 
 	mCursorStack.push(folder);	populateList(folder->getChildrenListToDisplay());
 	

@@ -416,7 +416,10 @@ protected:
 			}
 
 			if (wrapped)
+			{
 				AudioManager::getInstance()->playThematicSound("gamelist_wrap");
+				AudioManager::getInstance()->skipNextMoveSound();
+			}
 		}
 
 		if (amt != 0)

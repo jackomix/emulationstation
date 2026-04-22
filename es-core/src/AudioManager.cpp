@@ -25,7 +25,7 @@
 AudioManager* AudioManager::sInstance = NULL;
 std::vector<std::shared_ptr<Sound>> AudioManager::sSoundVector;
 
-AudioManager::AudioManager() : mInitialized(false), mCurrentMusic(nullptr), mMusicVolume(MIX_MAX_VOLUME), mVideoPlaying(false)
+AudioManager::AudioManager() : mInitialized(false), mCurrentMusic(nullptr), mMusicVolume(MIX_MAX_VOLUME), mVideoPlaying(false), mSkipNextMoveSound(false)
 {
 	init();
 }
@@ -250,6 +250,12 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 
 void AudioManager::playThematicSound(const std::string& name)
 {
+	if (mSkipNextMoveSound && (name == "gamelist_move" || name == "system_move" || name == "menu_move"))
+	{
+		mSkipNextMoveSound = false;
+		return;
+	}
+
 	std::shared_ptr<Sound> s = nullptr;
 
 	if (mCurrentTheme)

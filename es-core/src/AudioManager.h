@@ -54,6 +54,7 @@ public:
 	void stopMusic(bool fadeOut=true);
 	
 	void playThematicSound(const std::string& name);
+	inline void skipNextMoveSound() { mSkipNextMoveSound = true; }
 
 	inline const std::string getSongName() const { return mCurrentSong; }
 
@@ -81,6 +82,7 @@ private:
 	bool songWasPlayedRecently(const std::string& song);
 
 	bool mSongNameChanged;
+	bool mSkipNextMoveSound;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H
