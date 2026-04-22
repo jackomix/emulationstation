@@ -72,6 +72,9 @@ protected:
 	using IList<ImageGridData, T>::getTransform;
 	using IList<ImageGridData, T>::mSize;
 	using IList<ImageGridData, T>::mCursor;
+	using IList<ImageGridData, T>::mLastCursor;
+	using IList<ImageGridData, T>::mLastCursorState;
+	using IList<ImageGridData, T>::mPlayWrapSound;
 	using IList<ImageGridData, T>::mShowing;
 	using IList<ImageGridData, T>::mVisible;
 	using IList<ImageGridData, T>::Entry;
