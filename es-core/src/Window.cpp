@@ -66,7 +66,8 @@ void Window::pushGui(GuiComponent* gui)
 {
 	resetMenuBackgroundShader();
 
-	AudioManager::getInstance()->playThematicSound("menu_open");
+	if (mGuiStack.empty())
+		AudioManager::getInstance()->playThematicSound("menu_open");
 
 	if (mGuiStack.size() > 0)
 	{
@@ -92,10 +93,11 @@ void Window::removeGui(GuiComponent* gui)
 	{
 		if(*i == gui)
 		{						
-			AudioManager::getInstance()->playThematicSound("menu_close");
-
 			gui->onHide();
 			i = mGuiStack.erase(i);
+
+			if (mGuiStack.empty())
+				AudioManager::getInstance()->playThematicSound("menu_close");
 
 			if(i == mGuiStack.cend() && mGuiStack.size()) // we just popped the stack and the stack is not empty
 			{
