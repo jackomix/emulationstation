@@ -410,6 +410,8 @@ void ISimpleGameListView::launchSelectedGame()
 
 		populateList(folder->getChildrenListToDisplay());
 		setCursor(top);
+
+		AudioManager::getInstance()->playThematicSound("folder_close");
 		Sound::getFromTheme(getTheme().get(), getName(), "back")->play();
 	}
 	else
