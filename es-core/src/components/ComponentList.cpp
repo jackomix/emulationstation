@@ -209,7 +209,7 @@ void ComponentList::update(int deltaTime)
 
 void ComponentList::onCursorChanged(const CursorState& state)
 {
-	if (mLastCursor != mCursor || mLastCursorState != state)
+	if (mFocused && (mLastCursor != mCursor || mLastCursorState != state))
 		AudioManager::getInstance()->playThematicSound("menu_move");
 
 	mLastCursor = mCursor;

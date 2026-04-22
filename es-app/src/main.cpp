@@ -637,10 +637,8 @@ int main(int argc, char* argv[])
 		AudioManager::getInstance()->playRandomMusic();
 
 	AudioManager::getInstance()->playThematicSound("es_startup");
-	AudioManager::getInstance()->skipNextMoveSound();
 
-
-#ifdef WIN32	
+	#ifdef WIN32	
 	DWORD displayFrequency = 60;
 
 	DEVMODE lpDevMode;

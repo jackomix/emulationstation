@@ -70,8 +70,6 @@ void Window::pushGui(GuiComponent* gui)
 	if (mGuiStack.size() == 1)
 		AudioManager::getInstance()->playThematicSound("menu_open");
 
-	AudioManager::getInstance()->skipNextMoveSound();
-
 	if (mGuiStack.size() > 0)
 	{
 		auto& top = mGuiStack.back();

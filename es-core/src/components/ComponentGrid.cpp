@@ -8,7 +8,7 @@
 using namespace GridFlags;
 
 ComponentGrid::ComponentGrid(Window* window, const Vector2i& gridDimensions) : GuiComponent(window), 
-	mGridSize(gridDimensions), mCursor(0, 0)
+	mGridSize(gridDimensions), mCursor(0, 0), mFocused(false)
 {
 	assert(gridDimensions.x() > 0 && gridDimensions.y() > 0);
 
@@ -391,6 +391,7 @@ void ComponentGrid::setCursorTo(Vector2i pos)
 
 void ComponentGrid::onFocusLost()
 {
+	mFocused = false;
 	const GridEntry* cursorEntry = getCellAt(mCursor);
 	if(cursorEntry)
 		cursorEntry->component->onFocusLost();
@@ -398,6 +399,7 @@ void ComponentGrid::onFocusLost()
 
 void ComponentGrid::onFocusGained()
 {
+	mFocused = true;
 	const GridEntry* cursorEntry = getCellAt(mCursor);
 	if(cursorEntry)
 		cursorEntry->component->onFocusGained();
@@ -448,7 +450,7 @@ void ComponentGrid::textInput(const char* text)
 
 void ComponentGrid::onCursorMoved(Vector2i from, Vector2i to)
 {
-	if (from != to)
+	if (mFocused && from != to)
 		AudioManager::getInstance()->playThematicSound("menu_move");
 
 	const GridEntry* cell = getCellAt(from);

@@ -82,6 +82,8 @@ public:
 	Vector2i getGridSize() { return mGridSize; }
 
 private:
+	bool mFocused;
+
 	class GridEntry
 	{
 	public:
