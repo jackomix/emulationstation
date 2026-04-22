@@ -75,6 +75,7 @@ protected:
 	using IList<ImageGridData, T>::mLastCursor;
 	using IList<ImageGridData, T>::mLastCursorState;
 	using IList<ImageGridData, T>::mPlayWrapSound;
+	using IList<ImageGridData, T>::mFocused;
 	using IList<ImageGridData, T>::mShowing;
 	using IList<ImageGridData, T>::mVisible;
 	using IList<ImageGridData, T>::Entry;
@@ -1134,7 +1135,7 @@ void ImageGridComponent<T>::onCursorChanged(const CursorState& state)
 					if (tile->hasItemTemplate())
 						tile->setSelected(false);
 		}
-		else if (mLastCursor = -9999)
+		else if (mLastCursor == -9999)
 			mEntries[mCursor].data.tile->startVideo();
 	}
 

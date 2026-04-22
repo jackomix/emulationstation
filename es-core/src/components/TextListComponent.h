@@ -45,6 +45,7 @@ protected:
 	using IList<TextListData, T>::mLastCursor;
 	using IList<TextListData, T>::mLastCursorState;
 	using IList<TextListData, T>::mPlayWrapSound;
+	using IList<TextListData, T>::mFocused;
 	using IList<TextListData, T>::mIsMouseOver;
 	using IList<TextListData, T>::mScrollVelocity;
 	using IList<TextListData, T>::mWindow;
