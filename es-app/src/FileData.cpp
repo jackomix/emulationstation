@@ -830,6 +830,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		LOG(LogWarning) << "...Show Error message! exit code " << exitCode << "!";
 	}
 
+	AudioManager::getInstance()->skipNextMoveSound();
 	window->reactivateGui();
 
 	if (system != nullptr && system->getTheme() != nullptr)

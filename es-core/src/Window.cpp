@@ -66,7 +66,8 @@ void Window::pushGui(GuiComponent* gui)
 {
 	resetMenuBackgroundShader();
 
-	if (mGuiStack.empty())
+	// ViewController is always on the stack, so a menu opening means going from 1 to 2
+	if (mGuiStack.size() == 1)
 		AudioManager::getInstance()->playThematicSound("menu_open");
 
 	if (mGuiStack.size() > 0)
@@ -96,7 +97,7 @@ void Window::removeGui(GuiComponent* gui)
 			gui->onHide();
 			i = mGuiStack.erase(i);
 
-			if (mGuiStack.empty())
+			if (mGuiStack.size() == 1)
 				AudioManager::getInstance()->playThematicSound("menu_close");
 
 			if(i == mGuiStack.cend() && mGuiStack.size()) // we just popped the stack and the stack is not empty
