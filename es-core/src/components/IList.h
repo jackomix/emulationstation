@@ -73,6 +73,8 @@ protected:
 	int mLastCursor;
 	CursorState mLastCursorState;
 
+	bool mPlayWrapSound;
+
 	int mScrollTier;
 	int mScrollVelocity;
 
@@ -96,6 +98,7 @@ public:
 		mCursor = 0;
 		mLastCursor = 0;
 		mLastCursorState = CURSOR_STOPPED;
+		mPlayWrapSound = false;
 		mScrollTier = 0;
 		mScrollVelocity = 0;
 		mScrollTierAccumulator = 0;
@@ -415,7 +418,7 @@ protected:
 				wrapped = true;
 			}
 
-			if (wrapped)
+			if (wrapped && mPlayWrapSound)
 			{
 				AudioManager::getInstance()->playThematicSound("gamelist_wrap");
 				AudioManager::getInstance()->skipNextMoveSound();

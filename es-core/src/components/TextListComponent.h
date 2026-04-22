@@ -208,6 +208,7 @@ TextListComponent<T>::TextListComponent(Window* window) :
 	mMarqueeTime = 0;
 	mLastCursor = 0;
 	mLastCursorState = CursorState::CURSOR_STOPPED;
+	mPlayWrapSound = true;
 
 	mHorizontalMargin = 0;
 	mAlignment = ALIGN_CENTER;

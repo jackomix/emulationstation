@@ -447,6 +447,7 @@ ImageGridComponent<T>::ImageGridComponent(Window* window) : IList<ImageGridData,
 
 	mLastCursor = 0;
 	mLastCursorState = CursorState::CURSOR_STOPPED;
+	mPlayWrapSound = true;
 
 	mDefaultGameTexture = ":/cartridge.svg";
 	mDefaultFolderTexture = ":/folder.svg";
