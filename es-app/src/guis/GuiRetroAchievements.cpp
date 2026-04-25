@@ -2,6 +2,7 @@
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiRetroAchievements.h"
 #include "guis/GuiSettings.h"
+#include "guis/GuiRetroAchievementsSettings.h"
 #include "components/WebImageComponent.h"
 #include "Window.h"
 #include "Log.h"
