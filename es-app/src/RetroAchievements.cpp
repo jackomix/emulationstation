@@ -681,7 +681,10 @@ std::string RetroAchievements::getCheevosHash( SystemData* system, const std::st
 
 bool RetroAchievements::testAccount(const std::string& username, const std::string& password, std::string& tokenOrError)
 {
-	if (username.empty() || password.empty())
+	std::string baseUrl = getApiBaseUrl();
+	bool isLocalServer = (baseUrl.find("127.0.0.1") != std::string::npos || baseUrl.find("localhost") != std::string::npos);
+
+	if (username.empty() || (password.empty() && !isLocalServer))
 	{
 		tokenOrError = _("A valid account is required. Please register an account on https://retroachievements.org");
 		return false;
@@ -692,9 +695,12 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 	try
 	{
 		auto options = getHttpOptions();
-		std::string baseUrl = getApiBaseUrl();
 
-		HttpReq request(baseUrl + "dorequest.php?r=login&u=" + HttpReq::urlEncode(username) + "&p=" + HttpReq::urlEncode(password), &options);
+		std::string url = baseUrl + "dorequest.php?r=login&u=" + HttpReq::urlEncode(username);
+		if (!isLocalServer)
+			url += "&p=" + HttpReq::urlEncode(password);
+
+		HttpReq request(url, &options);
 		if (!request.wait())
 		{						
 			tokenOrError = request.getErrorMsg();
