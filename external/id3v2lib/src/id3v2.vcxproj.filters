@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\id3v2lib\src\frame.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\id3v2lib\src\header.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\id3v2lib\src\id3v2lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\id3v2lib\src\types.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\id3v2lib\src\utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\id3v2lib\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{AC105FC2-95EC-34C1-8F16-E549032CE2E6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\4368f7a3dde20d76eece57b255d1dadf\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{F5BE19B7-3F61-31DF-8B36-135C4E9855DA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

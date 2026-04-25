@@ -555,7 +555,11 @@ namespace Utils
 		std::string getShOutput(const std::string& mStr)
 		{
 			std::string result, file;
+#ifdef _WIN32
+			FILE* pipe{ _popen(mStr.c_str(), "r") };
+#else
 			FILE* pipe{ popen(mStr.c_str(), "r") };
+#endif
 			char buffer[256];
 
 			while (fgets(buffer, sizeof(buffer), pipe) != NULL)
@@ -564,7 +568,11 @@ namespace Utils
 				result += file.substr(0, file.size() - 1);
 			}
 
+#ifdef _WIN32
+			_pclose(pipe);
+#else
 			pclose(pipe);
+#endif
 			return result;
 		}
 

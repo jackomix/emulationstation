@@ -1,0 +1,665 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\AudioManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\BindingManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\CECInput.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GuiComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HelpStyle.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HttpReq.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ImageIO.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputConfig.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GunManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Log.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MameNames.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\LocaleES.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\PowerSaver.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Scripting.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Settings.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Sound.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Splash.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeData.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeVariables.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\VolumeControl.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Window.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MultiStateInput.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\TextToSpeech.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Paths.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\AnimationController.cpp">
+      <Filter>animations</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\ThemeStoryboard.cpp">
+      <Filter>anim</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\StoryboardAnimator.cpp">
+      <Filter>anim</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\AnimatedGifPlaylist.cpp">
+      <Filter>playlists</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\M3uPlaylist.cpp">
+      <Filter>playlists</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AnimatedImageComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AsyncNotificationComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIndicatorComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIconComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryTextComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NetworkIconComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\PostProcessShaderComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\StackPanelComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BusyComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ButtonComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ClockComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ControllerActivityComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\IExternalActivity.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentGrid.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentList.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeEditComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\HelpComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\GridTileComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ImageComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MenuComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NinePatchComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollableContainer.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SliderComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RatingComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RectangleComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SwitchComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextEditComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoPlayerComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoVlcComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VolumeInfoComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollbarComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MultiLineMenuEntry.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentTab.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\WebImageComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\CarouselComponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiDetectDevice.cpp">
+      <Filter>guis</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInputConfig.cpp">
+      <Filter>guis</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiMsgBox.cpp">
+      <Filter>guis</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInfoPopup.cpp">
+      <Filter>guis</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopup.cpp">
+      <Filter>guis</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopupKeyboard.cpp">
+      <Filter>guis</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\SystemConf.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Misc.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Transform4x4f.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2f.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2i.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector3f.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector4f.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GL21.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES10.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES20.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\GlExtensions.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Shader.cpp">
+      <Filter>renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\Font.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\ResourceManager.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureResource.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureData.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureDataManager.cpp">
+      <Filter>resources</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\FileSystemUtil.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringUtil.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringListLock.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\TimeUtil.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ThreadPool.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Platform.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\NameResolver.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\MathExpr.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ZipFile.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\md5.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Randomizer.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\HtmlColor.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\WatchersManager.cpp">
+      <Filter>watchers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\BatteryLevelWatcher.cpp">
+      <Filter>watchers</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\NetworkStateWatcher.cpp">
+      <Filter>watchers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\AsyncHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\AudioManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\BindingManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\CECInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GuiComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HelpStyle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HttpReq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ImageIO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GunManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MameNames.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\gettext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\LocaleES.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\SystemConf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\PowerSaver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Splash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeVariables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\VolumeControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MultiStateInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\TextToSpeech.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Paths.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\Animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\AnimationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\LambdaAnimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\AnimatedGifPlaylist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\M3uPlaylist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\ThemeAnimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\ThemeStoryboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\StoryboardAnimator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AnimatedImageComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AsyncNotificationComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIndicatorComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIconComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryTextComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NetworkIconComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\PostProcessShaderComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\StackPanelComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BusyComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ButtonComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ClockComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ControllerActivityComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\IExternalActivity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentGrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeEditComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\HelpComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\GridTileComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\IList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ImageComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ImageGridComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MenuComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NinePatchComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\OptionListComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollableContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SliderComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RatingComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RectangleComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SwitchComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextEditComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoPlayerComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoVlcComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VolumeInfoComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MultiLineMenuEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollbarComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentTab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\WebImageComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextListComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\CarouselComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiDetectDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInputConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiMsgBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInfoPopup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopupKeyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Transform4x4f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector3f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector4f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GL21.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES10.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES20.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\GlExtensions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureDataManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\FileSystemUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringListLock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\TimeUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ThreadPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\NameResolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\zip_file.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ZipFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\MathExpr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Delegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Randomizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\VectorEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\HtmlColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\WatchersManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\BatteryLevelWatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\NetworkStateWatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6C4D4A87-2397-3A61-93EF-9443BE66D64A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="anim">
+      <UniqueIdentifier>{14BBEC5F-48E1-398D-903E-7D7C185285A8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="animations">
+      <UniqueIdentifier>{269A5D9B-4C3F-3734-8052-0FDB3E0C5FD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="components">
+      <UniqueIdentifier>{F30AC3FA-5596-3DB6-9014-EFA88583E9E4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="guis">
+      <UniqueIdentifier>{5CA8864D-892A-3BAD-8B47-209675022F2D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{70E022EF-6113-35FE-B853-278A7853CF81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="playlists">
+      <UniqueIdentifier>{A8EC0B92-4346-34CD-B2F6-8910C32BE8D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderers">
+      <UniqueIdentifier>{8E6ADDCE-FCD3-31A7-A8C5-ACE2F8163DE8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{82CF4145-79A0-37F4-A877-720C50756E88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{FEFCC1D1-8A0E-3FE7-8C7A-F4BF73006496}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="watchers">
+      <UniqueIdentifier>{A988D4E7-29E6-3CD7-8D5D-FBB84F3FAB32}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

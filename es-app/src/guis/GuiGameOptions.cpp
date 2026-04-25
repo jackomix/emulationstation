@@ -26,6 +26,7 @@
 #include "SaveStateRepository.h"
 #include "guis/GuiSaveState.h"
 #include "SystemConf.h"
+#include "HttpReq.h"
 
 GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(window),
 	mMenu(window, game->getName()), mReloadAll(false)
@@ -125,12 +126,28 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 					GuiGameAchievements::show(window, Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId)));
 					close();
 				}, "", false, true);
+
+				mMenu.addEntry(_("UPDATE LOCAL ACHIEVEMENTS"), false, [window, game, this]
+				{
+					std::string gameId = game->getMetadata(MetaDataId::CheevosId);
+					HttpReq req("http://127.0.0.1:8000/laheer/dorequest.php?r=laheetriggerfetch&gameid=" + gameId);
+					req.wait();
+					close();
+				});
 			}
 			else
 			{
 				mMenu.addEntry(_("VIEW THIS GAME'S ACHIEVEMENTS"), false, [window, game, this]
 				{
 					GuiGameAchievements::show(window, Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId)));
+					close();
+				});
+
+				mMenu.addEntry(_("UPDATE LOCAL ACHIEVEMENTS"), false, [window, game, this]
+				{
+					std::string gameId = game->getMetadata(MetaDataId::CheevosId);
+					HttpReq req("http://127.0.0.1:8000/laheer/dorequest.php?r=laheetriggerfetch&gameid=" + gameId);
+					req.wait();
 					close();
 				});
 			}

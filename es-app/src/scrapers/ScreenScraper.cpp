@@ -739,6 +739,14 @@ void ScreenScraperRequest::processGame(const pugi::xml_document& xmldoc, std::ve
 				}
 			}
 
+			// LAHEE Integration: Scrape Game Icon
+			{
+				ripList = { "icon", "imageIcon", "imageicon" };
+				pugi::xml_node art = findMedia(media_list, ripList, romlang, region);
+				if (art)
+					result.urls[MetaDataId::Icon] = ScraperSearchItem(ensureUrl(art.text().get()), art.attribute("format") ? "." + std::string(art.attribute("format").value()) : "");
+			}
+
 			if (Settings::getInstance()->getBool("ScrapeVideos"))
 			{
 				ripList = getRipList("video");

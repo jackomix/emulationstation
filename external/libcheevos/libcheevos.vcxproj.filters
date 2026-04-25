@@ -1,0 +1,604 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\cheevos.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_common.c">
+      <Filter>rcheevos\rapi</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_info.c">
+      <Filter>rcheevos\rapi</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_runtime.c">
+      <Filter>rcheevos\rapi</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_user.c">
+      <Filter>rcheevos\rapi</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\alloc.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\compat.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\condition.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\condset.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\consoleinfo.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\format.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\lboard.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\memref.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\operand.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_libretro.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\richpresence.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\runtime.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\runtime_progress.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\trigger.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\value.c">
+      <Filter>rcheevos\rcheevos</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rhash\hash.c">
+      <Filter>rcheevos\rhash</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rhash\cdreader.c">
+      <Filter>rcheevos\rhash</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rurl\url.c">
+      <Filter>rcheevos\rurl</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\file\file_path.c">
+      <Filter>libretro-common\file</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\file\file_path_io.c">
+      <Filter>libretro-common\file</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\file\retro_dirent.c">
+      <Filter>libretro-common\file</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\compat_strl.c">
+      <Filter>libretro-common\compat</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\compat_strcasestr.c">
+      <Filter>libretro-common\compat</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\compat_posix_string.c">
+      <Filter>libretro-common\compat</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\fopen_utf8.c">
+      <Filter>libretro-common\compat</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\memmap\memalign.c">
+      <Filter>libretro-common\memmap</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\memmap\memmap.c">
+      <Filter>libretro-common\memmap</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\cdfs\cdfs.c">
+      <Filter>libretro-common\formats\cdfs</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_bitstream.c">
+      <Filter>libretro-common\formats\libchdr</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_cdrom.c">
+      <Filter>libretro-common\formats\libchdr</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_chd.c">
+      <Filter>libretro-common\formats\libchdr</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_huffman.c">
+      <Filter>libretro-common\formats\libchdr</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_flac.c">
+      <Filter>libretro-common\formats\libchdr</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\m3u\m3u_file.c">
+      <Filter>libretro-common\formats\m3u</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\chd_stream.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\file_stream.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\file_stream_transforms.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\interface_stream.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\memory_stream.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\rzip_stream.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\stdin_stream.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\trans_stream.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\trans_stream_pipe.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\trans_stream_zlib.c">
+      <Filter>libretro-common\streams</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\string\stdstring.c">
+      <Filter>libretro-common\string</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\utils\md5.c">
+      <Filter>libretro-common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\vfs\vfs_implementation.c">
+      <Filter>libretro-common\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\vfs\vfs_implementation_cdrom.c">
+      <Filter>libretro-common\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\lists\dir_list.c">
+      <Filter>libretro-common\lists</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\lists\string_list.c">
+      <Filter>libretro-common\lists</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\time\rtime.c">
+      <Filter>libretro-common\time</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\cdrom\cdrom.c">
+      <Filter>libretro-common\cdrom</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\encodings\encoding_crc32.c">
+      <Filter>libretro-common\encodings</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\encodings\encoding_utf.c">
+      <Filter>libretro-common\encodings</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaDec.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaEnc.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zBuf.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zCrc.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zDec.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zFile.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zStream.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Bcj2.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Bra.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Delta.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\CpuArch.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zArcIn.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\BraIA64.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzFind.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Lzma2Dec.c">
+      <Filter>libretro-common\7zip</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\adler32.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\compress.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\deflate.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzclose.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzlib.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzread.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzwrite.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\inffast.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\inflate.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\inftrees.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\libz-crc32.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\trees.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\uncompr.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\zutil.c">
+      <Filter>libretro-common\libz</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\bitmath.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\bitreader.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\cpu.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\crc.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\fixed.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\float.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\format.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\lpc.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\md5.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\memory.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\stream_decoder.c">
+      <Filter>libretro-common\libFLAC</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_compat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_libretro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rhash\md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\cheevos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rcheevos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_request.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_runtime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_user.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_consoles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_runtime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_runtime_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_url.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_miscellaneous.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_endianness.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_common_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_environment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_assert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_timers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_dirent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libretro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\boolean.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\memalign.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\memmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\formats\cdfs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\formats\m3u_file.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\chd_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\file_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\file_stream_transforms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\interface_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\memory_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\rzip_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\stdin_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\trans_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\bitstream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\cdrom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\chd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\chdconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\coretypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\flac.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\huffman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\file\file_path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\dr_libs\dr_flac.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\string\stdstring.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\lists\dir_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\lists\string_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\cdrom\cdrom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\time\rtime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\vfs\vfs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\vfs\vfs_implementation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\vfs\vfs_implementation_cdrom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\compat\msvc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\encodings\crc32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\encodings\utf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaDec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaEnc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7z.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Precomp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\assert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\callback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\export.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\metadata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\ordinals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\stream_decoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{6C4D4A87-2397-3A61-93EF-9443BE66D64A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common">
+      <UniqueIdentifier>{2E4CA110-5FA8-3910-A1D3-3019CAF9E819}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\7zip">
+      <UniqueIdentifier>{BB35668B-AFA3-36C5-8386-0D5A5419A259}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\cdrom">
+      <UniqueIdentifier>{55A64A4A-E623-387C-BB07-CA78C9187D2B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\compat">
+      <UniqueIdentifier>{4BC2A8AD-4FE6-3564-BD9F-EF3FE91D503B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\encodings">
+      <UniqueIdentifier>{A3484E17-7B4E-3920-9B5B-C56610E469D7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\file">
+      <UniqueIdentifier>{C0EFE962-736A-3573-880B-C292D4764CF0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\formats">
+      <UniqueIdentifier>{5EF43305-D212-36CB-825E-E020C265DD33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\formats\cdfs">
+      <UniqueIdentifier>{DBF74FA3-B53B-3421-A3D8-2ADDC6E3DAD4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\formats\libchdr">
+      <UniqueIdentifier>{E923BC18-D676-354B-96A9-942F6122345B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\formats\m3u">
+      <UniqueIdentifier>{8CD430C1-240F-38C9-8768-3F12BAEE74DA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\libFLAC">
+      <UniqueIdentifier>{D961118B-3F8A-3C6E-A815-C62FDDD10E51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\libz">
+      <UniqueIdentifier>{7422DE83-60DE-39E5-925D-48A63929B7E5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\lists">
+      <UniqueIdentifier>{B627CF30-B9A7-3068-8826-C6FA6C68C752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\memmap">
+      <UniqueIdentifier>{F49455DA-AD08-30F3-9C43-8E959BD7C038}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\streams">
+      <UniqueIdentifier>{1EE1AF78-686E-346D-8BF7-5F187EF30CE0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\string">
+      <UniqueIdentifier>{B78958AD-0CDB-3B28-9FF1-0007D717BD09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\time">
+      <UniqueIdentifier>{7F905F27-A3FB-38A0-A5C9-86CA5D713483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\utils">
+      <UniqueIdentifier>{288AA0F2-D51B-34DC-A246-61CB5F808837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libretro-common\vfs">
+      <UniqueIdentifier>{5789A522-3FCF-306D-9AED-C01831F4F9B9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rcheevos">
+      <UniqueIdentifier>{E8C8AFDD-D5A8-38D9-BE45-CBAD09D82E1B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rcheevos\rapi">
+      <UniqueIdentifier>{EC2675E6-6665-3116-9A56-BA2F7059E63E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rcheevos\rcheevos">
+      <UniqueIdentifier>{AAD718DB-C45B-3C14-8340-34A1578321D3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rcheevos\rhash">
+      <UniqueIdentifier>{779BDF62-988C-375B-AFD6-36E8B82E454A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rcheevos\rurl">
+      <UniqueIdentifier>{005230F1-01B4-30B0-A99F-9D7936A14947}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

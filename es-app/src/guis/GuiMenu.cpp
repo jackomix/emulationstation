@@ -22,6 +22,7 @@
 #include "guis/GuiSystemInformation.h"
 #include "guis/GuiScraperSettings.h"
 #include "guis/GuiControllersSettings.h"
+#include "components/WebImageComponent.h"
 #include "guis/GuiTools.h"
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
@@ -206,6 +207,16 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 {
 	// MAIN MENU
 	bool isFullUI = !UIModeController::getInstance()->isUIModeKid() && !UIModeController::getInstance()->isUIModeKiosk();
+
+	std::string ra_username = SystemConf::getInstance()->get("global.retroachievements.username");
+	if (!ra_username.empty())
+	{
+		auto image = std::make_shared<WebImageComponent>(mWindow, 0);
+		image->setImage("http://127.0.0.1:8000/laheer/UserPic/" + ra_username + ".png");
+		mMenu.setSubTitle(" ");
+		mMenu.setTitleImage(image, true);
+	}
+
 #ifdef _ENABLEAMBERELEC
 	bool isKidUI = UIModeController::getInstance()->isUIModeKid();
 #endif

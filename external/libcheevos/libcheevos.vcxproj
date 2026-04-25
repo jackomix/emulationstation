@@ -1,0 +1,465 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4537F080-67D1-3232-9A93-8F8877DEDE35}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>Win32</Platform>
+    <ProjectName>libcheevos</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libcheevos.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libcheevosd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libcheevos.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libcheevos</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">libcheevos.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">libcheevos</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">libcheevos.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">libcheevos</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_7ZIP_ST;HAVE_CDROM;HAVE_CHD;WANT_SUBCODE;WANT_RAW_DATA_SECTOR;HAVE_ZLIB;HAVE_7ZIP;HAVE_FLAC;FLAC__NO_DLL;FLAC__HAS_OGG=0;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;RC_DISABLE_LUA;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/external/libcheevos/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\cheevos.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_common.c" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_common.h" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_info.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_runtime.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rapi\rc_api_user.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\alloc.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\compat.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\condition.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\condset.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\consoleinfo.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\format.c">
+      <ObjectFileName>$(IntDir)/rcheevos/src/rcheevos/format.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\lboard.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\memref.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\operand.c" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_compat.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_internal.h" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_libretro.c" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\rc_libretro.h" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\richpresence.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\runtime.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\runtime_progress.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\trigger.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rcheevos\value.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rhash\hash.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rhash\cdreader.c" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rhash\md5.h" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\src\rurl\url.c" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\cheevos.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rcheevos.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_info.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_request.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_runtime.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_api_user.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_consoles.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_error.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_hash.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_runtime.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_runtime_types.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\rcheevos\include\rc_url.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_miscellaneous.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_endianness.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_common.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_common_api.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_environment.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_inline.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_assert.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_math.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_timers.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\retro_dirent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libretro.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\boolean.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\memalign.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\memmap.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\formats\cdfs.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\formats\m3u_file.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\chd_stream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\file_stream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\file_stream_transforms.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\interface_stream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\memory_stream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\rzip_stream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\stdin_stream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\streams\trans_stream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\bitstream.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\cdrom.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\chd.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\chdconfig.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\coretypes.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\flac.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\libchdr\huffman.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\file\file_path.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\dr_libs\dr_flac.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\string\stdstring.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\lists\dir_list.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\lists\string_list.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\cdrom\cdrom.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\time\rtime.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\vfs\vfs.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\vfs\vfs_implementation.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\vfs\vfs_implementation_cdrom.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\compat\msvc.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\encodings\crc32.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\include\encodings\utf.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaDec.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaEnc.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7z.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zTypes.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zFile.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Precomp.h" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\file\file_path.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\file\file_path_io.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\file\retro_dirent.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\compat_strl.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\compat_strcasestr.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\compat_posix_string.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\compat\fopen_utf8.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\memmap\memalign.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\memmap\memmap.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\cdfs\cdfs.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_bitstream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_cdrom.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_chd.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_huffman.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\libchdr\libchdr_flac.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\formats\m3u\m3u_file.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\chd_stream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\file_stream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\file_stream_transforms.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\interface_stream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\memory_stream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\rzip_stream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\stdin_stream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\trans_stream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\trans_stream_pipe.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\streams\trans_stream_zlib.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\string\stdstring.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\utils\md5.c">
+      <ObjectFileName>$(IntDir)/libretro-common/src/utils/md5.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\vfs\vfs_implementation.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\vfs\vfs_implementation_cdrom.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\lists\dir_list.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\lists\string_list.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\time\rtime.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\cdrom\cdrom.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\encodings\encoding_crc32.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\encodings\encoding_utf.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaDec.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzmaEnc.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zBuf.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zCrc.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zDec.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zFile.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zStream.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Bcj2.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Bra.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Delta.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\CpuArch.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\7zArcIn.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\BraIA64.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\LzFind.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\7zip\Lzma2Dec.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\adler32.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\compress.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\deflate.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzclose.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzlib.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzread.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\gzwrite.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\inffast.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\inflate.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\inftrees.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\libz-crc32.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\trees.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\uncompr.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libz\zutil.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\bitmath.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\bitreader.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\cpu.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\crc.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\fixed.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\float.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\format.c">
+      <ObjectFileName>$(IntDir)/libretro-common/src/libFLAC/format.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\lpc.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\md5.c">
+      <ObjectFileName>$(IntDir)/libretro-common/src/libFLAC/md5.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\memory.c" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\stream_decoder.c" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\assert.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\callback.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\export.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\format.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\metadata.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\ordinals.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libretro-common\src\libFLAC\include\FLAC\stream_decoder.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\ZERO_CHECK.vcxproj">
+      <Project>{E7D0DBB7-147C-3C90-B873-3230C29261C2}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

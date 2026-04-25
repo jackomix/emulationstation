@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AC053159-DD9C-36EC-ADF7-1459DFD1C328}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>Win32</Platform>
+    <ProjectName>win32libs-populate</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-mkdir.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating directories for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/tmp/win32libs-populate-mkdirs.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-mkdir
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-mkdir</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-download.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing download step (git clone) for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+cd D:\myEmulationStation\amber-es\.worktrees\lahee-integration
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -P D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/tmp/win32libs-populate-gitclone.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-download
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\win32libs-populate-gitinfo.txt;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-mkdir;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-download</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-update.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing update step for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+cd D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -P D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/tmp/win32libs-populate-gitupdate.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-download;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-update</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</VerifyInputsAndOutputsExist>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-patch.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">No patch step for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-patch
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-update;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-patch</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</VerifyInputsAndOutputsExist>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-configure.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">No configure step for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+cd D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-configure
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\tmp\win32libs-populate-cfgcmd.txt;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-patch;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-configure</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-build.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">No build step for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+cd D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-build
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-configure;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-build</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-install.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">No install step for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+cd D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-install
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-build;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-install</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\b92908dfda59bb5173668dd90f96c645\win32libs-populate-test.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">No test step for 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+cd D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-test
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-install;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-test</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\4f636e1759b763f15e33fe88f32344e9\win32libs-populate-complete.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Completed 'win32libs-populate'</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/CMakeFiles/Debug
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/CMakeFiles/Debug/win32libs-populate-complete
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/win32libs-populate-prefix/src/win32libs-populate-stamp/Debug/win32libs-populate-done
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-install;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-mkdir;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-download;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-update;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-patch;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-configure;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-build;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\src\win32libs-populate-stamp\Debug\win32libs-populate-test;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\Debug\win32libs-populate-complete</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</VerifyInputsAndOutputsExist>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\4368f7a3dde20d76eece57b255d1dadf\win32libs-populate.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\Debug\win32libs-populate-complete;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\win32libs-populate</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</VerifyInputsAndOutputsExist>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/_deps/win32libs-subbuild/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\ExternalProject.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\ExternalProject\RepositoryInfo.txt.in;C:\Program Files\CMake\share\cmake-3.26\Modules\ExternalProject\cfgcmd.txt.in;C:\Program Files\CMake\share\cmake-3.26\Modules\ExternalProject\gitclone.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\ExternalProject\gitupdate.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\ExternalProject\mkdirs.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\win32libs-populate-prefix\tmp\win32libs-populate-mkdirs.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\CMakeFiles\win32libs-populate">
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\_deps\win32libs-subbuild\ZERO_CHECK.vcxproj">
+      <Project>{BA27A4D3-CB30-321F-BEB2-C0B772B411A2}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

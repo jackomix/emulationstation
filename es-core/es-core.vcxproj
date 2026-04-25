@@ -1,0 +1,524 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A763EBC1-1784-3D93-902D-956DF9586242}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>Win32</Platform>
+    <ProjectName>es-core</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">es-core.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">es-cored</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">es-core.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">es-core</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">es-core.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">es-core</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\bin\Win32\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">es-core.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">es-core</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_ENABLE_KODI_;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;USE_OPENGL_21;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\freetype\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\FreeImage\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2_mixer\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\SDL2\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\curl\x86\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\libvlc\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\win32-libs\rapidjson\include;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src;D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/myEmulationStation/amber-es/.worktrees/lahee-integration -BD:/myEmulationStation/amber-es/.worktrees/lahee-integration --check-stamp-file D:/myEmulationStation/amber-es/.worktrees/lahee-integration/es-core/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\AudioManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\BindingManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\CECInput.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GuiComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HelpStyle.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HttpReq.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ImageIO.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputConfig.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GunManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Log.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MameNames.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\LocaleES.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\PowerSaver.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Scripting.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Settings.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Sound.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Splash.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeData.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeVariables.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\VolumeControl.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Window.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MultiStateInput.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\TextToSpeech.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Paths.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\AnimationController.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\ThemeStoryboard.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\StoryboardAnimator.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\AnimatedGifPlaylist.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\M3uPlaylist.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AnimatedImageComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AsyncNotificationComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIndicatorComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIconComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryTextComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NetworkIconComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\PostProcessShaderComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\StackPanelComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BusyComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ButtonComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ClockComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ControllerActivityComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\IExternalActivity.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentGrid.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentList.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeEditComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\HelpComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\GridTileComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ImageComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MenuComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NinePatchComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollableContainer.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SliderComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RatingComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RectangleComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SwitchComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextEditComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoPlayerComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoVlcComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VolumeInfoComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollbarComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MultiLineMenuEntry.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentTab.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\WebImageComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\CarouselComponent.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiDetectDevice.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInputConfig.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiMsgBox.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInfoPopup.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopup.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopupKeyboard.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\SystemConf.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Misc.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Transform4x4f.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2f.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2i.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector3f.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector4f.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GL21.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES10.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES20.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\GlExtensions.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Shader.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\Font.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\ResourceManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureResource.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureData.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureDataManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\FileSystemUtil.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringUtil.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringListLock.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\TimeUtil.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ThreadPool.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Platform.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\NameResolver.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\MathExpr.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ZipFile.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\md5.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Randomizer.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\HtmlColor.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\WatchersManager.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\BatteryLevelWatcher.cpp" />
+    <ClCompile Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\NetworkStateWatcher.cpp" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\AsyncHandle.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\AudioManager.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\BindingManager.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\CECInput.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GuiComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HelpStyle.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\HttpReq.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ImageIO.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputConfig.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\InputManager.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\GunManager.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Log.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MameNames.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\gettext.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\LocaleES.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\SystemConf.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\PowerSaver.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Settings.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Sound.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Splash.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeData.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\ThemeVariables.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\VolumeControl.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Window.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\MultiStateInput.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\TextToSpeech.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\Paths.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\Animation.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\AnimationController.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\animations\LambdaAnimation.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\AnimatedGifPlaylist.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\playlists\M3uPlaylist.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\ThemeAnimation.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\ThemeStoryboard.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\anim\StoryboardAnimator.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AnimatedImageComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\AsyncNotificationComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIndicatorComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryIconComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BatteryTextComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NetworkIconComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\PostProcessShaderComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\StackPanelComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\BusyComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ButtonComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ClockComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ControllerActivityComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\IExternalActivity.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentGrid.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentList.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\DateTimeEditComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\HelpComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\GridTileComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\IList.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ImageComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ImageGridComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MenuComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\NinePatchComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\OptionListComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollableContainer.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SliderComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RatingComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\RectangleComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\SwitchComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextEditComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoPlayerComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VideoVlcComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\VolumeInfoComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\MultiLineMenuEntry.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ScrollbarComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\ComponentTab.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\WebImageComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\TextListComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\components\CarouselComponent.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiDetectDevice.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInputConfig.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiMsgBox.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiInfoPopup.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopup.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\guis\GuiTextEditPopupKeyboard.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Misc.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Transform4x4f.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2f.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector2i.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector3f.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\math\Vector4f.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GL21.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES10.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\Renderer_GLES20.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\renderers\GlExtensions.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\Font.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\ResourceManager.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureResource.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureData.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\resources\TextureDataManager.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\FileSystemUtil.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringUtil.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\StringListLock.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\TimeUtil.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ThreadPool.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Platform.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\NameResolver.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\zip_file.hpp" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\ZipFile.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\md5.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\MathExpr.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Delegate.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\Randomizer.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\VectorEx.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\utils\HtmlColor.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\WatchersManager.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\BatteryLevelWatcher.h" />
+    <ClInclude Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\es-core\src\watchers\NetworkStateWatcher.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\ZERO_CHECK.vcxproj">
+      <Project>{E7D0DBB7-147C-3C90-B873-3230C29261C2}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\id3v2lib\src\id3v2.vcxproj">
+      <Project>{5DF86004-E795-3257-B845-5A8768100CDB}</Project>
+      <Name>id3v2</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\libcheevos\libcheevos.vcxproj">
+      <Project>{4537F080-67D1-3232-9A93-8F8877DEDE35}</Project>
+      <Name>libcheevos</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\nanosvg\nanosvg.vcxproj">
+      <Project>{03AC065D-4546-38C4-9A90-F647FAB48DBB}</Project>
+      <Name>nanosvg</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\myEmulationStation\amber-es\.worktrees\lahee-integration\external\pugixml\pugixml.vcxproj">
+      <Project>{6111946D-0091-382A-9350-6D2F0B82A04C}</Project>
+      <Name>pugixml</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

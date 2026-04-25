@@ -8,6 +8,7 @@
 #include "guis/GuiMsgBox.h"
 #include "components/SwitchComponent.h"
 #include "components/OptionListComponent.h"
+#include "HttpReq.h"
 
 GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : GuiSettings(window, _("RETROACHIEVEMENT SETTINGS").c_str())
 {
@@ -63,6 +64,14 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	{
 		if (ThreadedHasher::checkCloseIfRunning(mWindow))
 			mWindow->pushGui(new GuiHashStart(mWindow, ThreadedHasher::HASH_CHEEVOS_MD5));
+	});
+
+	addGroup(_("LAHEE OFFLINE SERVER"));
+	addEntry(_("PATCH RETROARCH"), true, [this] { Utils::Platform::ProcessStartInfo("python /userdata/roms/ports/LAHEE/lahee_patch_ra.py").run(); });
+	addEntry(_("UNPATCH RETROARCH"), true, [this] { Utils::Platform::ProcessStartInfo("python /userdata/roms/ports/LAHEE/lahee_unpatch_ra.py").run(); });
+	addEntry(_("FETCH MISSING DATA"), true, [this] { 
+		HttpReq req("http://127.0.0.1:8000/laheer/dorequest.php?r=laheetriggerfetchall"); 
+		req.wait();
 	});
 
 	addSaveFunc([retroachievementsEnabled, retroachievements_enabled, username, password, window]
