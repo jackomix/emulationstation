@@ -270,10 +270,13 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 		addEntry(_("GAME COLLECTION SETTINGS").c_str(), true, [this] { openCollectionSystemSettings(); }, "iconAdvanced");
 
+		std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+		bool isLocalRA = (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos);
+
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS) &&
 			SystemConf::getInstance()->getBool("global.retroachievements") &&
 			Settings::getInstance()->getBool("RetroachievementsMenuitem") &&
-			SystemConf::getInstance()->get("global.retroachievements.username") != "")
+			(SystemConf::getInstance()->get("global.retroachievements.username") != "" || isLocalRA))
 			addEntry(_("RETROACHIEVEMENTS").c_str(), true, [this] {
 					if (!checkNetwork())
 						return;
@@ -1477,7 +1480,10 @@ void GuiMenu::openUpdatesSettings()
 
 bool GuiMenu::checkNetwork()
 {
-	if (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED")
+	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+	bool isLocalRA = (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos);
+	
+	if (!isLocalRA && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED")
 	{
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
 		return false;
@@ -3089,8 +3095,8 @@ void GuiMenu::openGamesSettings()
 		s->addGroup(_("ACCOUNTS"));
 
 	// Retroachievements
-	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS))
-		s->addEntry(_("RETROACHIEVEMENT SETTINGS"), true, [this] { openRetroachievementsSettings(); });
+	/*if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS))
+		s->addEntry(_("RETROACHIEVEMENT SETTINGS"), true, [this] { openRetroachievementsSettings(); });*/
 
 	// Netplay
 	if (SystemData::isNetplayActivated() && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::NETPLAY))

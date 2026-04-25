@@ -72,8 +72,24 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	});
 
 	addGroup(_("LAHEE OFFLINE SERVER"));
-	addEntry(_("PATCH RETROARCH"), true, [this] { Utils::Platform::ProcessStartInfo("python /userdata/roms/ports/LAHEE/lahee_patch_ra.py").run(); });
-	addEntry(_("UNPATCH RETROARCH"), true, [this] { Utils::Platform::ProcessStartInfo("python /userdata/roms/ports/LAHEE/lahee_unpatch_ra.py").run(); });
+	addEntry(_("FIX RETROARCH (PATCH)"), true, [this] { 
+		std::string patcher = "/roms/ports/LAHEE/lahee_patch_ra.py";
+		if (!Utils::FileSystem::exists(patcher)) patcher = "/userdata/roms/ports/LAHEE/lahee_patch_ra.py";
+		if (Utils::FileSystem::exists(patcher))
+			Utils::Platform::ProcessStartInfo("python3 \"" + patcher + "\"").run();
+	});
+	addEntry(_("UNPATCH RETROARCH"), true, [this] { 
+		std::string unpatcher = "/roms/ports/LAHEE/lahee_unpatch_ra.py";
+		if (!Utils::FileSystem::exists(unpatcher)) unpatcher = "/userdata/roms/ports/LAHEE/lahee_unpatch_ra.py";
+		if (Utils::FileSystem::exists(unpatcher))
+			Utils::Platform::ProcessStartInfo("python3 \"" + unpatcher + "\"").run();
+	});
+	addEntry(_("TEST CONNECTIVITY"), true, [this] { 
+		std::string script = "/roms/ports/LAHEE/LAHEE Connectivity Test.sh";
+		if (!Utils::FileSystem::exists(script)) script = "/userdata/roms/ports/LAHEE/LAHEE Connectivity Test.sh";
+		if (Utils::FileSystem::exists(script))
+			Utils::Platform::ProcessStartInfo("bash \"" + script + "\"").run();
+	});
 	addEntry(_("FETCH MISSING DATA"), true, [this] { 
 		HttpReq req("http://127.0.0.1:8000/laheer/dorequest.php?r=laheetriggerfetchall"); 
 		req.wait();

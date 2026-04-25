@@ -451,20 +451,44 @@ void startLAHEEServer()
 	Utils::FileSystem::writeAllText("/tmp/lahee_running", "1");
 
 	// Force enable achievements for LAHEE integration
-	Settings::getInstance()->setBool("global.retroachievements", true);
-	if (Settings::getInstance()->getString("global.retroachievements.username").empty())
-		Settings::getInstance()->setString("global.retroachievements.username", "Player");
+	SystemConf::getInstance()->setBool("global.retroachievements", true);
+	if (SystemConf::getInstance()->get("global.retroachievements.username").empty())
+		SystemConf::getInstance()->set("global.retroachievements.username", "Player");
 	
-	if (Settings::getInstance()->getString("global.retroachievements.token").empty())
-		Settings::getInstance()->setString("global.retroachievements.token", "lahee_token");
+	if (SystemConf::getInstance()->get("global.retroachievements.token").empty())
+		SystemConf::getInstance()->set("global.retroachievements.token", "lahee_token");
 
-	std::string scriptPath = "/roms/ports/LAHEE/LAHEE Server.sh";
-	if (!Utils::FileSystem::exists(scriptPath))
-		scriptPath = "/userdata/roms/ports/LAHEE/LAHEE Server.sh";
+	std::string scriptPath = "";
+	std::vector<std::string> searchPaths = {
+		"/roms/ports/LAHEE/LAHEE Server.sh",
+		"/roms/ports/LAHEE Server.sh",
+		"/userdata/roms/ports/LAHEE/LAHEE Server.sh",
+		"/userdata/roms/ports/LAHEE Server.sh"
+	};
 
-	std::string configPath = "/roms/ports/LAHEE/LAHEE.json";
-	if (!Utils::FileSystem::exists(configPath))
-		configPath = "/userdata/roms/ports/LAHEE/LAHEE.json";
+	for (const auto& path : searchPaths)
+	{
+		if (Utils::FileSystem::exists(path))
+		{
+			scriptPath = path;
+			break;
+		}
+	}
+
+	std::string configPath = "";
+	std::vector<std::string> configPaths = {
+		"/roms/ports/LAHEE/LAHEE.json",
+		"/userdata/roms/ports/LAHEE/LAHEE.json"
+	};
+
+	for (const auto& path : configPaths)
+	{
+		if (Utils::FileSystem::exists(path))
+		{
+			configPath = path;
+			break;
+		}
+	}
 
 	// Dynamically update LAHEE paths to ROMs partition
 	std::string romsRoot = "/roms/";
@@ -481,7 +505,7 @@ void startLAHEEServer()
 		Utils::FileSystem::createDirectory(raRoot + "Badge");
 		Utils::FileSystem::createDirectory(raRoot + "User");
 
-		if (Utils::FileSystem::exists(configPath))
+		if (!configPath.empty())
 		{
 			std::string content = Utils::FileSystem::readAllText(configPath);
 			// Update LAHEE to look at the consolidated ROMs folder
@@ -492,10 +516,8 @@ void startLAHEEServer()
 			std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
 			if (!serverUrl.empty() && (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos))
 			{
-				// Ensure the ImageResourceHost matches the ES configured URL
-				// Example: "http://127.0.0.1:8000"
 				std::string hostOnly = serverUrl;
-				if (hostOnly.back() == '/') hostOnly.pop_back(); // Remove trailing slash
+				if (hostOnly.back() == '/') hostOnly.pop_back(); 
 				if (hostOnly.find("/laheer") != std::string::npos) hostOnly = Utils::String::replace(hostOnly, "/laheer", "");
 
 				content = Utils::String::replace(content, "\"ImageResourceHost\": \"http://127.0.0.1:8000\"", "\"ImageResourceHost\": \"" + hostOnly + "\"");
@@ -505,10 +527,37 @@ void startLAHEEServer()
 		}
 	}
 
-	if (Utils::FileSystem::exists(scriptPath))
+	if (!scriptPath.empty())
 	{
-		std::string cmd = "bash \"" + scriptPath + "\" &";
+		LOG(LogInfo) << "LAHEE Server script found at: " << scriptPath;
+		std::string dir = Utils::FileSystem::getParent(scriptPath);
+		// Run with explicit working directory and export 'directory' for PortMaster compatibility
+		std::string cmd = "cd \"" + dir + "\" && export directory=\"roms\" && bash \"" + scriptPath + "\" &";
 		Utils::Platform::ProcessStartInfo(cmd).run();
+	}
+	else
+	{
+		// Fallback: search for the binary directly if script is missing
+		std::string binPath = "";
+		std::vector<std::string> binSearchPaths = {
+			"/roms/ports/LAHEE/LAHEE",
+			"/userdata/roms/ports/LAHEE/LAHEE"
+		};
+		for (const auto& path : binSearchPaths) {
+			if (Utils::FileSystem::exists(path)) {
+				binPath = path;
+				break;
+			}
+		}
+
+		if (!binPath.empty()) {
+			LOG(LogInfo) << "LAHEE binary found at: " << binPath;
+			std::string dir = Utils::FileSystem::getParent(binPath);
+			std::string cmd = "cd \"" + dir + "\" && nohup ./LAHEE > /dev/null 2>&1 &";
+			Utils::Platform::ProcessStartInfo(cmd).run();
+		} else {
+			LOG(LogWarning) << "LAHEE Server script and binary not found.";
+		}
 	}
 }
 

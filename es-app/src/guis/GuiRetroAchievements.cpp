@@ -305,6 +305,14 @@ GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo 
 		setTitleImage(image);
 	}
 
+	addGroup(_("ACTIONS"));
+	addEntry(_("RETROACHIEVEMENT SETTINGS"), true, [this] {
+		mWindow->pushGui(new GuiRetroAchievementsSettings(mWindow));
+	});
+
+	if (ra.games.size() > 0)
+		addGroup(_("RECENTLY PLAYED GAMES"));
+
 	for (auto game : ra.games)
 	{
 		ComponentListRow row;
