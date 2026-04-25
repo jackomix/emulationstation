@@ -20,6 +20,21 @@ if (!(Test-Path $retroAchievementsDir)) {
 
 Write-Host "Scraping RetroAchievements to $retroAchievementsDir..."
 
-# Dummy scraper logic for the implementation
-# In reality, this would use RAHasher to get checksums and query the RA API.
+# Example of how it will be organized:
+# $retroAchievementsDir/nes/1446-Super Mario Bros.set.json
+# $retroAchievementsDir/nes/1446-Super Mario Bros/ (for badges if needed, or just in nes/)
+
+# Real implementation would iterate systems
+$systems = Get-ChildItem -Path $PartitionRoot -Directory | Where-Object { $_.Name -ne "RetroAchievements" -and $_.Name -ne "bios" -and $_.Name -ne "screenshots" }
+
+foreach ($system in $systems) {
+    $systemDir = Join-Path $retroAchievementsDir $system.Name
+    if (!(Test-Path $systemDir)) {
+        New-Item -ItemType Directory -Path $systemDir | Out-Null
+    }
+    
+    # Logic to find games and scrape would go here
+    # Write-Host "Checking $system.Name..."
+}
+
 Write-Host "Scraping complete."
