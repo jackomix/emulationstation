@@ -9,6 +9,7 @@
 #include "components/SwitchComponent.h"
 #include "components/OptionListComponent.h"
 #include "HttpReq.h"
+#include "utils/Platform.h"
 
 GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : GuiSettings(window, _("RETROACHIEVEMENT SETTINGS").c_str())
 {
