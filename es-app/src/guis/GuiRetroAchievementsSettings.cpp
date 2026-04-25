@@ -24,9 +24,13 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	retroachievements_enabled->setState(retroachievementsEnabled);
 	addWithLabel(_("RETROACHIEVEMENTS"), retroachievements_enabled);
 
+	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+	bool isLocalServer = (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos);
+
 	// retroachievements, username, password
 	addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
-	addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
+	if (!isLocalServer)
+		addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
 
 	addGroup(_("OPTIONS"));
 
@@ -87,26 +91,18 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 
 		if (newState && (!retroachievementsEnabled || username != newUsername || (password != newPassword && !isLocalServer) || token.empty()))
 		{
-			if (isLocalServer)
+			std::string tokenOrError;
+			if (RetroAchievements::testAccount(newUsername, isLocalServer ? "" : newPassword, tokenOrError))
 			{
-				// LAHEE doesn't need real login, just a username
-				SystemConf::getInstance()->set("global.retroachievements.token", "lahee_token");
+				SystemConf::getInstance()->set("global.retroachievements.token", tokenOrError);
 			}
 			else
 			{
-				std::string tokenOrError;
-				if (RetroAchievements::testAccount(newUsername, newPassword, tokenOrError))
-				{
-					SystemConf::getInstance()->set("global.retroachievements.token", tokenOrError);
-				}
-				else
-				{
-					SystemConf::getInstance()->set("global.retroachievements.token", "");
+				SystemConf::getInstance()->set("global.retroachievements.token", "");
 
-					window->pushGui(new GuiMsgBox(window, _("UNABLE TO ACTIVATE RETROACHIEVEMENTS:") + "\n" + tokenOrError, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
-					retroachievements_enabled->setState(false);
-					newState = false;
-				}
+				window->pushGui(new GuiMsgBox(window, _("UNABLE TO ACTIVATE RETROACHIEVEMENTS:") + "\n" + tokenOrError, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
+				retroachievements_enabled->setState(false);
+				newState = false;
 			}
 		}
 		else if (!newState)
