@@ -50,3 +50,6 @@ CPackSourceConfig.cmake
 /.vs/
 *.sqlite
 .DS_Store
+
+# Worktrees
+.worktrees/
