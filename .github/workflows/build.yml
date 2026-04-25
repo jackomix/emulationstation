@@ -2,7 +2,7 @@ name: Build EmulationStation (R36S ARM64)
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, feature/lahee-integration ]
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
