@@ -241,6 +241,8 @@ void Settings::setDefaults()
 	mBoolMap["StopMusicOnScreenSaver"] = false;
 
 	mBoolMap["RetroachievementsMenuitem"] = true;
+	mBoolMap["AutoStartLAHEE"] = true;
+	mStringMap["RetroAchievementsServerURL"] = "http://127.0.0.1:8000/laheer/";
 	mIntMap["ScreenSaverSwapImageTimeout"] = 10000;
 	mBoolMap["SlideshowScreenSaverStretch"] = false;
 	mBoolMap["SlideshowScreenSaverCustomImageSource"] = false;

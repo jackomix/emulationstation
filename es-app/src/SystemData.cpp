@@ -1299,6 +1299,12 @@ SystemData* SystemData::getPrev() const
 	return *it;
 }
 
+std::string SystemData::getRetroAchievementsPath() const
+{
+	std::string parentDir = Utils::FileSystem::getParent(mEnvData->mStartPath);
+	return parentDir + "/RetroAchievements/" + getName();
+}
+
 std::string SystemData::getGamelistPath(bool forWrite) const
 {
 	std::string filePath;

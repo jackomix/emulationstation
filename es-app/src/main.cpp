@@ -439,6 +439,28 @@ void launchStartupGame()
 	}	
 }
 
+void startLAHEEServer()
+{
+	if (!Settings::getInstance()->getBool("AutoStartLAHEE"))
+		return;
+
+	if (Utils::FileSystem::exists("/tmp/lahee_running"))
+		return;
+
+	LOG(LogInfo) << "Starting LAHEE Server for the first time this session...";
+	Utils::FileSystem::writeAllText("/tmp/lahee_running", "1");
+
+	std::string scriptPath = "/roms/ports/LAHEE/LAHEE Server.sh";
+	if (!Utils::FileSystem::exists(scriptPath))
+		scriptPath = "/userdata/roms/ports/LAHEE/LAHEE Server.sh";
+
+	if (Utils::FileSystem::exists(scriptPath))
+	{
+		std::string cmd = "bash \"" + scriptPath + "\" &";
+		Utils::Platform::ProcessStartInfo(cmd).run();
+	}
+}
+
 #include "utils/MathExpr.h"
 
 int main(int argc, char* argv[])
@@ -526,6 +548,8 @@ int main(int argc, char* argv[])
 #endif
 
 	Scripting::fireEvent("start");
+
+	startLAHEEServer();
 
 	// metadata init
 	HttpReq::resetCookies();

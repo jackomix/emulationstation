@@ -104,6 +104,7 @@ public:
 	std::string getGamelistPath(bool forWrite) const;
 	bool hasGamelist() const;
 	std::string getThemePath() const;
+	std::string getRetroAchievementsPath() const;
 
 	unsigned int getGameCount() const;
 
