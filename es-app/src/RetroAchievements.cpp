@@ -684,7 +684,13 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 	std::string baseUrl = getApiBaseUrl();
 	bool isLocalServer = (baseUrl.find("127.0.0.1") != std::string::npos || baseUrl.find("localhost") != std::string::npos);
 
-	if (username.empty() || (password.empty() && !isLocalServer))
+	if (username.empty())
+	{
+		tokenOrError = _("A valid account is required. Please register an account on https://retroachievements.org");
+		return false;
+	}
+
+	if (password.empty() && !isLocalServer)
 	{
 		tokenOrError = _("A valid account is required. Please register an account on https://retroachievements.org");
 		return false;

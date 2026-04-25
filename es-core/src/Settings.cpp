@@ -243,6 +243,12 @@ void Settings::setDefaults()
 	mBoolMap["RetroachievementsMenuitem"] = true;
 	mBoolMap["AutoStartLAHEE"] = true;
 	mStringMap["RetroAchievementsServerURL"] = "http://127.0.0.1:8000/laheer/";
+	
+	// LAHEE Integration: Default achievements to ON and set a default username for offline-native experience
+	mBoolMap["global.retroachievements"] = true;
+	mStringMap["global.retroachievements.username"] = "Player";
+	mStringMap["global.retroachievements.token"] = "lahee_token";
+
 	mIntMap["ScreenSaverSwapImageTimeout"] = 10000;
 	mBoolMap["SlideshowScreenSaverStretch"] = false;
 	mBoolMap["SlideshowScreenSaverCustomImageSource"] = false;
