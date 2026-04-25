@@ -454,6 +454,49 @@ void startLAHEEServer()
 	if (!Utils::FileSystem::exists(scriptPath))
 		scriptPath = "/userdata/roms/ports/LAHEE/LAHEE Server.sh";
 
+	std::string configPath = "/roms/ports/LAHEE/LAHEE.json";
+	if (!Utils::FileSystem::exists(configPath))
+		configPath = "/userdata/roms/ports/LAHEE/LAHEE.json";
+
+	// Dynamically update LAHEE paths to ROMs partition
+	std::string romsRoot = "/roms/";
+	if (!Utils::FileSystem::exists(romsRoot))
+		romsRoot = "/userdata/roms/";
+
+	std::string raRoot = romsRoot + "RetroAchievements/";
+	if (Utils::FileSystem::exists(romsRoot))
+	{
+		if (!Utils::FileSystem::exists(raRoot))
+			Utils::FileSystem::createDirectory(raRoot);
+
+		Utils::FileSystem::createDirectory(raRoot + "Data");
+		Utils::FileSystem::createDirectory(raRoot + "Badge");
+		Utils::FileSystem::createDirectory(raRoot + "User");
+
+		if (Utils::FileSystem::exists(configPath))
+		{
+			std::string content = Utils::FileSystem::readAllText(configPath);
+			// Update LAHEE to look at the consolidated ROMs folder
+			content = Utils::String::replace(content, "\"BadgeDirectory\": \"Badge\"", "\"BadgeDirectory\": \"" + raRoot + "Badge/\"");
+			content = Utils::String::replace(content, "\"DataDirectory\": \"Data\"", "\"DataDirectory\": \"" + raRoot + "Data/\"");
+			content = Utils::String::replace(content, "\"UserDirectory\": \"User\"", "\"UserDirectory\": \"" + raRoot + "User/\"");
+			
+			std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+			if (!serverUrl.empty() && (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos))
+			{
+				// Ensure the ImageResourceHost matches the ES configured URL
+				// Example: "http://127.0.0.1:8000"
+				std::string hostOnly = serverUrl;
+				if (hostOnly.back() == '/') hostOnly.pop_back(); // Remove trailing slash
+				if (hostOnly.find("/laheer") != std::string::npos) hostOnly = Utils::String::replace(hostOnly, "/laheer", "");
+
+				content = Utils::String::replace(content, "\"ImageResourceHost\": \"http://127.0.0.1:8000\"", "\"ImageResourceHost\": \"" + hostOnly + "\"");
+			}
+
+			Utils::FileSystem::writeAllText(configPath, content);
+		}
+	}
+
 	if (Utils::FileSystem::exists(scriptPath))
 	{
 		std::string cmd = "bash \"" + scriptPath + "\" &";
