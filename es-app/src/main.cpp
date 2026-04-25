@@ -450,6 +450,14 @@ void startLAHEEServer()
 	LOG(LogInfo) << "Starting LAHEE Server for the first time this session...";
 	Utils::FileSystem::writeAllText("/tmp/lahee_running", "1");
 
+	// Force enable achievements for LAHEE integration
+	Settings::getInstance()->setBool("global.retroachievements", true);
+	if (Settings::getInstance()->getString("global.retroachievements.username").empty())
+		Settings::getInstance()->setString("global.retroachievements.username", "Player");
+	
+	if (Settings::getInstance()->getString("global.retroachievements.token").empty())
+		Settings::getInstance()->setString("global.retroachievements.token", "lahee_token");
+
 	std::string scriptPath = "/roms/ports/LAHEE/LAHEE Server.sh";
 	if (!Utils::FileSystem::exists(scriptPath))
 		scriptPath = "/userdata/roms/ports/LAHEE/LAHEE Server.sh";

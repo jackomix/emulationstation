@@ -154,8 +154,13 @@ std::string RetroAchievements::getApiUrl(const std::string& method, const std::s
 
 	if (baseUrl.find("127.0.0.1") != std::string::npos || baseUrl.find("localhost") != std::string::npos)
 	{
-		// Local LAHEE usually maps API methods to .php files directly in the base path
-		return baseUrl + method + ".php?" + parameters;
+		// LAHEE uses a unified dorequest.php endpoint for all RA API calls
+		// It expects the method name in the 'r' parameter (usually without the 'API_' prefix)
+		std::string rMethod = method;
+		if (rMethod.find("API_") == 0)
+			rMethod = rMethod.substr(4);
+
+		return baseUrl + "dorequest.php?r=" + Utils::String::toLower(rMethod) + "&" + parameters;
 	}
 
 	// Default RetroAchievements API path
@@ -684,7 +689,11 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 	std::string baseUrl = getApiBaseUrl();
 	bool isLocalServer = (baseUrl.find("127.0.0.1") != std::string::npos || baseUrl.find("localhost") != std::string::npos);
 
-	if (username.empty())
+	std::string finalUser = username;
+	if (finalUser.empty() && isLocalServer)
+		finalUser = "Player";
+
+	if (finalUser.empty())
 	{
 		tokenOrError = _("A valid account is required. Please register an account on https://retroachievements.org");
 		return false;
@@ -702,7 +711,7 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 	{
 		auto options = getHttpOptions();
 
-		std::string url = baseUrl + "dorequest.php?r=login&u=" + HttpReq::urlEncode(username);
+		std::string url = baseUrl + "dorequest.php?r=login&u=" + HttpReq::urlEncode(finalUser);
 		if (!isLocalServer)
 			url += "&p=" + HttpReq::urlEncode(password);
 
@@ -710,6 +719,12 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 		if (!request.wait())
 		{						
 			tokenOrError = request.getErrorMsg();
+			if (isLocalServer)
+			{
+				// If local server is not ready yet, don't block the UI, just return a dummy success
+				tokenOrError = "lahee_token";
+				return true;
+			}
 			return false;
 		}
 
