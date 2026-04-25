@@ -81,21 +81,32 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		std::string newUsername = SystemConf::getInstance()->get("global.retroachievements.username");
 		std::string newPassword = SystemConf::getInstance()->get("global.retroachievements.password");
 		std::string token = SystemConf::getInstance()->get("global.retroachievements.token");
+		std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
 
-		if (newState && (!retroachievementsEnabled || username != newUsername || password != newPassword || token.empty()))
+		bool isLocalServer = (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos);
+
+		if (newState && (!retroachievementsEnabled || username != newUsername || (password != newPassword && !isLocalServer) || token.empty()))
 		{
-			std::string tokenOrError;
-			if (RetroAchievements::testAccount(newUsername, newPassword, tokenOrError))
+			if (isLocalServer)
 			{
-				SystemConf::getInstance()->set("global.retroachievements.token", tokenOrError);
+				// LAHEE doesn't need real login, just a username
+				SystemConf::getInstance()->set("global.retroachievements.token", "lahee_token");
 			}
 			else
 			{
-				SystemConf::getInstance()->set("global.retroachievements.token", "");
+				std::string tokenOrError;
+				if (RetroAchievements::testAccount(newUsername, newPassword, tokenOrError))
+				{
+					SystemConf::getInstance()->set("global.retroachievements.token", tokenOrError);
+				}
+				else
+				{
+					SystemConf::getInstance()->set("global.retroachievements.token", "");
 
-				window->pushGui(new GuiMsgBox(window, _("UNABLE TO ACTIVATE RETROACHIEVEMENTS:") + "\n" + tokenOrError, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
-				retroachievements_enabled->setState(false);
-				newState = false;
+					window->pushGui(new GuiMsgBox(window, _("UNABLE TO ACTIVATE RETROACHIEVEMENTS:") + "\n" + tokenOrError, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
+					retroachievements_enabled->setState(false);
+					newState = false;
+				}
 			}
 		}
 		else if (!newState)
