@@ -139,43 +139,56 @@ static HttpReqOptions getHttpOptions()
 	return options;
 }
 
-std::string RetroAchievements::getApiUrl(const std::string& method, const std::string& parameters)
+std::string getApiBaseUrl()
 {
 	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
 	if (serverUrl.empty())
-		serverUrl = "https://retroachievements.org/API/";
+		return "https://retroachievements.org/";
+	
+	return serverUrl;
+}
 
-	if (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos)
+std::string RetroAchievements::getApiUrl(const std::string& method, const std::string& parameters)
+{
+	std::string baseUrl = getApiBaseUrl();
+
+	if (baseUrl.find("127.0.0.1") != std::string::npos || baseUrl.find("localhost") != std::string::npos)
 	{
-		// For local LAHEE, we might need a different mapping or just proxy it
-		return serverUrl + method + ".php?" + parameters;
+		// Local LAHEE usually maps API methods to .php files directly in the base path
+		return baseUrl + method + ".php?" + parameters;
 	}
+
+	// Default RetroAchievements API path
+	if (baseUrl.find("retroachievements.org") != std::string::npos && baseUrl.find("/API/") == std::string::npos)
+		baseUrl += "API/";
 
 #ifdef CHEEVOS_DEV_LOGIN
 	auto options = std::string(CHEEVOS_DEV_LOGIN);
-	return serverUrl + method + ".php?" + options + "&" + parameters;
+	return baseUrl + method + ".php?" + options + "&" + parameters;
 #else 
-	return serverUrl + method + ".php?" + parameters;
+	return baseUrl + method + ".php?" + parameters;
 #endif
 }
 
 std::string GameInfoAndUserProgress::getImageUrl(const std::string& image)
 {
-	if (image.empty())
-		return "http://i.retroachievements.org" + ImageIcon;
+	std::string baseUrl = getApiBaseUrl();
+	if (baseUrl.find("retroachievements.org") != std::string::npos)
+		baseUrl = "http://i.retroachievements.org";
 
-	return "http://i.retroachievements.org" + image;
+	if (image.empty())
+		return baseUrl + ImageIcon;
+
+	return baseUrl + image;
 }
 
 std::string Achievement::getBadgeUrl()
 {
-	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
-	std::string baseUrl = "http://i.retroachievements.org/Badge/";
-
-	if (!serverUrl.empty() && (serverUrl.find("127.0.0.1") != std::string::npos || serverUrl.find("localhost") != std::string::npos))
-	{
-		baseUrl = serverUrl + "Badge/";
-	}
+	std::string baseUrl = getApiBaseUrl();
+	if (baseUrl.find("retroachievements.org") != std::string::npos)
+		baseUrl = "http://i.retroachievements.org/Badge/";
+	else
+		baseUrl += "Badge/";
 
 	if (!DateEarned.empty() || !DateEarnedHardcore.empty())
 		return baseUrl + BadgeName + ".png";
@@ -518,9 +531,10 @@ std::map<std::string, std::string> RetroAchievements::getCheevosHashes()
 		std::map<int, std::string> officialGames;
 
 		auto options = getHttpOptions();
+		std::string baseUrl = getApiBaseUrl();
 
-		HttpReq hashLibrary("https://retroachievements.org/dorequest.php?r=hashlibrary", &options);
-		HttpReq officialGamesList("https://retroachievements.org/dorequest.php?r=officialgameslist", &options);
+		HttpReq hashLibrary(baseUrl + "dorequest.php?r=hashlibrary", &options);
+		HttpReq officialGamesList(baseUrl + "dorequest.php?r=officialgameslist", &options);
 
 		// Official games
 		if (officialGamesList.wait())
@@ -678,8 +692,9 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 	try
 	{
 		auto options = getHttpOptions();
+		std::string baseUrl = getApiBaseUrl();
 
-		HttpReq request("https://retroachievements.org/dorequest.php?r=login&u=" + HttpReq::urlEncode(username) + "&p=" + HttpReq::urlEncode(password), &options);
+		HttpReq request(baseUrl + "dorequest.php?r=login&u=" + HttpReq::urlEncode(username) + "&p=" + HttpReq::urlEncode(password), &options);
 		if (!request.wait())
 		{						
 			tokenOrError = request.getErrorMsg();
