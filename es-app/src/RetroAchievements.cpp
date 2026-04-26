@@ -71,9 +71,9 @@ bool RetroAchievements::isLocalEngineActive() {
 	if (sLocalEngineActive) return true;
 	std::string hubPath = getRetroAchievementsHubPath();
 	if (hubPath.empty()) return false;
-	HttpReqOptions options;
-	HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeinfo", &options);
-	sLocalEngineActive = request.wait() && request.status() == HttpReq::REQ_SUCCESS;
+
+	// pidof is much more reliable than file existence or HTTP pings for local status
+	sLocalEngineActive = !ApiSystem::getInstance()->executeSystem("pidof LAHEE").empty();
 	return sLocalEngineActive;
 }
 

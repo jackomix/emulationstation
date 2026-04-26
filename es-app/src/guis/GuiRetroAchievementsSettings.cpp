@@ -10,15 +10,16 @@
 #include "guis/GuiTextEditPopup.h"
 #include "components/SwitchComponent.h"
 #include "components/OptionListComponent.h"
+#include "components/TextComponent.h"
 #include "LocaleES.h"
 
 GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : GuiSettings(window, _("RETROACHIEVEMENT PROFILES").c_str())
 {
+	addGroup(_("GENERAL SETTINGS"));
+
 	// We are now in NATIVE MODE. We scan the SD card directly.
 	auto hubPath = RetroAchievements::getRetroAchievementsHubPath();
 	bool isIntegrated = !hubPath.empty();
-
-	addGroup(_("GENERAL SETTINGS"));
 
 	// Master Toggle - Always available
 	addSwitch(_("ENABLE RETROACHIEVEMENTS"), _("Enable local achievement tracking for supported systems."), "global.retroachievements", true, nullptr);
@@ -64,6 +65,7 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 				// UI feedback: add to list immediately
 				profile_choices->add(name, name, true);
 				SystemConf::getInstance()->set("global.retroachievements.username", name);
+				SystemConf::getInstance()->saveSystemConf(); // WRITE TO DISK IMMEDIATELY
 				
 				// LAHEE handles the actual file creation on next heartbeat/switch
 				HttpReqOptions options;
@@ -72,11 +74,30 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 			}, false));
 		});
 
+		addGroup(_("TOOLS"));
+		
+		addEntry(_("PATCH RETROARCH"), true, [this, hubPath]
+		{
+			std::string scriptPath = hubPath + "/Server/lahee_patch_ra.py";
+			std::string cmd = "python3 \"" + scriptPath + "\"";
+			Utils::Platform::ProcessStartInfo(cmd).run();
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("RETROARCH PATCHED. PLEASE RESTART."), _("OK"), nullptr));
+		});
+
+		addEntry(_("UNPATCH RETROARCH"), true, [this, hubPath]
+		{
+			std::string scriptPath = hubPath + "/Server/lahee_unpatch_ra.py";
+			std::string cmd = "python3 \"" + scriptPath + "\"";
+			Utils::Platform::ProcessStartInfo(cmd).run();
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("RETROARCH UNPATCHED."), _("OK"), nullptr));
+		});
+
 		addGroup(_("ENGINE STATUS"));
 		
 		// Heartbeat check
 		bool isOnline = RetroAchievements::isLocalEngineActive();
-		addEntry(_("LAHEE ENGINE"), false, nullptr, isOnline ? _("ONLINE") : _("STARTING..."));
+		auto statusText = std::make_shared<TextComponent>(mWindow, isOnline ? _("ONLINE") : _("OFFLINE"), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
+		addWithLabel(_("LAHEE ENGINE"), statusText);
 		
 		if (!isOnline)
 		{
@@ -97,6 +118,7 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 			if (SystemConf::getInstance()->get("global.retroachievements.username") != selected)
 			{
 				SystemConf::getInstance()->set("global.retroachievements.username", selected);
+				SystemConf::getInstance()->saveSystemConf(); // WRITE TO DISK IMMEDIATELY
 				
 				// Notify the engine
 				HttpReqOptions options;
