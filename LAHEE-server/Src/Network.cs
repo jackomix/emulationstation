@@ -16,7 +16,7 @@ namespace LAHEE;
 
 static class Network {
     public const string LOCAL_HOST = "127.0.0.1";
-    public const string BASE_DIR = "/";
+    public const string BASE_DIR = "/laheer/";
     public static string LocalUrl;
 
     internal const string RA_ROUTE_HEADER = "X-RA-Route";
