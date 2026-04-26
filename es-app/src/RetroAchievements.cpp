@@ -5,6 +5,7 @@
 #include "SystemConf.h"
 #include "PlatformId.h"
 #include "SystemData.h"
+#include "FileData.h"
 #include "utils/StringUtil.h"
 #include "utils/ZipFile.h"
 #include "Log.h"
@@ -130,7 +131,7 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 	UserSummary ret;
 	ret.Username = usrName;
 	ret.Rank = "LOCAL";
-	ret.Score = "0";
+	ret.Points = "0";
 
 	// NATIVE FILE SYSTEM ENGINE
 	if (isLocalEngineActive()) {
@@ -141,8 +142,6 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 			if (!doc.HasParseError() && doc.IsObject()) {
 				ret.RecentlyPlayedCount = jsonInt(doc, "RecentlyPlayedCount");
 				ret.Points = jsonString(doc, "Points");
-				ret.Score = ret.Points;
-				// ... (RecentlyPlayed can be populated here)
 				return ret;
 			}
 		}
@@ -156,7 +155,6 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 		doc.Parse(httpreq.getContent().c_str());
 		if (!doc.HasParseError()) {
 			ret.Points = jsonString(doc, "Points");
-			ret.Score = ret.Points;
 			ret.Rank = jsonString(doc, "Rank");
 			ret.UserPic = jsonString(doc, "UserPic");
 		}
