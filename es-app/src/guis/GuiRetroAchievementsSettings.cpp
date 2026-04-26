@@ -4,6 +4,8 @@
 #include "ApiSystem.h"
 #include "RetroAchievements.h"
 #include "utils/FileSystemUtil.h"
+#include "utils/Platform.h"
+#include "HttpReq.h"
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiTextEditPopup.h"
 #include "components/SwitchComponent.h"
@@ -19,8 +21,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	addGroup(_("GENERAL SETTINGS"));
 
 	// Master Toggle - Always available
-	addSwitch(_("ENABLE RETROACHIEVEMENTS"), _("Enable local achievement tracking for supported systems."), "global.retroachievements", true);
-	addSwitch(_("HARDCORE MODE"), _("Disable save states and cheats to earn hardcore achievements."), "global.retroachievements.hardcore", false);
+	addSwitch(_("ENABLE RETROACHIEVEMENTS"), _("Enable local achievement tracking for supported systems."), "global.retroachievements", true, nullptr);
+	addSwitch(_("HARDCORE MODE"), _("Disable save states and cheats to earn hardcore achievements."), "global.retroachievements.hardcore", false, nullptr);
 
 	if (isIntegrated)
 	{
@@ -82,7 +84,7 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 			{
 				// Kill any stuck PID and try again
 				Utils::FileSystem::removeFile("/tmp/lahee.pid");
-				ApiSystem::getInstance()->executeSystem("killall LAHEE");
+				Utils::Platform::ProcessStartInfo("killall LAHEE").run();
 				// The main loop will handle restart or we can trigger it here
 				delete this;
 			});
@@ -111,5 +113,5 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
 	}
 
-	addSwitch(_("SHOW IN MENU"), _("Show RetroAchievements in the main menu."), "RetroachievementsMenuitem", true);
+	addSwitch(_("SHOW IN MENU"), _("Show RetroAchievements in the main menu."), "RetroachievementsMenuitem", true, nullptr);
 }
