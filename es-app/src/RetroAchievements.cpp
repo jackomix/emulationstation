@@ -247,7 +247,11 @@ std::string RetroAchievements::getCheevosHashFromFile(int consoleId, const std::
 }
 
 std::string RetroAchievements::getCheevosHash(SystemData* system, const std::string& fileName) {
-	return getCheevosHashFromFile(0, fileName);
+	int consoleId = 0;
+	auto it = cheevosConsoleID.find(system->getPlatformId());
+	if (it != cheevosConsoleID.end()) consoleId = it->second;
+	
+	return getCheevosHashFromFile(consoleId, fileName);
 }
 
 bool RetroAchievements::testAccount(const std::string& username, const std::string& password, std::string& tokenOrError) {
