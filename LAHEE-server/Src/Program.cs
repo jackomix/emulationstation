@@ -36,6 +36,20 @@ class Program {
         try {
             AppConfig.Initialize(args);
             Config = new AppConfig("LAHEE", args);
+
+            string hubDir = Config.Get("LAHEE", "HubDirectory");
+            string dataDir = Config.Get("LAHEE", "DataDirectory");
+
+            if (!string.IsNullOrEmpty(hubDir)) {
+                Environment.CurrentDirectory = hubDir;
+            } else if (!string.IsNullOrEmpty(dataDir) && Path.IsPathRooted(dataDir)) {
+                Environment.CurrentDirectory = dataDir;
+            }
+
+            string badgeDirectory = Config.Get("LAHEE", "BadgeDirectory") ?? "Badge";
+            if (!Directory.Exists(badgeDirectory)) {
+                Directory.CreateDirectory(badgeDirectory);
+            }
         } catch (Exception ex) {
             Console.WriteLine("An error ocurred during loading the configuration:\n" + ex.Message);
 #if DEBUG
@@ -43,20 +57,6 @@ class Program {
 #endif
             Console.ReadLine();
             return;
-        }
-
-        string hubDir = Config.Get("LAHEE", "HubDirectory");
-        string dataDir = Config.Get("LAHEE", "DataDirectory");
-
-        if (!string.IsNullOrEmpty(hubDir)) {
-            Environment.CurrentDirectory = hubDir;
-        } else if (!string.IsNullOrEmpty(dataDir) && Path.IsPathRooted(dataDir)) {
-            Environment.CurrentDirectory = dataDir;
-        }
-
-        string badgeDirectory = Config.Get("LAHEE", "BadgeDirectory") ?? "Badge";
-        if (!Directory.Exists(badgeDirectory)) {
-            Directory.CreateDirectory(badgeDirectory);
         }
 
         Log.Initialize();
@@ -96,7 +96,7 @@ class Program {
         Console.CancelKeyPress += Console_CancelKeyPress;
 
         // Support for running commands from command line arguments
-        if (args.Length > 0) {
+        if (args.Length > 0 && !args[0].StartsWith("--")) {
             string fullCmd = string.Join(" ", args);
             Log.Main.LogInformation("Running command from CLI: {cmd}", fullCmd);
             try {
