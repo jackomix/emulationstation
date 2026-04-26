@@ -148,7 +148,7 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 				
 				if (doc.HasMember("RecentlyPlayed") && doc["RecentlyPlayed"].IsArray()) {
 					for (auto& gp : doc["RecentlyPlayed"].GetArray()) {
-						RecentlyPlayed item;
+						RecentGame item;
 						item.GameID = jsonString(gp, "GameID");
 						item.Title = jsonString(gp, "Title");
 						item.ImageIcon = jsonString(gp, "ImageIcon");
@@ -159,7 +159,7 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 
 				if (doc.HasMember("Awarded") && doc["Awarded"].IsObject()) {
 					for (auto it = doc["Awarded"].MemberBegin(); it != doc["Awarded"].MemberEnd(); ++it) {
-						Awarded item;
+						Award item;
 						item.NumPossibleAchievements = jsonInt(it->value, "NumPossibleAchievements");
 						item.PossibleScore = jsonInt(it->value, "PossibleScore");
 						item.NumAchieved = jsonInt(it->value, "NumAchieved");
