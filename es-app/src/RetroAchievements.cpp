@@ -1,6 +1,7 @@
 #include "RetroAchievements.h"
 #include "HttpReq.h"
 #include "ApiSystem.h"
+#include "Settings.h"
 #include "SystemConf.h"
 #include "PlatformId.h"
 #include "SystemData.h"
@@ -141,28 +142,68 @@ static HttpReqOptions getHttpOptions()
 
 std::string RetroAchievements::getApiUrl(const std::string& method, const std::string& parameters)
 {
+	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+	if (serverUrl.empty())
+		serverUrl = "https://retroachievements.org/API/";
+
+	if (serverUrl.find("/laheer/") != std::string::npos)
+	{
+		std::string translatedMethod = Utils::String::toLower(method);
+		if (Utils::String::startsWith(translatedMethod, "api_"))
+			translatedMethod = translatedMethod.substr(4);
+
+		if (translatedMethod == "getuserrankandscore")
+			translatedMethod = "getusersummary";
+
+		return serverUrl + "dorequest.php?r=" + translatedMethod + "&" + parameters;
+	}
+
 #ifdef CHEEVOS_DEV_LOGIN
 	auto options = std::string(CHEEVOS_DEV_LOGIN);
-	return "https://retroachievements.org/API/"+ method +".php?"+ options +"&" + parameters;
+	return serverUrl + method + ".php?" + options + "&" + parameters;
 #else 
-	return "https://retroachievements.org/API/" + method + ".php?" + parameters;
+	return serverUrl + method + ".php?" + parameters;
 #endif
 }
 
 std::string GameInfoAndUserProgress::getImageUrl(const std::string& image)
 {
-	if (image.empty())
-		return "http://i.retroachievements.org" + ImageIcon;
+	std::string baseUrl = "http://i.retroachievements.org";
 
-	return "http://i.retroachievements.org" + image;
+	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+	if (serverUrl.find("/laheer/") != std::string::npos)
+	{
+		baseUrl = serverUrl;
+		std::string img = image.empty() ? ImageIcon : image;
+		if (img.empty()) return "";
+		if (img[0] == '/') img = img.substr(1);
+		return baseUrl + img;
+	}
+
+	if (image.empty())
+		return baseUrl + ImageIcon;
+
+	return baseUrl + image;
 }
 
 std::string Achievement::getBadgeUrl()
 {
-	if (!DateEarned.empty() || !DateEarnedHardcore.empty())
-		return "http://i.retroachievements.org/Badge/" + BadgeName + ".png";
+	std::string baseUrl = "http://i.retroachievements.org";
 
-	return "http://i.retroachievements.org/Badge/" + BadgeName + "_lock.png";
+	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+	if (serverUrl.find("/laheer/") != std::string::npos)
+	{
+		baseUrl = serverUrl;
+		if (!DateEarned.empty() || !DateEarnedHardcore.empty())
+			return baseUrl + "Badge/" + BadgeName + ".png";
+
+		return baseUrl + "Badge/" + BadgeName + "_lock.png";
+	}
+
+	if (!DateEarned.empty() || !DateEarnedHardcore.empty())
+		return baseUrl + "/Badge/" + BadgeName + ".png";
+
+	return baseUrl + "/Badge/" + BadgeName + "_lock.png";
 }
 
 
@@ -439,7 +480,22 @@ RetroAchievementInfo RetroAchievements::toRetroAchivementInfo(UserSummary& ret)
 		return info;
 	}
 
-	info.userpic = "https://retroachievements.org" + ret.UserPic;
+	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+	std::string baseUrl = "https://retroachievements.org";
+	std::string imageBaseUrl = "http://i.retroachievements.org";
+
+	size_t pos = serverUrl.find("/laheer/");
+	if (pos != std::string::npos)
+	{
+		baseUrl = serverUrl;
+		imageBaseUrl = baseUrl;
+	}
+
+	if (pos != std::string::npos && !ret.UserPic.empty() && ret.UserPic[0] == '/')
+		info.userpic = baseUrl + ret.UserPic.substr(1);
+	else
+		info.userpic = baseUrl + ret.UserPic;
+
 	info.rank = ret.Rank;
 
 	if (!ret.TotalRanked.empty() && !ret.Rank.empty())
@@ -462,7 +518,12 @@ RetroAchievementInfo RetroAchievements::toRetroAchivementInfo(UserSummary& ret)
 		rg.id = played.GameID;
 
 		if (!played.ImageIcon.empty())
-			rg.badge = "http://i.retroachievements.org" + played.ImageIcon;
+		{
+			if (pos != std::string::npos && played.ImageIcon[0] == '/')
+				rg.badge = imageBaseUrl + played.ImageIcon.substr(1);
+			else
+				rg.badge = imageBaseUrl + played.ImageIcon;
+		}
 
 		rg.name = played.Title; // +" [" + played.ConsoleName + "]";
 		rg.consoleName = played.ConsoleName;
@@ -501,8 +562,13 @@ std::map<std::string, std::string> RetroAchievements::getCheevosHashes()
 
 		auto options = getHttpOptions();
 
-		HttpReq hashLibrary("https://retroachievements.org/dorequest.php?r=hashlibrary", &options);
-		HttpReq officialGamesList("https://retroachievements.org/dorequest.php?r=officialgameslist", &options);
+		std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+		std::string baseUrl = "https://retroachievements.org/";
+		if (serverUrl.find("/laheer/") != std::string::npos)
+			baseUrl = serverUrl;
+
+		HttpReq hashLibrary(baseUrl + "dorequest.php?r=hashlibrary", &options);
+		HttpReq officialGamesList(baseUrl + "dorequest.php?r=officialgameslist", &options);
 
 		// Official games
 		if (officialGamesList.wait())
@@ -661,7 +727,12 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 	{
 		auto options = getHttpOptions();
 
-		HttpReq request("https://retroachievements.org/dorequest.php?r=login&u=" + HttpReq::urlEncode(username) + "&p=" + HttpReq::urlEncode(password), &options);
+		std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+		std::string baseUrl = "https://retroachievements.org/";
+		if (serverUrl.find("/laheer/") != std::string::npos)
+			baseUrl = serverUrl;
+
+		HttpReq request(baseUrl + "dorequest.php?r=login&u=" + HttpReq::urlEncode(username) + "&p=" + HttpReq::urlEncode(password), &options);
 		if (!request.wait())
 		{						
 			tokenOrError = request.getErrorMsg();

@@ -444,21 +444,31 @@ void startLAHEEServer()
 	if (!Settings::getInstance()->getBool("AutoStartLAHEE"))
 		return;
 
-	if (Utils::FileSystem::exists("/tmp/lahee_running"))
+	if (Utils::FileSystem::exists("/tmp/lahee.pid"))
 		return;
 
-	LOG(LogInfo) << "Starting LAHEE Server for the first time this session...";
-	Utils::FileSystem::writeAllText("/tmp/lahee_running", "1");
-
-	std::string scriptPath = "/roms/ports/LAHEE/LAHEE Server.sh";
-	if (!Utils::FileSystem::exists(scriptPath))
-		scriptPath = "/userdata/roms/ports/LAHEE/LAHEE Server.sh";
-
-	if (Utils::FileSystem::exists(scriptPath))
+	std::string romsRoot = "";
+	for (auto pSystem : SystemData::sSystemVector)
 	{
-		std::string cmd = "bash \"" + scriptPath + "\" &";
-		Utils::Platform::ProcessStartInfo(cmd).run();
+		if (!pSystem->isCollection())
+		{
+			romsRoot = Utils::FileSystem::getParent(pSystem->getStartPath());
+			break;
+		}
 	}
+
+	if (romsRoot.empty())
+		return;
+
+	std::string binaryPath = romsRoot + "/RetroAchievements/Server/LAHEE";
+
+	if (!Utils::FileSystem::exists(binaryPath))
+		return;
+
+	LOG(LogInfo) << "Starting LAHEE Server...";
+
+	std::string cmd = "chmod +x \"" + binaryPath + "\" ; nohup \"" + binaryPath + "\" --roms \"" + romsRoot + "\" --hub \"" + romsRoot + "/RetroAchievements\" > /tmp/lahee.log 2>&1 & echo $! > /tmp/lahee.pid";
+	Utils::Platform::ProcessStartInfo(cmd).run();
 }
 
 #include "utils/MathExpr.h"
@@ -549,8 +559,6 @@ int main(int argc, char* argv[])
 
 	Scripting::fireEvent("start");
 
-	startLAHEEServer();
-
 	// metadata init
 	HttpReq::resetCookies();
 	Genres::init();
@@ -600,6 +608,8 @@ int main(int argc, char* argv[])
 		// we can't handle es_systems.cfg file problems inside ES itself, so display the error message then quit
 		window.pushGui(new GuiMsgBox(&window, errorMsg, _("QUIT"), [] { Utils::Platform::quitES(); }));
 	}
+
+	startLAHEEServer();
 
 	SystemConf* systemConf = SystemConf::getInstance();
 

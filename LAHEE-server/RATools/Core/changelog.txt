@@ -1,0 +1,95 @@
+v1.3.7 - 16 Sep 2025
+* Add Tokenizer.ReadWord
+* Handle characters wider than fixed-width in code editor
+
+v1.3.6 - 10 Mar 2025
+* Use native WINAPIs for clipboard access to avoid CLIPBRD_E_CANT_OPEN error
+
+v1.3.5 - 01 Oct 2024
+* Allow JsonField.BooleanValue to convert integer fields
+* Improve debugger display string for StringTokenizer
+
+v1.3.4 - 22 May 2024
+* Allow character chords containing Ctrl (i.e. Ctrl+Alt+4 for left curly brace on French keyboards) in code editor
+* Fix exception doing a search and replace of some string to empty string in code editor
+
+v1.3.3 - 4 Mar 2024
+* Add SoftwareVersion struct
+* Add overload to TaskDialogViewModel.ShowErrorMessage that accepts a dialog title
+* Fix exception parsing JSON with decimals in some locales
+* Fix find at end of editor not wrapping to start of editor
+
+v1.3.2 - 16 Jul 2023
+* Fix exception when viewport height change causes last line of editor to be hidden
+
+v1.3.1 - 23 Apr 2023
+* Allow up/down navigation in grid
+* Don't force TextPiece recalculation of offscreen lines
+
+v1.3.0 - 29 Jan 2023
+* Auto-show horizontal scrollbar in code editor
+* Ability to select entire lines in code editor by clicking on line number
+
+v1.2.1 - 14 Nov 2022
+* Add TextRange.Union
+* Fix negative integer handling in JsonObject
+* Fix crash if clipboard is not available
+
+v1.2.0 - 14 Jun 2022
+* Upgrade to .NET Core 6.0
+* Extract UI code into separate DLL
+* Add SecretTextFieldViewModel
+* Allow JsonField.IntegerValue to convert string fields
+* Improve thread-safety when updating LineViewModel text
+* LineViewModel is no longer exposed through LineEventArgs. Individual read-only properties are exposed instead
+
+v1.1.8 - 4 Jan 2022
+* update to .NET 4.0
+* support for taskbar progress
+* use hours for estimates over 120 minutes
+
+v1.1.7 - 21 Aug 2021
+* add PushState/PopState to Tokenizer
+* raise CodeEditor.LineChanged event for merged/split lines
+* add CodeEditor.TypeCharacter for subclass testing
+
+v1.1.6 - 27 Feb 2021
+* add TextLocation and TextRange
+* several small performance improvements to CodeEditor
+* fix: JsonObject parsed array of int/double was always empty
+
+v1.1.5 - 28 Jul 2020
+* add ColorPickerDialogViewModel
+* add support for TLS 1.2 in HttpRequestService
+* fix: exception when code editor error highlight extends beyond end of line
+
+v1.1.4 - 10 Aug 2019
+* add TaskDialogViewModel
+* add FileDialogViewModel.ShowSelectFolderDialog
+* add CommandBinding.FileDropCommand
+* add support for writing ini files
+* fix: newline at end of content should add a blank line to the code editor
+* fix: include all lines in ContentChangedEventArgs when pasting multiple lines
+
+v1.1.3 - 16 Apr 2019
+* escape backslashes in persistant data
+* fix exceptions when replacing text with smaller amount of text (via paste/undo/redo) in code editor
+
+v1.1.2 - 26 Jan 2019
+* don't insert matching brace if the character following the cursor is not whitespace or punctuation
+
+v1.1.1 - 27 Aug 2018
+* stop at punctuation when highlighting word at cursor in CodeEditor
+
+v1.1 - 23 Jun 2018
+* add CodeEditor (view/viewmodel/supporting classes)
+* add FixedSizeStack
+* add ITimerService
+* add StandardDeviation
+* add ListViewUtils.AutoSizeColumn
+* add IClipboardService.GetText
+* minor improvements to FocusIfTrue attached property
+* add SelectAllOnFocus attached property
+
+v1.0 - 28 Nov 2017
+* initial public release build candidate

@@ -1,0 +1,525 @@
+<!doctype html>
+<!--suppress HtmlFormInputWithoutLabel, HtmlRequiredAltAttribute, HtmlDeprecatedAttribute, JSDeprecatedSymbols -->
+<html lang="en" data-bs-theme="auto">
+<head>
+
+    <meta charset="utf8">
+    <title>LAHEE</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/split.css" rel="stylesheet">
+    <link href="css/lahee.css" rel="stylesheet">
+    <link rel="icon" href="favicon.ico">
+
+    <script src="js/3rdparty/color-modes.js"></script>
+    <script src="js/3rdparty/TimeSpan.js"></script>
+    <script src="js/3rdparty/split.min.js"></script>
+    <script src="js/lahee_dto.js"></script>
+</head>
+<body class="d-flex flex-column h-100" onload="lahee_init();">
+
+    <!-- theme toggle -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+        <symbol id="check2" viewBox="0 0 16 16">
+            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+        </symbol>
+        <symbol id="circle-half" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
+        </symbol>
+        <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+            <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z" />
+            <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z" />
+        </symbol>
+        <symbol id="sun-fill" viewBox="0 0 16 16">
+            <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
+        </symbol>
+    </svg>
+
+    <div class="dropdown position-fixed bottom-0 end-0 mb-4 me-3 bd-mode-toggle">
+        <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
+                id="bd-theme"
+                type="button"
+                data-bs-toggle="dropdown"
+                style="background-color: rgba(0, 148, 255, 0.2)">
+            <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
+            <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
+            <li>
+                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                    <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#sun-fill"></use></svg>
+                    Light
+                    <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
+                </button>
+            </li>
+            <li>
+                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                    <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
+                    Dark
+                    <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
+                </button>
+            </li>
+            <li>
+                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+                    <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#circle-half"></use></svg>
+                    Auto
+                    <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <!-- theme toggle end -->
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul id="main_nav" style="visibility: hidden;" class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:lahee_set_page('page_achievements')">Achievements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:lahee_set_page('page_leaderboards')">Records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:lahee_set_page('page_stats')">Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:lahee_set_page('page_settings')">Settings</a>
+                    </li>
+                </ul>
+                <form id="main_data_selector" style="visibility: hidden;" class="d-flex" onsubmit="lahee_change_game(); return false;">
+                    <img id="user_avatar" src="" height="48"/>
+                    <select id="user_select" class="form-select me-2" onchange="lahee_build_game_selector(true);">
+                        <option>Loading...</option>
+                    </select>
+                    <img id="game_avatar" src="" height="48"
+                         class="page_achievements_controls page_leaderboards_controls page-controls"/>
+                    <select id="game_select" class="form-select me-2 page_achievements_controls page_leaderboards_controls page-controls">
+                        <option>Loading...</option>
+                    </select>
+                    <select id="sort_select" class="form-select me-2 page_achievements_controls page-controls">
+                        <option value="0">Sort: Default</option>
+                        <option value="1">Sort: Locked</option>
+                        <option value="2">Sort: Unlocked</option>
+                        <option value="3">Sort: Missable</option>
+                        <option value="4">Sort: Flagged</option>
+                        <option value="5">Sort: Points</option>
+                    </select>
+                    <input class="form-control me-2 page_achievements_controls page-controls" type="text" id="filter" placeholder="Filter by name/desc." />
+                    <select id="leaderboard_sort_select"
+                            class="form-select me-2 page-controls page_leaderboards_controls">
+                        <option value="0">Sort: Best</option>
+                        <option value="1">Sort: Recent</option>
+                    </select>
+                    <button class="btn btn-outline-success" type="button" onclick="lahee_change_game();">Switch</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div id="page_loading" class="lahee-page text-center" style="display: block;">
+            <img src="lahee.png" />
+            <h1>L.A.H.E.E.</h1>
+            <h4>Local Achievements Home Edition Enhanced</h4>
+            <hr />
+            <h3>Now Loading...</h3>
+            <progress id="loading_progress" class="progress-bar d-inline w-25" value="0" max="6"></progress>
+            <p>Depending on the number of games or achievements, this may take a moment.</p>
+        </div>
+        <div id="page_achievements" class="lahee-page">
+            <div class="row split">
+                <div class="col-9" id="achievement_grid"></div>
+                <div class="col" id="achievement_details">
+                    <p id="adetail_img"></p>
+                    <h3 id="adetail_title" class="text-center">Please select...</h3>
+                    <p id="adetail_desc"></p>
+                    <div id="adetail_info" style="display:none;">
+                        <table>
+                            <tr>
+                                <td>Type</td>
+                                <td id="adetail_type"></td>
+                            </tr>
+                            <tr>
+                                <td>Score</td>
+                                <td id="adetail_score"></td>
+                            </tr>
+                            <tr id="adetail_ex_trigger_row">
+                                <td>Primable</td>
+                                <td id="adetail_ex_trigger"></td>
+                            </tr>
+                            <tr id="adetail_ex_measured_row">
+                                <td>Target</td>
+                                <td id="adetail_ex_measured"></td>
+                            </tr>
+                            <tr>
+                                <td>Status</td>
+                                <td id="adetail_status"></td>
+                            </tr>
+                            <tr>
+                                <td>Unlocked</td>
+                                <td id="adetail_unlock"></td>
+                            </tr>
+                            <tr>
+                                <td>Playtime</td>
+                                <td id="adetail_unlock_pt"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <hr />
+                    <div id="comment_controls" style="display: none;">
+                        <div class="row my-2">
+                            <div class="col">
+                                <input type="button" class="btn btn-warning w-100" value="Flag"
+                                       onclick="lahee_flag_important();"/>
+                            </div>
+                            <div class="col">
+                                <input id="download_ach_code_btn" type="button" class="btn btn-secondary w-100"
+                                       value="View Code" onclick="lahee_show_code_popup();"/>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <input type="button" class="btn btn-primary w-100" value="Add Notes"
+                                       onclick="lahee_show_comment_editor();"/>
+                            </div>
+                            <div class="col">
+                                <input id="ra_download_btn" type="button" onclick="lahee_download_comments();"
+                                       class="btn btn-secondary w-100" value="DL Notes"/>
+                            </div>
+                        </div>
+                        <div id="comment_container">
+                            
+                        </div>
+                        <hr />
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h2 id="game_pt">0/0</h2>
+                            <p>Game Points</p>
+                        </div>
+                        <div class="col">
+                            <h2 id="total_pt">0</h2>
+                            <p>Total Points</p>
+                        </div>
+                    </div>
+                    <div class="progress" role="progressbar">
+                        <div id="game_point_progress" class="progress-bar bg-success" style="width: 0">Now Loading...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="page_leaderboards" class="lahee-page">
+            <select class="form-select" id="lb_id" onchange="lahee_records_change_selected();">
+                <option>Loading...</option>
+            </select>
+            <hr />
+            <table id="lb_table" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="4" id="lb_desc"></th>
+                    </tr>
+                    <tr>
+                        <th>Attempt #</th>
+                        <th>Score</th>
+                        <th>Record Date</th>
+                        <th>Playtime</th>
+                    </tr>
+                </thead>
+                <tbody id="lb_content"></tbody>
+            </table>
+        </div>
+        <div id="page_stats" class="lahee-page">
+            <div id="stats_unavailable">
+                <p>Stats are not yet available for this user. Play at least one game and obtain at least one achievement.</p>
+            </div>
+            <div id="stats_available">
+
+                <div class="row mb-5">
+
+                    <div class="col-12 col-sm-3 text-center stats_details">
+                        <h1>Most Played</h1>
+                        <p><img id="game_img_l" class="game_img" src=""/></p>
+                        <p id="game_title_l">NAME</p>
+                        <h4 id="game_time_l">0 days 00:00:00</h4>
+                    </div>
+                    <div class="col-12 col-sm-3 text-center">
+                        <h1>Least Played</h1>
+                        <p><img id="game_img_s" class="game_img" src=""/></p>
+                        <p id="game_title_s">NAME</p>
+                        <h4 id="game_time_s">0.00:00:00</h4>
+                    </div>
+
+                    <div class="col-12 col-sm-6 text-center">
+                        <h1>Totals</h1>
+                        <table class="table">
+                            <tr>
+                                <td>Total Time</td>
+                                <td id="total_time">0.00:00:00</td>
+                            </tr>
+                            <tr>
+                                <td>Games<br><small class="stats_small_text">Registered / Played / Beaten / Completed /
+                                    Mastered</small></td>
+                                <td id="total_counts">0 / 0 / 0 / 0 / 0</td>
+                            </tr>
+                            <tr>
+                                <td>Achievements<br><small class="stats_small_text">Possible / Obtained / Hardcore</small></td>
+                                <td id="total_ach">0 / 0 / 0</td>
+                            </tr>
+                            <tr>
+                                <td>Score<br><small class="stats_small_text">Possible / Obtained / Hardcore</small></td>
+                                <td id="total_score">0 / 0 / 0</td>
+                            </tr>
+                            <tr>
+                                <td>Started using LAHEE</td>
+                                <td id="total_started">0000-00-00 00:00:00</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="row mb-5">
+
+                    <div class="col-12 col-sm-3 text-center">
+                        <h1>Fastest 100%</h1>
+                        <p><img id="game_img_f1" class="game_img" src=""/></p>
+                        <p id="game_title_f1">NAME</p>
+                        <h4 id="game_time_f1">0.00:00:00</h4>
+                    </div>
+                    <div class="col-12 col-sm-3 text-center">
+                        <h1>Slowest 100%</h1>
+                        <p><img id="game_img_s1" class="game_img" src=""/></p>
+                        <p id="game_title_s1">NAME</p>
+                        <h4 id="game_time_s1">0.00:00:00</h4>
+                    </div>
+                    <div class="col-12 col-sm-3 text-center">
+                        <h1>Fastest Beat</h1>
+                        <p><img id="game_img_fb" class="game_img" src=""/></p>
+                        <p id="game_title_fb">NAME</p>
+                        <h4 id="game_time_fb">0.00:00:00</h4>
+                    </div>
+                    <div class="col-12 col-sm-3 text-center">
+                        <h1>Slowest Beat</h1>
+                        <p><img id="game_img_sb" class="game_img" src=""/></p>
+                        <p id="game_title_sb">NAME</p>
+                        <h4 id="game_time_sb">0.00:00:00</h4>
+                    </div>
+
+                </div>
+
+                <h3>Meta-Achievements</h3>
+                <div class="row mb-5">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Condition</th>
+                            <th colspan="3">Achievement</th>
+                            <th>Related</th>
+                            <th>Achieved</th>
+                            <th>Playtime</th>
+                        </tr>
+                        </thead>
+                        <tbody id="meta_table">
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Game Summary</h3>
+                <div class="row mb-5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><!-- Image --></th>
+                                <th>Game</th>
+                                <th>Progress</th>
+                                <th>Points</th>
+                                <th>Status</th>
+                                <th>Started</th>
+                                <th>Playtime</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats_table">
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Milestones</h3>
+                <div class="row mb-5">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th><!-- Game Image --></th>
+                            <th><!-- Achievement Image --></th>
+                            <th>Achievement</th>
+                            <th>Achieved</th>
+                            <th>Playtime</th>
+                            <th>#</th>
+                        </tr>
+                        </thead>
+                        <tbody id="milestones_table">
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <div id="page_settings" class="lahee-page">
+            <div class="alert alert-info" role="alert">Settings are stored locally in the browser and apply to all users
+                you view on LAHEE.
+            </div>
+            <h1>Achievement List Settings</h1>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="lahee_setting_ach_grouping">
+                    <label class="form-check-label" for="lahee_setting_ach_grouping">
+                        Group achievement grid by (sub-)sets if more than 1 set is present
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="lahee_setting_ach_no_margin">
+                    <label class="form-check-label" for="lahee_setting_ach_no_margin">
+                        Make achievement icon grid span the full width (disable margins)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="lahee_setting_hover_spoiler_protect">
+                    <label class="form-check-label" for="lahee_setting_hover_spoiler_protect">
+                        Hide title/description from progression/unmissable achievements on tooltips (spoiler protection)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="lahee_setting_show_metaflags">
+                    <label class="form-check-label" for="lahee_setting_show_metaflags">
+                        Show meta-flags on achievements (Measured, Trigger)
+                        <div class="form-text">This increases initial loading time.</div>
+                    </label>
+                </div>
+            </div>
+
+            <label for="lahee_setting_split_sizes" class="form-label">Column Layout</label>
+            <input type="text" id="lahee_setting_split_sizes" class="form-control" disabled>
+            <div class="form-text">The sizes of the achievement display columns in %. Resize them by dragging them via
+                &#x28FF;
+            </div>
+
+            <hr/>
+            <button type="button" class="btn btn-primary"
+                    onclick="lahee_settings_save(); lahee_settings_apply(); lahee_set_page('page_achievements');">Save
+            </button>
+            <button type="button" class="btn btn-warning" onclick="lahee_settings_reset();">Reset to defaults</button>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-body-tertiary">
+        <div class="container">
+            <span class="text-body-secondary" id="status_text"></span>
+            <span class="text-body-secondary float-end" id="lahee_version">LAHEE</span>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="writeCommentModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Write Note</h5>
+                </div>
+                <div class="modal-body">
+                    <textarea id="comment_body" class="w-100 form-control" rows="15" onkeyup="lahee_comment_editor_onkeyup(event);"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="lahee_popup.hide();">Close (Esc)</button>
+                    <button type="button" class="btn btn-primary" onclick="lahee_write_comment();">Add Notes (Ctrl+Enter)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="codeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="codeModalTitle">Achievement Code</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="ach_code_desc"></p>
+                    <table class="table table-striped">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>Flag</th>
+                            <th>Type</th>
+                            <th>Mem</th>
+                            <th>Cmp</th>
+                            <th>Type</th>
+                            <th>Mem/Val</th>
+                            <th><span class="hoverable_text"
+                                      title="0 means the requirement must be true at the time the achievement triggers.&#013;Any other value indicates the number of frames a requirement must be true before the achievement can trigger.">Hits</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="ach_code_table">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="lahee_popup.hide();">
+                        Close (Esc)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bg-dark bg-opacity-50" id="extendedCodeNoteModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="extendedCodeNoteTitle"></h5>
+                </div>
+                <div class="modal-body" id="extendedCodeNoteModalText">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            onclick="lahee_popup_2.hide();">Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+        <div id="toast_saved" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Settings</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                Settings have been saved.
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+        <div id="toast_notifications" class="toast" role="alert" data-bs-delay="30000" style="width: 900px">
+            <div class="toast-header">
+                <strong class="me-auto">Data Update Notifications</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="server_side_notifications">
+            </div>
+        </div>
+    </div>
+
+    <script src="js/3rdparty/bootstrap.bundle.min.js"></script>
+    <script src="js/lahee.js"></script>
+
+</body>
+</html>

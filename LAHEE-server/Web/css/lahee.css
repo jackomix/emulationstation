@@ -1,0 +1,158 @@
+main.container {
+    padding-bottom: 80px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.bd-mode-toggle {
+    z-index: 2;
+}
+
+#user_avatar, #game_avatar {
+    margin-right: 5px;
+}
+
+#achievement_grid, #achievement_details {
+    overflow-y: scroll;
+    height: calc(100vh - 170px);
+}
+
+.ach_grid, .ach_grid img {
+    float: left;
+}
+
+.ach_grid img {
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+#adetail_img img {
+    border: 2px solid transparent;
+    display: block;
+    margin: 0 auto;
+}
+
+.ach {
+    cursor: pointer;
+}
+
+.ach_type_missable {
+    border-color: red !important;
+}
+
+.ach_type_progression {
+    border-color: lightskyblue !important;
+}
+
+.ach_type_win_condition {
+    border-color: lime !important;
+}
+
+.ach_status_1 {
+    border-color: transparent !important; /* override missable type */
+    filter: none !important; /* override unofficial */
+}
+
+.ach_status_2 {
+    border-color: gold !important;
+    filter: none !important; /* override unofficial */
+}
+
+table {
+    width: 100%;
+}
+
+.lahee-page, .page-controls {
+    display: none;
+}
+
+#adetail_title {
+    word-break: break-word;
+}
+
+.ach_flag_important {
+    border-color: deeppink !important;
+    filter: sepia(100%) saturate(1000%) brightness(100%) hue-rotate(273deg);
+}
+
+.stats_details {
+    .game_img {
+        border: 2px solid transparent;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .ach_img {
+        border: 2px solid transparent;
+        display: block;
+        margin: 0 auto;
+    }
+}
+
+.bg-hardcore {
+    --bs-bg-opacity: 1;
+    background-color: gold !important;
+}
+
+.bg-softcore {
+    --bs-bg-opacity: 1;
+    background-color: silver !important;
+}
+
+.stats_small_text {
+    font-size: 12px;
+}
+
+.ach_flags_4, .ach_flags_5 {
+    filter: sepia(100%);
+    border-color: brown;
+}
+
+.hoverable_text {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    cursor: pointer;
+}
+
+.ach_set_header {
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    clear: both;
+    padding-top: 1rem;
+}
+
+.ach_set_header:nth-of-type(1) {
+    padding-top: 0;
+}
+
+.toast {
+    --bs-toast-bg: #fff !important;
+}
+
+.ach_icon_container {
+    position: relative;
+    float: left;
+}
+
+.ach_ex_overlay {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 2px;
+    background-color: rgba(0, 0, 0, 0.25);
+    font-size: smaller;
+    color: white;
+    text-align: right;
+}
+
+.ach_ex_trigger {
+}
+
+.ach_ex_measured {
+    font-size: smaller;
+}

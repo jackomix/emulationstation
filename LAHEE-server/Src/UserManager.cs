@@ -1,0 +1,141 @@
+﻿using LAHEE.Data;
+using LAHEE.Util;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+
+namespace LAHEE;
+
+class UserManager {
+    public static string UserDataDirectory { get; private set; }
+
+    private static Dictionary<string, UserData> userData;
+    private static Dictionary<string, UserData> activeTokens;
+    private static readonly Lock SAVE_LOCK = new Lock();
+
+    internal static void Initialize() {
+        UserDataDirectory = Program.Config.Get("LAHEE", "UserDirectory");
+
+        activeTokens = new Dictionary<string, UserData>();
+
+        Load(UserDataDirectory);
+
+        Log.User.LogInformation("Finished loading data: {users} User(s) with {achiev} Achievements total", userData.Count, userData.Sum((r) => r.Value.GameData?.Sum((ru => ru.Value.Achievements.Count))));
+    }
+
+    public static void Load(string dir) {
+        userData = new Dictionary<string, UserData>();
+
+        Log.User.LogInformation("Loading user profiles from {Dir}...", dir);
+
+        if (!Directory.Exists(dir)) {
+            Directory.CreateDirectory(dir);
+            Log.User.LogTrace("Created directory");
+        }
+
+        foreach (string file in Directory.GetFiles(dir)) {
+            if (file.EndsWith(".bak")) {
+                continue;
+            }
+
+            string username = Path.GetFileNameWithoutExtension(file);
+            try {
+                Log.User.LogDebug("Reading {f}", file);
+
+                UserData data = JsonConvert.DeserializeObject<UserData>(File.ReadAllText(file));
+                Migrate(data);
+                userData[data.UserName] = data;
+
+                Log.User.LogDebug("Loaded data for \"{User}\"", data);
+            } catch (Exception ex) {
+                Log.User.LogError("Failed to load data from " + file + ": " + ex);
+                userData[username] = new UserData() {
+                    UserName = username,
+                    AllowUse = false
+                };
+            }
+        }
+    }
+
+    private static void Migrate(UserData data) {
+        foreach (UserGameData ugd in data.GameData.Values) {
+            if (ugd.FlaggedAchievements == null) {
+                ugd.FlaggedAchievements = new List<int>();
+            }
+        }
+    }
+
+    public static UserData GetUserData(string username) {
+        if (userData.ContainsKey(username)) {
+            return userData[username];
+        } else {
+            return null;
+        }
+    }
+
+    public static UserData RegisterNewUser(string username) {
+        UserData user = new UserData() {
+            AllowUse = true,
+            UserName = username,
+            ID = new Random().Next(),
+            GameData = new Dictionary<uint, UserGameData>()
+        };
+        userData.Add(username, user);
+        Log.User.LogInformation("Registered new user: {User}", user);
+        return user;
+    }
+
+    public static void Save() {
+        Save(UserDataDirectory);
+    }
+
+    public static void Save(string dir) {
+        lock (SAVE_LOCK) {
+            foreach (UserData data in userData.Values) {
+                if (data.AllowUse) {
+                    string outputFile = Path.Combine(dir, data.UserName + ".json");
+                    string backupFile = Path.Combine(dir, data.UserName + ".bak");
+                    if (File.Exists(outputFile)) {
+                        File.Copy(outputFile, backupFile, true);
+                    }
+
+                    string output = JsonConvert.SerializeObject(data);
+                    if (String.IsNullOrWhiteSpace(output)) {
+                        throw new IOException("Attempted to write empty/null user save data for " + data);
+                    }
+
+                    File.WriteAllText(outputFile, output);
+                    Log.User.LogDebug("Saved user data for {user}", data.UserName);
+                } else {
+                    Log.User.LogWarning("Not saving {User}, because data loading has failed!", data);
+                }
+            }
+
+            Log.User.LogInformation("User data was saved");
+        }
+    }
+
+    public static string RegisterSessionToken(UserData user) {
+        Log.User.LogDebug("Registering random session token");
+        return RegisterSessionToken(user, Utils.RandomString(32));
+    }
+
+    public static string RegisterSessionToken(UserData user, string token) {
+        Log.User.LogDebug("Registering session token: {token}", token);
+        activeTokens[token] = user;
+        return token;
+    }
+
+    public static UserData GetUserDataFromToken(string str) {
+        if (Program.Config.GetBool("LAHEE", "AutoSessionOnSingleUser") && userData.Count == 1) {
+            UserData u = userData.Values.First();
+            Log.User.LogDebug("AutoSession enabled, user is {u}", u);
+            return u;
+        }
+
+        return activeTokens.GetValueOrDefault(str, null);
+    }
+
+    internal static UserData[] GetAllUserData() {
+        return userData.Values.ToArray();
+    }
+}

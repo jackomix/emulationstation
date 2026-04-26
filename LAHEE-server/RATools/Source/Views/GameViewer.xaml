@@ -1,0 +1,248 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:RATools.ViewModels">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ScriptViewer.xaml" />
+        <ResourceDictionary Source="AchievementViewer.xaml" />
+        <ResourceDictionary Source="RichPresenceViewer.xaml" />
+        <ResourceDictionary Source="LeaderboardViewer.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <DataTemplate x:Key="editorRowTemplate">
+        <Grid HorizontalAlignment="Left" Width="{Binding ActualWidth, ElementName=maxAchievementRowWidth}" Height="13" Margin="-1,0,0,0">
+            <Grid.Resources>
+                <ContextMenu x:Key="updateLocalContextMenu" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="Update Local" Command="{Binding DataContext.UpdateLocalCommand}" />
+                </ContextMenu>
+            </Grid.Resources>
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Setter Property="ContextMenu" Value="{StaticResource updateLocalContextMenu}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CompareState}" Value="None">
+                            <Setter Property="ContextMenu" Value="{x:Null}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CompareState}" Value="Same">
+                            <Setter Property="ContextMenu" Value="{x:Null}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding UpdateLocalCommand}" Value="{x:Null}">
+                            <Setter Property="ContextMenu" Value="{x:Null}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsGenerated}" Value="False">
+                            <Setter Property="ContextMenu" Value="{x:Null}" />
+                            <Setter Property="Opacity" Value="0.6" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="13" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Modified (explicitly gray to match images) -->
+            <TextBlock FontSize="10" VerticalAlignment="Center" Foreground="Gray" 
+                       ToolTip="{Binding ModificationMessage}" Margin="-2,-2,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CompareState}" Value="PublishedMatchesNotLocal">
+                                <Setter Property="Text" Value="&#x25CB;" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CompareState}" Value="LocalDiffers">
+                                <Setter Property="Text" Value="&#x2BC3;" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CompareState}" Value="PublishedDiffers">
+                                <Setter Property="Text" Value="&#x25D0;" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- Image -->
+            <Image Grid.Column="1" Width="12" Height="12" Margin="0,-1,0,-1"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Source="{Binding ViewerImage}" ToolTip="{Binding ViewerType}" />
+
+            <!-- Name -->
+            <TextBlock Grid.Column="2" Margin="2,-3,2,0" HorizontalAlignment="Stretch"
+                       Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+
+            <!-- Points -->
+            <TextBlock Grid.Column="3" Text="{Binding Points}" Margin="2,-2,2,0" HorizontalAlignment="Right">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Points}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            
+            <!-- Type -->
+            <Image Grid.Column="4" Source="{Binding TypeImage}" ToolTip="{Binding AchievementType}">
+                <Image.Style>
+                    <Style TargetType="{x:Type Image}">
+                        <Setter Property="Width" Value="13" />
+                        <Setter Property="Height" Value="13" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding AchievementType}" Value="Missable">
+                                <Setter Property="Width" Value="11" />
+                                <Setter Property="Height" Value="11" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:GameViewModel}">
+        <Grid Background="#F0F0F0" x:Name="gameGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="238" MinWidth="128" MaxWidth="400" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="*" MinWidth="480" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid IsEnabled="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid Margin="6" Background="Red" x:Name="maxAchievementRowWidth" Height="10" />
+                <ScrollBar Grid.Column="2" Orientation="Vertical" />
+            </Grid>
+
+            <ListBox ItemsSource="{Binding Editors}" SelectedItem="{Binding SelectedEditor}" HorizontalContentAlignment="Stretch"
+                     ItemTemplate="{StaticResource editorRowTemplate}" x:Name="achievementsList" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                     Style="{StaticResource themedListBox}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Margin" Value="1" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" ResizeDirection="Columns" />
+
+            <ContentPresenter Grid.Column="2" Content="{Binding SelectedEditor}" />
+
+            <Border Grid.Row="1" Grid.ColumnSpan="3" Height="20" Background="#C0C0C0" BorderBrush="DarkGray" BorderThickness="0,1,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Margin="4,0,4,0">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CoreAchievementCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                        <Run Text="Core(" />
+                        <TextBlock Text="{Binding CoreAchievementCount}" Margin="-3,0,-3,0" />                        
+                        <Run Text="): " />
+                        <TextBlock Text="{Binding CoreAchievementPoints, FallbackValue=0}" Margin="-3,0,-3,0" />
+                        <Run Text="pts" />
+                    </TextBlock>
+                    <TextBlock Grid.Column="1" Margin="4,0,4,0">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding UnofficialAchievementCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                        <Run Text="Unofficial(" />
+                        <TextBlock Text="{Binding UnofficialAchievementCount}" Margin="-3,0,-3,0" />
+                        <Run Text="): " />
+                        <TextBlock Text="{Binding UnofficialAchievementPoints, FallbackValue=0}" Margin="-3,0,-3,0" />
+                        <Run Text="pts" />
+                    </TextBlock>
+                    <TextBlock Grid.Column="2" Margin="4,0,4,0" ToolTip="{Binding LocalFilePath}">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding LocalAchievementCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                        <Run Text="Local(" />
+                        <TextBlock Text="{Binding LocalAchievementCount}" Margin="-3,0,-3,0" />
+                        <Run Text="): " />
+                        <TextBlock Text="{Binding LocalAchievementPoints, FallbackValue=0}" Margin="-3,0,-3,0" />
+                        <Run Text="pts" />
+                    </TextBlock>
+
+                    <Grid Grid.Column="3" Margin="4,0,24,0" HorizontalAlignment="Right">
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CompileProgress}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.ToolTip>
+                            <TextBlock>
+                                <Run Text="Processing line" />
+                                <TextBlock Text="{Binding CompileProgressLine}" />
+                            </TextBlock>
+                        </Grid.ToolTip>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="32" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Processing" Margin="0,0,2,0" />
+                        <Border Grid.Column="1" BorderThickness="1" BorderBrush="#808080" Background="#A0A0A0" Width="100" Height="10">
+                            <Border Background="#80C080" Width="{Binding CompileProgress}" Height="8" 
+                                    VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0" />
+                        </Border>
+                        <TextBlock Grid.Column="2" Margin="2,0,0,0" HorizontalAlignment="Right">
+                            <TextBlock Text="{Binding CompileProgress}" Margin="0,0,-2,0" />
+                            <Run Text="%" />
+                        </TextBlock>
+                    </Grid>
+
+                    <TextBlock Grid.Column="4" Margin="4,0,4,0" HorizontalAlignment="Right">
+                        <Run Text="Ln " />
+                        <TextBlock Text="{Binding Script.Editor.CursorLine, FallbackValue=0}" />
+                        <Run Text="   Col " />
+                        <TextBlock Text="{Binding Script.Editor.CursorColumn, FallbackValue=0}" />
+                    </TextBlock>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>

@@ -1,0 +1,532 @@
+v1.16.2 - 19 Dec 2025
+* improved New Script functionality to create helper functions for pointed-at data
+* add [...] to filtered note in logic viewer to see the whole note
+* passing a comparison to rich_presence_value() will now generate an error. if counting was
+  intended, it needs to be wrapped in tally().
+* restore name matching for published assets
+* fix this pointer not being captured for lambda expressions
+* fix duplicate items appearing in array when code generating data for array_push changes
+* fix closed tickets showing up in New Script achievement list
+* fix combining modified pointed-at values by using Remember/Recall
+* fix exception if array_filter predicate returns a non-boolean expression
+* fix exception if complex value expression does not contain a measured clause
+* fix unexpected tally() when dumping scaled Measured values
+
+v1.16.1 - 26 Sep 2025
+* fix indexing of class fields
+* fix exception loading pointer memory notes containing blank lines
+* fix exception pressing left while typing at end of line
+* fix non-overlapping alts being merged if subclauses cover all values for an address
+* fix Remember being separated from Recall when promoting ResetNextIf to ResetIf
+* fix dumping comparison of indirect address to another indirect address using the same pointer
+* fix Array() being output when dumping unused array note
+
+v1.16.0 - 16 Sep 2025
+* support for structured data via class definitions
+* support for multiset cached data
+  - new set parameter to achievement and leaderboard functions
+* report error when multiple unique remembers are needed to build an AddSource chain
+* improve structured code note processing
+* move Progression button from Game Stats dialog to separate menu item
+  - leverages new API for better estimates
+* allow bitwise operations on AddSource chains via Remember/Recall
+* fix comparing indirect memory with static memory
+* fix distribution of prev across multiple conditions
+* fix modulus support in local achievements
+* fix nested never() being discarded when removing once() from never() clause
+* fix never(A || B) inside repeated() clause to generate OrNext instead of multiple ResetNextIfs
+* fix __ornext() not being honored inside trigger_when()
+* fix rebalancing of SubSource in the middle of a chain of indirect memory reads
+* fix unexpected distribution of divisor when performing integer division
+* fix incorrect extraction of BCD from comparison with modification
+* fix missing parentheses when dumping clause with ResetNextIf and OrNext
+* fix cursor placement for emoticons (and other characters wider than the fixed width font)
+* fix badges being lost when merging the User.txt file through rascript-cli.exe
+
+v1.15.2 - 8 May 2025
+* add link to local file in the Update Local dialog
+* fix infinite loop trying to rebalance SubSource prev comparison with multiple pointers
+* fix multiplication of two memrefs in rich presence macros
+* fix AddSource being used with Remember/Recall in an AddAddress calculation
+* fix AddSource being used with Remember/Recall in a Measured calculation
+* fix reading memory at pointer address with no offset
+* fix division by large number being converted to multiplication by zero
+* fix exception indexing function result
+* fix exception when multiple clauses of a complex subclause can be elimiated by a parent clause
+
+v1.15.1 - 10 Mar 2025
+* add `array_filter` and `array_reduce` functions
+* support using Remember/Recall when combining two modified memrefs for use in another memory accessor.
+* support collapsing neighboring bits into bitcount when used in rich presence macros
+* lower rich presence max length to match server value which is lower to accomodate the presence of unicode characters
+* eliminate non-ResetIf condition that would always be true when a ResetIf is not true
+* eliminate hit target on `never(once(...))`
+* fix OpenClipboard Failed error that occurs when some other applications (like a VM) are running
+* fix "^" operator not displaying in achievement viewer
+* fix error not being reported when repeated clause contains multiple OrNext subclauses ANDed together
+* fix rich presence appearing modified due to extra trailing whitespace
+* fix dividing by floats incorrectly serializing to legacy value format
+* fix ResetNextIf attached to PauseIf being discarded if it matches a ResetIf outside the PauseIf.
+
+v1.15.0 - 01 Oct 2024
+* add `double32` and `double32_be` memory accessors
+* add `array_contains` and `dictionary_contains_key` functions
+* add `rich_presence_ascii_string_lookup` function
+* add `assert` function
+* support for turning complex arithmetic into remember/recall chains
+* support for runtime modulus
+* support for unary minus
+* add `Copy Definition to Clipboard` to achievement viewer
+* add progression/win_condition/missable indicators to achievement list
+* automatically replace leaderboard submit with always_true if identical to leaderboard start
+* allow opening script from command line (allows associating .rascript with RATools.exe)
+* improve error message when indexing empty array
+* improve error message when encountering runtime code at an execution level inside a function
+* fix #MinimumVersion comment not affecting leaderboards
+* fix `lower_is_better` not being set correctly when creating new scripts
+* fix OrNext 0=1 following AddSource being improperly optimized out
+* fix bitwise inversion flag being ignored when present on boths sides of operator
+* fix ResetNextIf attached to PauseIf being turned into a ResetIf if trigger had no hit targets
+* fix explicit modifier being discarded when relocating SubSource
+* fix broken parser when shorthand function definition contains a parse error
+* fix ability to call nested function recursively
+* fix infinite loop when summation chain contains subtraction and pointers
+* fix exception calling `max_of` with no parameters
+
+v1.14.1 - 19 Jun 2024
+* no longer generate leaderboard values with operator in final measured clause
+* fix exception typing a memory accessor before a clause surrounded in parentheses
+* fix dumping script containing AddSource and SubSource in multiple clauses of same achievement
+* fix migration of constants in measured statement using percent format
+
+v1.14.0 - 29 May 2024
+* support for multiline comments via `/* */`
+* add `#MinimumVersion` header meta-comment to specify some minimum target version for optional features
+* serialize addresses as 16-bit if script does not reference any addresses over 0xFFFF
+* support to translate `prev(A == B)` into `prev(A) == prev(B)`
+* support invoking functions stored in dictionaries and indexing function returns without intermediate variables
+* show output path as tooltip on local achievement count
+* allow character chords containing Ctrl (i.e. Ctrl+Alt+4 for left curly brace on French keyboards)
+* report error ORing hitcounts inside tally (instead of commas)
+* better error when summing expressions that cannot be converted to requirements
+* fix modification of nested dictionaries
+* fix arithmetic and bitwise modifications being combined incorrectly
+* fix constant modifier at end of AddSource chain becoming `always_true()`/`always_false()` when viewing logic
+* fix `always_true()` clause being removed from end of AddSource chain
+* fix IDs not being generated when using the CLI tool
+* fix modified comparisons being considered equal if they're equivalent without the modification
+* fix modified comparison losing modification when used inside `tally()`
+* fix error specifying anonymous function as default parameter
+* fix extra tally when dumping script containing AddHits chain inside Measured
+* fix address not updating when shrinking big endian sizes
+* fix exception processing `repeated(N, always_true() && never(X))`
+* fix exception doing a search and replace of some string to empty string
+* fix exception when cross-multipling conditions results in an `always_true()`
+* fix exception when predicate doesn't return a value
+
+v1.13.0 - 4 Mar 2024
+* add `float_be` function
+* add `type` parameter to `achievement` function
+* add `transform` parameter to `ascii_string_equals` and `unicode_string_equals` to support prev/prior logic
+* add `rascript-cli.exe` for command line processing of scripts
+* add leaderboard/rich presence value formats: `TENS`,`HUNDREDS`,`THOUSANDS`,`FIXED1`,`FIXED2`,`FIXED3`
+* support for `trigger_when(measured(...))` via alt groups
+* allow `max_of()` to be called with an array of expressions
+* improved error messages for invalid function parameters
+* improved error message when trying to use a complex object as a dictionary key
+* fix assigning values to nested dictionaries
+* fix anonymous function error using boolean directly in if statement
+* fix "Input string was not in the correct format" on machines with locales using comma as a decimal separator
+* fix find at end of file not wrapping to start of file
+* fix mutually exclusive alts being collapsed into an `always_true()` clause
+* fix inverted bits being collapsed into a bitcount
+* fix `never(always_true())` being discarded when guarded by an `unless()`
+* fix pointer offset calculation when subtracting a memory reference
+* fix exception comparing dictionary to value
+* fix exception processing code note containing both "bit" and "byte" substrings
+
+v1.12.2 - 7 Oct 2023
+* ensure `tally` with `deduct` has at least one unbounded condition for total hit target
+* fix achievement containing only a modification to an AddSource constant not appearing modified
+* fix modifier being lost when comparing values with the same pointer chain
+* fix issue trying to process complex comparison to very large number
+* fix "Centiseconds" rich presence macro; support "SecondsAsMinutes" rich presence macro
+
+v1.12.1 - 16 Jul 2023
+* improve error message when parameter list has a trailing comma
+* improve error message when using measured with an untallied comparison
+* improve error message when building trigger from memory accessor without comparison
+* allow variables to be assigned to default parameters of functions to emulate constants
+* fix exception when viewport height change causes last line of script to be hidden
+* fix exception when local variable has same name as global function
+* fix ResetNextIf being converted to ResetIf when attached to a Trigger
+* fix modified AddAddress being optimized out of comparison
+* fix Measured target calculation when using tally
+* fix dumping achievement using measured unbounded tally
+
+v1.12.0 - 23 Apr 2023
+* only show first line of code notes in achievement/leaderboard views
+* new dialog to preview list of achievements as they would appear in the emulator
+  * ability to export list of achievements from preview dialog
+* support for `max_of` when dumping leaderboards
+* improve error when function call contains a function used as a variable
+* fix infinite loop trying to find whitespace is a very long pointer chain
+* fix empty referenced memory addresses list when generating new script for game with no assets
+* fix issue generating multiple ResetNextIfs in an AndNext/OrNext chain
+* fix issue generating nested clauses in alt groups
+* fix infinite loop when underflow adjustment exceeds 32-bits
+* fix exception rebalancing comparison of unwrapped pointer offset and zero
+* fix exception when tally target is greater than 0x7FFFFFFF
+* fix exception generating script for game without name
+
+v1.11.0 - 29 Jan 2023
+* add `mbf32_le` function
+* add `substring` function
+* add `ascii_string_equals` and `unicode_string_equals` functions
+* add XOR operator (`^`)
+* add bitwise invert operator (`~`)
+* add horizontal scrollbar when file is sufficiently wide
+* ability to select entire lines by clicking on line number
+* support for merging bits into bitcount when pointers are involved
+* fix corruption of local notes containing newlines
+* fix dumping game using masked pointers
+* fix exception dumping game with no achievements or leaderboards
+* fix exception dumping game with incomplete leaderboards (one or more blank fields)
+* fix exception dumping rich presence with whitespace at the top of the file
+
+v1.10.2 - 6 Dec 2022
+* fix intersection of float comparisons
+
+v1.10.1 - 3 Dec 2022
+* fix `any_of()` logic for boolean predicates
+* fix dumping ResetNextIf for OR'd logic
+* fix intersecting optimization of OR'd logic
+* fix `__ornext` hint sometimes being optimized
+
+v1.10.0 - 14 Nov 2022
+* new internal representation of logic
+  - small performance boost due to not having to reevaluate on each usage
+  - allows for more optimization opportunities
+  NOTE: this causes errors to be generated for several previously allowed syntaxes:
+    * implicit `always_true()` and `always_false()` are no longer supported in logic chains. logic 
+      such as: `0=1 && never(byte(0x1234) == 3)` will now collapse to `false` as `0=1` can never be
+      true. script authors must replace the `0=1` with an `always_false()` to preserve the logic in
+      the output.
+    * `always_true()` and `always_false()` are no longer supported for leaderboard values. 
+      use `measured(repeated(0, always_true()))` and `0` instead.
+    * memory addresses can no longer be compared to `true` or `false`. Compare to `1` or `0` instead.
+    * integer division is no longer implicitly converted to floats for leaderboard values:
+      `byte(0x1234) * 3 / 2` will no longer be automatically converted to `byte(0x1234) * 1.5`.
+      use `byte(0x1234) * 3.0 / 2` for automatic conversion.
+    * calling `repeated` or `tally` with a count of 0 is no longer supported outside of a `measured`
+      clause of a value expression. Doing so implies an unbounded hit requirement which cannot be
+      reached and is equivalent to `always_false()`. Using these to generate an AndNext/OrNext chain
+      was not intended. If you absolutely want to prevent the OrNext from being converted to alt groups
+      use the `__ornext(condition)` function. If you have a valid reason for forcing an AndNext chain
+      let me know.
+    * `measured(A && B)` will now generate an error instead of just setting the Measured flag on B.
+      The actual logic it previously generated was `A && measured(B)` or `measured(repeated(0, A && B))`
+      depending on whether it was being used in a trigger expression or a value expression.
+    * `once(A && once(B))` will now keep a separate hit count for B and for the entire clause by
+      reordering the conditions or injecting an `always_false()` condition to hold the total count.
+    * `once(unless(A))` will now generate an error. use `unless(once(A))` or `disable_when(A)` instead.
+      Similarly, `unless` cannot be used inside `repeated` or `tally` clauses.
+    * `repeated(10, trigger_when(A))` will now generate an error. use `trigger_when(repeated(10, A))` instead.
+    * `repeated(10, measured(A))` will now generate an error. use `measured(repeated(10, A))` instead.
+* support for local code notes
+* add Progression analysis dialog (open from Game Stats dialog)
+* add ability to autogenerate function names in New Script dialog
+* fix "measured(bitcount(X) == 8)" being converted to "measured(byte(X) == 255)"
+* fix "measured(X + 100 > 200)" being converted to "measured(X > 100)"
+* fix "float(X) < 0" being converted to "always_false()"
+* fix never in tally clause being replaced with AndNext
+* fix Copy to Clipboard not working on Rich Presence and Leaderboard title/description
+* fix duplicating of file extension for local badge images
+* fix dumping Rich Presence with measured value in display string
+* fix viewing Rich Presence diff where lookup was removed
+
+v1.9.1 - 22 Jun 2022
+* show error when server returns non-JSON authentication error
+* improve diff logic for rich presence lookups
+* fix optimization of division by self in leaderboard value
+* fix line endings causing rich presence to appear modified
+* fix back navigation when an asset has changed
+
+v1.9.0 - 14 Jun 2022
+* upgrade from .NET Framework 4.6 to .NET Core 6.0
+* add forward/backward navigation via mouse4/mouse5 buttons
+* use APIs for Analysis dialogs (fixes failures caused by scraping website when site changes)
+  - added Web API Key field to settings dialog
+* add User Mastery analysis dialog (warning: fetches game stats for every game user has mastered)
+* add Unlock Distance analysis dialog
+* add Rich Presence to the Update Local dialog
+* update Rich Presence size warning to 64KB
+* fix issue dumping script with "measured(tally(), when=...)" clause
+* fix issue dumping script with "tally(1, ...)" clause
+* fix issue dumping script when local leaderboards are present
+* fix issue dumping leaderboard value with AddAddress and non-integer multiplier
+* fix issue generating rich presence when lookup is hardcoded for value=0
+* fix issue pasting multiline text into a line with an error indicator
+* fix error generating leaderboard value with "measured(..., when=repeated() && never())"
+* fix error using multiple "never"s in a single "repeated" clause
+* fix whitespace not being required after "else" keyword
+
+v1.8.5 - 3 Apr 2022
+* many improvements to generating scripts from existing achievements
+  - support for generating from local achievements
+  - support for built-in macros
+  - support for compound code note sizes i.e. "[32-bit float]"
+  - convert PauseIf with hitcounts/ResetNextIf logic to disable_when()
+  - convert AddHits chain to tally()
+  - fix exception if macro has no parameter
+  - fix exception when no tickets are found
+* add array_map() function
+* add tally_of() function
+* add logic to convert "A<1||A>1" into "A!=1"
+* support for multiple conditions in a ResetNextIf using OrNext
+* make error more user-friendly when an if expression cannot be evaluated at compile time
+* fix multiple conditions in a repeated() in measured(when=) getting split into separate MeasuredIfs
+
+v1.8.4 - 15 Feb 2022
+* support for bitwise and (&)
+* add lower_is_better flag to leaderboard() function
+* support for collapsing AddSource bit chain into BitCount
+* support joining multiple MeasuredIfs for when parameter of measured() function when dumping New Script
+* allow || in when parameter of measured() function.
+* use core badge when merging local/generated achievement with badge "00000"
+* improved matching for trigger diffs - most notably, when alt group indices change
+* show serialization warnings when using Update Local dialog
+* fix premature optimization of subclause causing complex condition to evaluate to always_false()
+* fix exception when line-wrapping some complex expressions when dumping script via New Script
+
+v1.8.3 - 4 Jan 2022
+* add true and false constants for script logic (continue to use always_true() and always_false() for trigger definitions)
+* add word_be(), tbyte_be(), and dword_be() big-endian memory accessor functions
+* add max_of() helper function for leaderboard() value clause
+* add rich_presence_macro() function
+* support for floating point numbers
+* support for writing leaderboards to local file (direct import to 0.80 DLL)
+* support for generating code for leaderboards from New Script dialog
+* add format parameter to measured() function to support raw vs. percent display
+* allow negative offsets when processing pointers
+* allow bcd() to be called inside prev()
+* allow trigger(a || b) to expand to alt groups
+* allow loading file without a game id
+* lookup entries that match the fallback value are no longer included in the generated Rich Presence script
+* improved underflow adjustment calculations
+* fix empty array/dictionary showing up orange
+* fix loss of hit target when final condition of clause is optimized out
+* fix loss of ResetIf when used in Measured value
+* fix cannot apply Trigger to ResetIf error when using never inside repeated in trigger_when()
+* fix highlighting issue when pasting lines that start with combining characters (&&, +, ...)
+* fix stack overflow processing very long chain of conditions
+* fix maximum recursion error when processing very long AddSource chain inside prev
+* fix maximum recursion error when editing the same function over and over
+* fix crash updating local achievements when system culture uses comma as decimal separator
+* fix stats not showing up without an ApiKey
+
+v1.8.2 - 21 Aug 2021
+* add disable_when() function
+* add any_of(), all_of(), none_of(), and sum_of() functions
+* allow functions to have default parameters
+* allow functions to be assigned to variables
+* support for anonymous functions
+* support for collapsing duplicated rich presence strings into keyed ranges
+* improved badge handling for non-local achievements
+* modify underflow adjustment logic to generate statements that don't require underflow adjustment
+  - for example [a - b > n] => [b + n < a] instead of [a - b - n + max(b) > max(b)]
+* add links to view user achievement history from game stats dialog
+* fix error indicator not updating when lines added/removed earlier in the script
+* fix goto source not going to the correct line when lines added/removed earlier in the script
+* fix scaled modifiers not supported in leaderboard values
+* fix indirect addresses not supported in bit() function
+* fix underflow adjustment for prev comparisons
+* fix impossible comparison [byte > 400] affecting neighboring conditions
+
+v1.8.1 - 9 May 2021
+* add trigger_when() function
+* add deduct() helper for tally() function
+* support scaling for modifier conditions (AddSource, SubSource, AddAddress)
+* support for hex constants (hXX) when deconstructing rich presence and leaderboards from server data
+* add copy to clipboard links for leaderboard title/description
+* fix bitcount() not being allowed in prev() and prior() functions
+* fix syntax highlighting in dictionary when not ordered by key
+* fix stack overflow evaluating very long chain of ANDed conditions
+* fix issue simplifying comparison with multiple constants
+
+v1.8.0 - 27 Feb 2021
+* dynamic recompilation (only process the parts of the script affected by changes)
+* several other optimizations around script processing
+* several minor improvements to better report the actual cause of an error
+* update analysis queries for website changes (NOTE: ticket list now requires setting a Cookie value in the ini file)
+* fix multiplication not being distributed over complex term
+* fix wrong condition being removed when two never() conditions overlap
+* fix PauseIf being removed from alt if it also exists in core
+
+v1.7.0 - 31 Jul 2020
+* allow customization of editor colors
+* make editor more responsive for complex scripts by moving evaluation of script to background thread
+* add bcd() function
+* report error hierarchy in the error list instead of just guessing at most important message to display
+* generate OrNext sequence if more than 20 alts would be generated by cross-product of conditions
+* convert indirect memory comparisons using different pointers to SubSource sequence
+
+v1.6.6 - 6 Jun 2020
+* add tally() function
+* add bitcount() function
+* add optional when parameter to measured() function
+* add array_push() and array_pop() functions
+* add length() function
+* support for generating rich_presence functions when creating new script from existing game
+* improve requirement matching for multi-condition requirements in achievement viewer
+* arrays and dictionaries are no longer evaluated when passed to functions. this is significantly more
+  performant, and allows the function to modify the array/dictionary.
+* IMPORTANT NOTE: repeated(N, A || B) now generates an OrNext chain instead of an AddHits chain.
+  tally() should be used to generate an AddHits chain. For those situations where A || B was previously
+  being generated with a loop, use array_push() to build an array of conditions and pass that to tally().
+
+v1.6.5 - 12 Apr 2020
+* add format() function
+* support for measured() in leaderboard value
+* fix AddAddress/AddSource/SubSource not allowed in sequence generated by repeated() function
+* fix handling of comparison between AddAddress chain and memory address
+* fix inverting PauseIf when used to guard a Measured
+* fix alt groups not showing in leaderboard conditions
+* fix handling of never(always_false())
+* optimize out 'AddHits false' and 'AndNext true'
+* report error when trigger has no comparison
+* remove internal comments from function tooltips
+
+v1.6.4 - 19 Jan 2020
+* support for indirect addressing in rich presence
+* increase maximum serialized achievement warning to 64KB
+* allow removal of always_false() alt group without promoting other to core when only two alt groups remain
+* fix generating condition when subtracting memory reference from an integer constant
+* fix AddAddress not allowed in subtraction expression
+* fix common clause being lost from AddHits sequence generated by repeated() function
+* fix AndNext in AddHits sequence generated by repeated() function
+* fix write location of ini/log file when launching from bookmark
+* fix formatting of empty comments generated when dumping ticket information
+
+v1.6.3 - 23 Nov 2019
+* new functions: measured() and tbyte()
+* support for indirect addressing: byte(0x1234 + byte(0x1233))
+* support for MINUTES and SECS_AS_MINS formats
+* improve logic for normalizing comparisons
+* fix highlighting of function parameters used as parameters to nested function calls
+* automatic underflow prevention when subtracting memory references in non-equality comparisons
+* fix inversion of multi-clause never()/unless() when no hit targets are present
+
+v1.6.2 - 10 Aug 2019
+* add Settings dialog
+* support for specifying fallback to be used in rich_presence_lookup() when no other items match
+* support for opening files via drag/drop
+* normalize generated conditions so constants are on the right
+* fix generating achievement from string with no core group
+* fix newline at end of content not appearing in editor
+* fix repeated warning when achievement exceeds length limit
+* fix to no longer remove 'repeated(n, always_true())' when optimizing
+
+v1.6.1 - 28 Jun 2019
+* support for &&'d conditions inside once(), repeated(), never(), and unless() [AndNext]
+* add prior() function for memory access
+* support for multiple OR'd groups AND'd together
+
+v1.6.0 - 16 Apr 2019
+* upgrade to .NET 4.0
+* separate trigger clause evaluation from code generation
+* add bit(index, address) function
+* support for generating non-zero achievement IDs for updating achievements already on the server
+* update maximum length for rich presence and achievement data
+* improved optimization for complex conditions (AddSource/SubSource/AddHits)
+* don't combine integer constants when a SubSource is involved
+* ensure expression containing multiplication and division is evaluated left-to-right
+* support for integers on left side of comparisons
+* support for negative hexadecimal constants
+* support for ORs in never() and unless()
+* extract mathematic constants from prev() statements
+* better error message when attempting to multiply within a trigger
+* disable Update Local when local directory is not known
+* ability to select/deselect all in Update Local dialog
+* fix recent items list when directory in path starts with 'r' or 'n'
+* fix exceptions when replacing text with smaller amount of text (via paste/undo/redo)
+
+v1.5.4 - 26 Jan 2019
+* support for quoted strings in local achievements
+* support for matching the difference between values at two addresses: "byte(0x1234) - byte(0x3456) == 6"
+* don't auto-insert matching brace/parenthesis if the next character is not whitespace or punctuation
+* fix dumping achievements using AddSource/SubSource/AddHits
+* fix order when generating condition with SubSource
+
+v1.5.3 - 10 Nov 2018
+* support for AddHits via 'repeated(n, condition1 || condition2 ...)'
+* add always_true() and always_false() methods for constructing alt chains
+* add optional 'format' parameter to rich_presence_value and leaderboard functions
+* show error on duplicate key when building dictionary
+* don't promote partial AddSource/SubSource/AddHits clause when common across alts
+* don't promote ResetIf clause from alt when protected by a PauseIf
+* support .json file extension for RACache files
+
+v1.5.2 - 4 Aug 2018
+* move rich presence before achievements in editor list
+* add shortcuts for error window: Ctrl+E to display, F8 for next error, Shift+F8 for previous error
+
+v1.5.1 - 16 Jul 2018
+* allow assigning arrays to variables
+
+v1.5.0 - 23 Jun 2018
+* add code editor
+* update open tickets dialog for reordered ticket list
+* new script no longer requires immediately writing the file to disk
+* improved rich presence diff calculation
+* allow AddSource/SubSource to exceed variable size for final comparison
+* escape quotes when dumping achievements
+
+v1.4.3 - 8 Mar 2018
+* highlight context of errors when reporting them
+
+v1.4.2 - 4 Mar 2018
+* add array data type
+* add range helper function
+* add rich_presence_conditional_display function
+
+v1.4.1 - 19 Feb 2018
+* more options for which code notes should be dumped when creating a new script
+* display rich presence length in editor
+* don't error if for loop appears in function called from trigger as long as function still return valid trigger expression
+
+v1.4.0 - 3 Feb 2018
+* replaced achievements grid with list, added icons
+* removed tabs from achievement viewer - if achievement is generated, will be shown with diff to local or core,
+  otherwise local or core achievement will be shown
+* changed the default file extension to '.rascript'
+* improved location reporting for some error messages
+* fixed exception activating 'Update Local' when loaded script had a parse error
+
+v1.3.1 - 21 Jan 2018
+* prevent exception dumping unofficial achievements
+
+v1.3.0 - 17 Jan 2018
+* replace "Dump Published" dialog with "New Script" dialog
+* added ability to dump unofficial achievements
+* support for generating achievements using AddSource/SubSource
+* add session counts to game stats dialog
+* prevent exception if incorrect number of parameters passed to rich_presence_value or rich_presence_lookup
+
+v1.2.0 - 7 Jan 2018
+* added "Update Local" dialog for updating multiple items at a time
+* support indexing dictionary using function call result
+* support for modulus operator (%)
+* improved reporting on games with more than 50 players that have been mastered more than 10 times
+
+v1.1.0 - 7 Dec 2017
+* added "Hexadecimal Values" toggle
+* added F5 shortcut for "Refresh Current"
+* added "Dump Published" dialog to select achievements to dump and provide simple function definitions
+
+v1.0.1 - 3 Dec 2017
+* prevent exception if no recent files exist
+* prevent exception attempting to open non-existing file
+
+v1.0.0 - 1 Dec 2017
+* initial public release build candidate

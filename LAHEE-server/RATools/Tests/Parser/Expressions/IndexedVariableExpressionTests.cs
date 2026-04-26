@@ -1,0 +1,445 @@
+﻿using Jamiras.Components;
+using NUnit.Framework;
+using RATools.Parser.Expressions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace RATools.Parser.Tests.Expressions
+{
+    [TestFixture]
+    class IndexedVariableExpressionTests
+    {
+        [Test]
+        public void TestAppendString()
+        {
+            var expr = new IndexedVariableExpression(new VariableExpression("test"), new IntegerConstantExpression(1));
+
+            var builder = new StringBuilder();
+            expr.AppendString(builder);
+            Assert.That(builder.ToString(), Is.EqualTo("test[1]"));
+        }
+
+        [Test]
+        public void TestAppendStringTwoDimensional()
+        {
+            var second = new IndexedVariableExpression(new VariableExpression("test"), new IntegerConstantExpression(2));
+            var expr = new IndexedVariableExpression(second, new IntegerConstantExpression(1));
+
+            var builder = new StringBuilder();
+            expr.AppendString(builder);
+            Assert.That(builder.ToString(), Is.EqualTo("test[2][1]"));
+        }
+
+        [Test]
+        public void TestReplaceVariables()
+        {
+            var variable = new VariableExpression("variable");
+            var key = new StringConstantExpression("key");
+            var value = new IntegerConstantExpression(99);
+            var dict = new DictionaryExpression();
+            dict.Add(key, value);
+            var expr = new IndexedVariableExpression(variable, key);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.True);
+            Assert.That(result, Is.InstanceOf<IntegerConstantExpression>());
+            Assert.That(((IntegerConstantExpression)result).Value, Is.EqualTo(99));
+        }
+
+        [Test]
+        public void TestReplaceTwoDimensional()
+        {
+            var variable = new VariableExpression("variable");
+            var key = new StringConstantExpression("key");
+            var value = new IntegerConstantExpression(99);
+            var dict2 = new DictionaryExpression();
+            dict2.Add(key, value);
+            var dict1 = new DictionaryExpression();
+            dict1.Add(key, dict2);
+            var expr2 = new IndexedVariableExpression(variable, key);
+            var expr = new IndexedVariableExpression(expr2, key);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict1);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.True);
+            Assert.That(result, Is.InstanceOf<IntegerConstantExpression>());
+            Assert.That(((IntegerConstantExpression)result).Value, Is.EqualTo(99));
+        }
+
+        [Test]
+        public void TestReplaceVariablesIndexVariable()
+        {
+            var variable = new VariableExpression("variable");
+            var key = new StringConstantExpression("key");
+            var index = new VariableExpression("index");
+            var value = new IntegerConstantExpression(99);
+            var dict = new DictionaryExpression();
+            dict.Add(key, value);
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict);
+            scope.AssignVariable(index, key);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.True);
+            Assert.That(result, Is.InstanceOf<IntegerConstantExpression>());
+            Assert.That(((IntegerConstantExpression)result).Value, Is.EqualTo(99));
+        }
+
+        [Test]
+        public void TestReplaceVariablesInvalidKey()
+        {
+            var variable = new VariableExpression("variable");
+            var key = new StringConstantExpression("key");
+            var dict = new DictionaryExpression();
+            var expr = new IndexedVariableExpression(variable, key);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.False);
+            Assert.That(result, Is.InstanceOf<ErrorExpression>());
+            Assert.That(((ErrorExpression)result).Message, Is.EqualTo("No entry in dictionary for key: \"key\""));
+        }
+
+        [Test]
+        public void TestReplaceVariablesNonDictionary()
+        {
+            var variable = new VariableExpression("variable");
+            var key = new StringConstantExpression("key");
+            var value = new IntegerConstantExpression(99);
+            var expr = new IndexedVariableExpression(variable, key);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, value);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.False);
+            Assert.That(result, Is.InstanceOf<ErrorExpression>());
+            Assert.That(((ErrorExpression)result).Message, Is.EqualTo("Cannot index integer: variable"));
+        }
+
+        [Test]
+        public void TestReplaceVariablesIndexMathematical()
+        {
+            var variable = new VariableExpression("variable");
+            var key = new IntegerConstantExpression(6);
+            var index = new MathematicExpression(new IntegerConstantExpression(2), MathematicOperation.Add, new IntegerConstantExpression(4));
+            var value = new IntegerConstantExpression(99);
+            var dict = new DictionaryExpression();
+            dict.Add(key, value);
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.True);
+            Assert.That(result, Is.InstanceOf<IntegerConstantExpression>());
+            Assert.That(((IntegerConstantExpression)result).Value, Is.EqualTo(99));
+        }
+
+        [Test]
+        public void TestReplaceVariablesIndexFunctionCall()
+        {
+            var tokenizer = new PositionalTokenizer(Tokenizer.CreateTokenizer("function func(i) => 6"));
+            var functionDefinition = ExpressionBase.Parse(tokenizer) as FunctionDefinitionExpression;
+
+            var functionCall = new FunctionCallExpression("func", new ExpressionBase[] { new IntegerConstantExpression(2) });
+            var value = new IntegerConstantExpression(98);
+
+            var variable = new VariableExpression("variable");
+            var dict = new DictionaryExpression();
+            dict.Add(new IntegerConstantExpression(6), value);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict);
+            scope.AddFunction(functionDefinition);
+
+            var expr = new IndexedVariableExpression(variable, functionCall);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.True);
+            Assert.That(result, Is.InstanceOf<IntegerConstantExpression>());
+            Assert.That(((IntegerConstantExpression)result).Value, Is.EqualTo(98));
+        }
+
+        [Test]
+        public void TestReplaceVariablesArray()
+        {
+            var variable = new VariableExpression("variable");
+            var index = new IntegerConstantExpression(0);
+            var indexVariable = new VariableExpression("index");
+            var value = new IntegerConstantExpression(99);
+            var array = new ArrayExpression();
+            array.Entries.Add(value);
+            var expr = new IndexedVariableExpression(variable, indexVariable);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, array);
+            scope.AssignVariable(indexVariable, index);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.True);
+            Assert.That(result, Is.InstanceOf<IntegerConstantExpression>());
+            Assert.That(((IntegerConstantExpression)result).Value, Is.EqualTo(99));
+        }
+
+        [Test]
+        public void TestReplaceVariablesArrayIndexOutOfRange()
+        {
+            var variable = new VariableExpression("variable");
+            var index = new IntegerConstantExpression(1);
+            var value = new IntegerConstantExpression(99);
+            var array = new ArrayExpression();
+            array.Entries.Add(value);
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, array);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.False);
+            Assert.That(result, Is.InstanceOf<ErrorExpression>());
+            Assert.That(((ErrorExpression)result).Message, Is.EqualTo("Index 1 not in range 0-0"));
+        }
+
+        [Test]
+        public void TestReplaceVariablesArrayIndexNegative()
+        {
+            var variable = new VariableExpression("variable");
+            var index = new IntegerConstantExpression(-1);
+            var value = new IntegerConstantExpression(99);
+            var array = new ArrayExpression();
+            array.Entries.Add(value);
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, array);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.False);
+            Assert.That(result, Is.InstanceOf<ErrorExpression>());
+            Assert.That(((ErrorExpression)result).Message, Is.EqualTo("Index -1 not in range 0-0"));
+        }
+
+        [Test]
+        public void TestReplaceVariablesArrayIndexString()
+        {
+            var variable = new VariableExpression("variable");
+            var index = new StringConstantExpression("str");
+            var value = new IntegerConstantExpression(99);
+            var array = new ArrayExpression();
+            array.Entries.Add(value);
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, array);
+
+            ExpressionBase result;
+            Assert.That(expr.ReplaceVariables(scope, out result), Is.False);
+            Assert.That(result, Is.InstanceOf<ErrorExpression>());
+            Assert.That(((ErrorExpression)result).Message, Is.EqualTo("Index does not evaluate to an integer constant"));
+        }
+
+        [Test]
+        public void TestAssignVariableIndexed()
+        {
+            var variable = new VariableExpression("test");
+            var value = new IntegerConstantExpression(99);
+            var dict = new DictionaryExpression();
+            var key = new IntegerConstantExpression(6);
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict);
+
+            var index = new IndexedVariableExpression(variable, key);
+            index.Assign(scope, value);
+
+            Assert.That(dict.Count, Is.EqualTo(1));
+            Assert.That(dict[0].Value, Is.SameAs(value));
+        }
+
+        [Test]
+        public void TestAssignVariableIndexedUpdate()
+        {
+            var variable = new VariableExpression("test");
+            var value = new IntegerConstantExpression(99);
+            var value2 = new IntegerConstantExpression(98);
+            var dict = new DictionaryExpression();
+            var key = new IntegerConstantExpression(6);
+            dict.Add(key, value);
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, dict);
+
+            var index = new IndexedVariableExpression(variable, key);
+            index.Assign(scope, value2);
+
+            Assert.That(dict[0].Value, Is.SameAs(value2));
+        }
+
+        [Test]
+        public void TestAssignVariableIndexedArrayUpdate()
+        {
+            var variable = new VariableExpression("test");
+            var value = new IntegerConstantExpression(99);
+            var value2 = new IntegerConstantExpression(98);
+            var array = new ArrayExpression();
+            var key = new IntegerConstantExpression(0);
+            array.Entries.Add(value);
+            var scope = new InterpreterScope();
+            scope.AssignVariable(variable, array);
+
+            var index = new IndexedVariableExpression(variable, key);
+            index.Assign(scope, value2);
+
+            Assert.That(array.Entries[0], Is.SameAs(value2));
+        }
+
+        [Test]
+        public void TestNestedExpressions()
+        {
+            var variable = new VariableExpression("variable1");
+            var index = new VariableExpression("variable2");
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var nested = ((INestedExpressions)expr).NestedExpressions;
+
+            Assert.That(nested.Count(), Is.EqualTo(2));
+            Assert.That(nested.Contains(variable));
+            Assert.That(nested.Contains(index));
+        }
+
+        [Test]
+        public void TestNestedExpressionsFunctionCall()
+        {
+            var tokenizer = Tokenizer.CreateTokenizer("lookup()[1]");
+            var expr = ExpressionBase.Parse(new PositionalTokenizer(tokenizer));
+
+            var nested = ((INestedExpressions)expr).NestedExpressions;
+
+            Assert.That(nested.Count(), Is.EqualTo(2));
+            Assert.That(nested.First(), Is.InstanceOf<FunctionCallExpression>());
+            Assert.That(nested.ElementAt(1), Is.InstanceOf<IntegerConstantExpression>());
+        }
+
+        [Test]
+        public void TestGetDependencies()
+        {
+            var variable = new VariableExpression("variable1");
+            var index = new VariableExpression("variable2");
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var dependencies = new HashSet<string>();
+            ((INestedExpressions)expr).GetDependencies(dependencies);
+
+            Assert.That(dependencies.Count, Is.EqualTo(2));
+            Assert.That(dependencies.Contains("variable1"));
+            Assert.That(dependencies.Contains("variable2"));
+        }
+
+        [Test]
+        public void TestGetDependenciesFunctionCall()
+        {
+            var tokenizer = Tokenizer.CreateTokenizer("lookup()[1]");
+            var expr = ExpressionBase.Parse(new PositionalTokenizer(tokenizer));
+
+            var dependencies = new HashSet<string>();
+            ((INestedExpressions)expr).GetDependencies(dependencies);
+
+            Assert.That(dependencies.Count, Is.EqualTo(1));
+            Assert.That(dependencies.Contains("lookup"));
+        }
+
+        [Test]
+        public void TestGetModifications()
+        {
+            var variable = new VariableExpression("variable1");
+            var index = new VariableExpression("variable2");
+            var expr = new IndexedVariableExpression(variable, index);
+
+            var modifications = new HashSet<string>();
+            ((INestedExpressions)expr).GetModifications(modifications);
+
+            Assert.That(modifications.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void TestArrayIndexOutOfRangeEmpty()
+        {
+            AchievementScriptTests.Evaluate(
+                "arr = []\n" +
+                "index = 5\n" +
+                "arr[index] = 3",
+
+                "3:5 Cannot index empty array");
+        }
+
+        [Test]
+        public void TestArrayIndexOutOfRange()
+        {
+            AchievementScriptTests.Evaluate(
+                "arr = [1,2]\n" +
+                "index = 5\n" +
+                "arr[index] = 3",
+
+                "3:5 Index 5 not in range 0-1");
+        }
+
+        [Test]
+        public void TestGetModificationsNestedAssignment()
+        {
+            var input =
+                "function f(a) { a[0] = 3 }\r\n" +
+                "arr = [1,2,3,4]\r\n" +
+                "f(arr)";
+            var tokenizer = Tokenizer.CreateTokenizer(input);
+            var parser = new AchievementScriptInterpreter();
+            var groups = parser.Parse(tokenizer);
+
+            // before execution, we don't know if a parameter will be a reference
+            var expr = groups.Groups.ElementAt(2).Expressions.ElementAt(0);
+            var modifications = new HashSet<string>();
+            ((INestedExpressions)expr).GetModifications(modifications);
+
+            AchievementScriptInterpreter.InitializeScope(groups, null);
+            parser.Run(groups);
+
+            // after execution, we do
+            ((INestedExpressions)expr).GetModifications(modifications);
+            Assert.That(modifications.Count, Is.EqualTo(1));
+            Assert.That(modifications.Contains("arr"));
+        }
+
+        [Test]
+        public void TestGetModificationsNestedRead()
+        {
+            var input =
+                "function f(a) { b = a[0] }\r\n" +
+                "arr = [1,2,3,4]\r\n" +
+                "f(arr)";
+            var tokenizer = Tokenizer.CreateTokenizer(input);
+            var parser = new AchievementScriptInterpreter();
+            var groups = parser.Parse(tokenizer);
+
+            // before execution, we don't know if a parameter will be a reference
+            var expr = groups.Groups.ElementAt(2).Expressions.ElementAt(0);
+            var modifications = new HashSet<string>();
+            ((INestedExpressions)expr).GetModifications(modifications);
+
+            AchievementScriptInterpreter.InitializeScope(groups, null);
+            parser.Run(groups);
+
+            // after execution, we do, but read shouldn't mark the parameter as modified
+            ((INestedExpressions)expr).GetModifications(modifications);
+            Assert.That(modifications.Count, Is.EqualTo(0));
+        }
+    }
+}

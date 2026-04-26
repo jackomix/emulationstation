@@ -40,8 +40,32 @@ jobs:
           cd ..
           strip emulationstation
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build LAHEE Server
+        run: |
+          cd LAHEE-server
+          dotnet publish ./LAHEE.csproj -c Release -r linux-arm64 --self-contained true -o ./publish
+          cd ..
+
+      - name: Package Release
+        run: |
+          mkdir -p release/RetroAchievements/Server
+          mkdir -p release/RetroAchievements/Data
+          mkdir -p release/RetroAchievements/Badges
+          mkdir -p release/RetroAchievements/UserPic
+          cp emulationstation release/
+          cp -r LAHEE-server/publish/* release/RetroAchievements/Server/
+          cp -r LAHEE-server/Web release/RetroAchievements/Server/
+          # Ensure scripts are executable
+          chmod +x release/emulationstation
+          chmod +x release/RetroAchievements/Server/LAHEE
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: emulationstation-r36s
-          path: emulationstation
+          name: amber-es-lahee-unified-r36s
+          path: release/

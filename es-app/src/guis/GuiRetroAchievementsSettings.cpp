@@ -4,6 +4,8 @@
 #include "SystemConf.h"
 #include "ApiSystem.h"
 #include "RetroAchievements.h"
+#include "HttpReq.h"
+#include "Settings.h"
 
 #include "guis/GuiMsgBox.h"
 #include "components/SwitchComponent.h"
@@ -25,6 +27,18 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	// retroachievements, username, password
 	addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
 	addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
+
+	addSwitch(_("AUTO-START LAHEE"), _("Automatically launch the local LAHEE server at startup."), "AutoStartLAHEE", true, nullptr);
+
+	bool isOnline = false;
+	if (Settings::getInstance()->getBool("AutoStartLAHEE"))
+	{
+		HttpReqOptions options;
+		HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeinfo", &options);
+		isOnline = request.wait() && request.status() == HttpReq::REQ_SUCCESS;
+	}
+
+	addEntry(_("SERVER STATUS"), false, nullptr, isOnline ? _("Online") : _("Offline"));
 
 	addGroup(_("OPTIONS"));
 

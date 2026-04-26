@@ -1,0 +1,109 @@
+﻿using Jamiras.Components;
+using NUnit.Framework;
+using RATools.Parser.Expressions;
+using RATools.Parser.Functions;
+using RATools.Parser.Tests.Expressions;
+using System.Linq;
+
+namespace RATools.Parser.Tests.Functions
+{
+    [TestFixture]
+    class AllOfFunctionTests
+    {
+        [Test]
+        public void TestDefinition()
+        {
+            var def = new AllOfFunction();
+            Assert.That(def.Name.Name, Is.EqualTo("all_of"));
+            Assert.That(def.Parameters.Count, Is.EqualTo(2));
+            Assert.That(def.Parameters.ElementAt(0).Name, Is.EqualTo("inputs"));
+            Assert.That(def.Parameters.ElementAt(1).Name, Is.EqualTo("predicate"));
+        }
+
+        private static string Evaluate(string input)
+        {
+            var script = "achievement(\"title\", \"desc\", 5,\n" + input + "\n)";
+            var tokenizer = Tokenizer.CreateTokenizer(script);
+            var parser = new AchievementScriptInterpreter();
+
+            if (parser.Run(tokenizer))
+            {
+                var achievement = parser.Achievements.First();
+                var builder = new AchievementBuilder(achievement);
+                return builder.RequirementsDebugString;
+            }
+
+            var error = parser.Error.InnermostError ?? parser.Error;
+            return error.Message;
+        }
+
+        [Test]
+        public void TestSimple()
+        {
+            Assert.That(Evaluate("all_of([1, 2, 3], a => byte(0x1234) != a)"),
+                Is.EqualTo("byte(0x001234) != 1 && byte(0x001234) != 2 && byte(0x001234) != 3"));
+        }
+
+        [Test]
+        public void TestSingleElement()
+        {
+            Assert.That(Evaluate("all_of([1], a => byte(0x1234) != a)"),
+                Is.EqualTo("byte(0x001234) != 1"));
+        }
+
+        [Test]
+        public void TestNoElements()
+        {
+            Assert.That(Evaluate("all_of([], a => byte(0x1234) != a)"),
+                Is.EqualTo("always_true()"));
+        }
+
+        [Test]
+        public void TestLogic()
+        {
+            // always_true() elements returned by predicate will be optimized out by the AchievementScriptInterpreter
+            Assert.That(Evaluate("all_of([1, 2, 3], (a) { if (a % 2 == 0) { return byte(0x1234) != a } else { return always_true() }})"),
+                Is.EqualTo("byte(0x001234) != 2"));
+        }
+
+        [Test]
+        public void TestEvaluationLogic()
+        {
+            var expr = ExpressionTests.Parse("all_of([1, 2, 3], a => a < 4)");
+            Assert.That(expr, Is.InstanceOf<BooleanConstantExpression>());
+            Assert.That(((BooleanConstantExpression)expr).Value, Is.True);
+
+            expr = ExpressionTests.Parse("all_of([1, 2, 3], a => a > 1)");
+            Assert.That(expr, Is.InstanceOf<BooleanConstantExpression>());
+            Assert.That(((BooleanConstantExpression)expr).Value, Is.False);
+        }
+
+        [Test]
+        public void TestRange()
+        {
+            Assert.That(Evaluate("all_of(range(1,5,2), a => byte(0x1234) != a)"),
+                Is.EqualTo("byte(0x001234) != 1 && byte(0x001234) != 3 && byte(0x001234) != 5"));
+        }
+
+        [Test]
+        public void TestDictionary()
+        {
+            Assert.That(Evaluate("all_of({1:\"One\",2:\"Two\",3:\"Three\"}, a => byte(0x1234) != a)"),
+                Is.EqualTo("byte(0x001234) != 1 && byte(0x001234) != 2 && byte(0x001234) != 3"));
+        }
+
+        [Test]
+        public void TestMissingReturn()
+        {
+            Assert.That(Evaluate("all_of([1, 2, 3], (a) { if (a == 2) return a })"),
+                Is.EqualTo("predicate did not return a value"));
+        }
+
+        [Test]
+        public void TestErrorInPredicate()
+        {
+            Assert.That(Evaluate("all_of([1, 2, 3], (a) { return b })"),
+                Is.EqualTo("Unknown variable: b"));
+        }
+    }
+}

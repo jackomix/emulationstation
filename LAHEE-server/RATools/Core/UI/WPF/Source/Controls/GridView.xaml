@@ -1,0 +1,184 @@
+﻿<UserControl x:Class="Jamiras.Controls.GridView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:Jamiras.Controls"
+             xmlns:fields="clr-namespace:Jamiras.ViewModels.Fields"
+             xmlns:grid="clr-namespace:Jamiras.ViewModels.Grid"
+             xmlns:converters="clr-namespace:Jamiras.ViewModels.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Border BorderBrush="Gray" BorderThickness="1">
+        <Grid Grid.IsSharedSizeScope="True">
+            <Grid.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontSize" Value="10" />
+                    <Setter Property="Margin" Value="2,0,2,0" />
+                </Style>
+            </Grid.Resources>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Background="Silver" BorderBrush="Gray" BorderThickness="0,0,0,1" />
+            <Grid HorizontalAlignment="Stretch" x:Name="headerGrid" />
+
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" x:Name="scrollViewer">
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <BooleanToVisibilityConverter x:Key="boolToVisConverter" />
+                        <converters:DateToStringConverter x:Key="dateToStringConverter" />
+                        
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="FontSize" Value="10" />
+                            <Setter Property="Margin" Value="2,0,2,0" />
+                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                        </Style>
+
+                        <Style TargetType="{x:Type TextBox}">
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FontSize" Value="10" />
+                            <Setter Property="Text" Value="{Binding Text}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsValid}" Value="False">
+                                    <Setter Property="Background" Value="#F0D0D0" />
+                                </DataTrigger>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="Background" Value="#E0E8F0" />
+                                </Trigger>
+                                <DataTrigger Binding="{Binding IsRightAligned}" Value="True">
+                                    <Setter Property="TextAlignment" Value="Right" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+                        <Style TargetType="{x:Type Path}" x:Key="commandPath">
+                            <Setter Property="Stroke" Value="#80C0FF" />
+                            <Setter Property="Fill" Value="#90D8FF" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:EventBindingPanel}}}" Value="False">
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+                        <DataTemplate DataType="{x:Type fields:ReadOnlyTextFieldViewModel}">
+                            <TextBlock Text="{Binding Text}">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}"
+                                            BasedOn="{StaticResource {x:Type TextBlock}}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsRightAligned}" Value="True">
+                                                <Setter Property="TextAlignment" Value="Right" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+
+                        <DataTemplate DataType="{x:Type fields:TextFieldViewModel}">
+                            <TextBox MaxLength="{Binding MaxLength}" />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="{x:Type fields:IntegerFieldViewModel}">
+                            <TextBox TextAlignment="Right" />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="{x:Type fields:CurrencyFieldViewModel}">
+                            <TextBox TextAlignment="Right" />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="{x:Type fields:DateFieldViewModel}">
+                            <TextBox TextAlignment="Right" Text="{Binding Date, Converter={StaticResource dateToStringConverter}}" />
+                        </DataTemplate>
+
+                    </StackPanel.Resources>
+
+                    <ItemsControl ItemsSource="{Binding RowViewModels, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GridView}}}" 
+                                  x:Name="rowsList" HorizontalContentAlignment="Stretch" IsTabStop="False">
+                        <ItemsControl.Resources>
+                            <DataTemplate DataType="{x:Type fields:AutoCompleteFieldViewModel}">
+                                <controls:AutoCompleteTextBox Background="#FFE0C0" MatchColor="White"
+                                                              BorderThickness="0" FontSize="10" Padding="0,0,0,1"
+                                                              MaxLength="{Binding MaxLength}"
+                                                              Suggestions="{Binding Suggestions}"
+                                                              SelectedId="{Binding SelectedId}"
+                                                              AutoCompleteText="{Binding Text}" MinWidth="100" />
+                            </DataTemplate>
+
+                            <DataTemplate DataType="{x:Type grid:GridRowCommandsViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid Visibility="{Binding CanReorder, Converter={StaticResource boolToVisConverter}}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="12" />
+                                            <ColumnDefinition Width="12" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <controls:EventBindingPanel ClickCommand="{Binding MoveUpCommand}"
+                                                                Visibility="{Binding IsMoveUpEnabled, Converter={StaticResource boolToVisConverter}}">
+                                            <Canvas Width="12" Height="12" SnapsToDevicePixels="True">
+                                                <Path Style="{StaticResource commandPath}" Data="M1,8 L5,3 L9,8 Z" />
+                                            </Canvas>
+                                        </controls:EventBindingPanel>
+                                        <controls:EventBindingPanel ClickCommand="{Binding MoveDownCommand}" Grid.Column="1"
+                                                                Visibility="{Binding IsMoveDownEnabled, Converter={StaticResource boolToVisConverter}}">
+                                            <Canvas Width="12" Height="12" SnapsToDevicePixels="True">
+                                                <Path Style="{StaticResource commandPath}" Data="M1,3 L5,8 L9,3 Z" />
+                                            </Canvas>
+                                        </controls:EventBindingPanel>
+                                    </Grid>
+
+                                    <controls:EventBindingPanel ClickCommand="{Binding RemoveCommand}" Grid.Column="1"
+                                                            Visibility="{Binding CanRemove, Converter={StaticResource boolToVisConverter}}">
+                                        <Canvas Width="12" Height="12" SnapsToDevicePixels="True">
+                                            <Path Stroke="#FF4000" Fill="#FF8040" Style="{StaticResource commandPath}" Data="M2,1 L5,4 L6,4 L9,1 L10,2 L7,5 L7,6 L10,9 L9,10 L6,7 L5,7 L2,10 L1,9 L4,6 L4,5 L1,2 Z" />
+                                        </Canvas>
+                                    </controls:EventBindingPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:GridRow HorizontalAlignment="Stretch" MaxWidth="{Binding ActualWidth, ElementName=rowsList}"
+                                                  Owner="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GridView}}}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    
+                    <Border Background="#E8F8F0"
+                            Visibility="{Binding CanAddRowsDynamically, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GridView}}, Converter={StaticResource boolToVisConverter}}">
+                        <Border.Resources>
+                            <Style TargetType="{x:Type TextBox}"
+                                   BasedOn="{StaticResource {x:Type TextBox}}">
+                                <Setter Property="Background" Value="#E8F8F0" />
+                            </Style>
+                            <DataTemplate DataType="{x:Type fields:AutoCompleteFieldViewModel}">
+                                <TextBox Text="{Binding Text}" />
+                            </DataTemplate>
+
+                            <DataTemplate DataType="{x:Type grid:GridRowCommandsViewModel}">
+                                <Grid />
+                            </DataTemplate>
+                        </Border.Resources>
+                        <ContentPresenter Content="{Binding DynamicRow, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:GridView}}}" />                        
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="Silver" Background="#E0E0E0" HorizontalAlignment="Stretch" Padding="0,0,0,2">
+                <Grid HorizontalAlignment="Stretch" x:Name="footerGrid" />
+            </Border>
+        </Grid>
+    </Border>
+
+</UserControl>

@@ -1,0 +1,72 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LAHEE", "LAHEE.csproj", "{82E2EB7E-2556-48BC-AA94-25FA3C213C16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BAC7CA8A-60AE-4383-B499-04628FC1C196}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Third Party", "Third Party", "{9C116AEF-3E99-418D-95DC-8B936BC423E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RATools.Data", "RATools\Source\Data\RATools.Data.csproj", "{1276C451-3EE6-4720-9198-0AE0DA2B2B4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jamiras.Core", "RATools\Core\Core\Source\Jamiras.Core.csproj", "{8FD8E667-A12D-4697-853C-48A61EC2CDAE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readme", "Readme", "{EA6DB437-2032-4A5B-9F91-8F5C5526003E}"
+	ProjectSection(SolutionItems) = preProject
+		Readme\screenshot.jpg = Readme\screenshot.jpg
+		Readme\screenshot2.png = Readme\screenshot2.png
+		Readme\screenshot3.png = Readme\screenshot3.png
+		Readme\lahee.png = Readme\lahee.png
+		Readme\screenshot4.png = Readme\screenshot4.png
+		Readme\screenshot_userscript.png = Readme\screenshot_userscript.png
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Haruka.Common", "Haruka.Common\Haruka.Common.csproj", "{E504F874-5BAC-457D-A68F-648D2E5AFC70}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{82E2EB7E-2556-48BC-AA94-25FA3C213C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E2EB7E-2556-48BC-AA94-25FA3C213C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82E2EB7E-2556-48BC-AA94-25FA3C213C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82E2EB7E-2556-48BC-AA94-25FA3C213C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0FEF240-EDF4-4563-99C3-C0D83234240A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0FEF240-EDF4-4563-99C3-C0D83234240A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0FEF240-EDF4-4563-99C3-C0D83234240A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0FEF240-EDF4-4563-99C3-C0D83234240A}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{1276C451-3EE6-4720-9198-0AE0DA2B2B4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1276C451-3EE6-4720-9198-0AE0DA2B2B4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1276C451-3EE6-4720-9198-0AE0DA2B2B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1276C451-3EE6-4720-9198-0AE0DA2B2B4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FD8E667-A12D-4697-853C-48A61EC2CDAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FD8E667-A12D-4697-853C-48A61EC2CDAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FD8E667-A12D-4697-853C-48A61EC2CDAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FD8E667-A12D-4697-853C-48A61EC2CDAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E504F874-5BAC-457D-A68F-648D2E5AFC70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E504F874-5BAC-457D-A68F-648D2E5AFC70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E504F874-5BAC-457D-A68F-648D2E5AFC70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E504F874-5BAC-457D-A68F-648D2E5AFC70}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A000435-D285-476B-90C7-70643E82A4B7}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1276C451-3EE6-4720-9198-0AE0DA2B2B4D} = {9C116AEF-3E99-418D-95DC-8B936BC423E7}
+		{8FD8E667-A12D-4697-853C-48A61EC2CDAE} = {9C116AEF-3E99-418D-95DC-8B936BC423E7}
+		{EA6DB437-2032-4A5B-9F91-8F5C5526003E} = {BAC7CA8A-60AE-4383-B499-04628FC1C196}
+		{E504F874-5BAC-457D-A68F-648D2E5AFC70} = {9C116AEF-3E99-418D-95DC-8B936BC423E7}
+	EndGlobalSection
+EndGlobal

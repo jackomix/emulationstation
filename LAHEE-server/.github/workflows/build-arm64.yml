@@ -1,0 +1,54 @@
+name: Build ARM64
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+        include-prerelease: true
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Package for PortMaster
+      run: |
+        mkdir -p ./publish_output/LAHEE/Web
+        mkdir -p ./publish_output/LAHEE/Data
+        
+        dotnet publish LAHEE.csproj -c Release -r linux-arm64 --self-contained true -o ./publish_output/LAHEE
+        
+        cp -r Web/* ./publish_output/LAHEE/Web/
+        cp -r Data/* ./publish_output/LAHEE/Data/
+        cp lahee.gptk ./publish_output/LAHEE/
+        cp lahee_patch_ra.py ./publish_output/LAHEE/
+        cp lahee_unpatch_ra.py ./publish_output/LAHEE/
+        cp lahee_ui.py ./publish_output/LAHEE/
+        cp main.lua ./publish_output/LAHEE/
+        cp lahee_diag.py ./publish_output/LAHEE/
+        
+        cp "portmaster_launchers/LAHEE Server.sh" ./publish_output/
+        cp "portmaster_launchers/LAHEE UI.sh" ./publish_output/
+        cp "portmaster_launchers/LAHEE Patch RetroArch.sh" ./publish_output/
+        cp "portmaster_launchers/LAHEE Unpatch RetroArch.sh" ./publish_output/
+        cp "portmaster_launchers/LAHEE Connectivity Test.sh" ./publish_output/
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: LAHEE-linux-arm64
+        path: ./publish_output/*
+        if-no-files-found: error

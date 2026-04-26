@@ -1,0 +1,163 @@
+﻿<UserControl x:Class="RATools.Views.NewScriptDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             SnapsToDevicePixels="True"
+             UseLayoutRounding="True"
+             RenderOptions.BitmapScalingMode="HighQuality"
+             mc:Ignorable="d" Width="960" Height="492"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Jamiras.UI.WPF;component/Controls/Styles/FieldStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="270" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ContentPresenter Content="{Binding GameId}" />
+            <Button Grid.Column="2" Content="_Search" Margin="2" Command="{Binding SearchCommand}" VerticalAlignment="Bottom">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsGameLoaded}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+
+        <TextBlock Grid.Row="1" Margin="4,0,0,0" FontSize="11" Text="Assets to dump" />
+        <TextBlock Grid.Row="1" Margin="0,0,24,0" FontSize="11" Text="Open Tickets" HorizontalAlignment="Right" />
+        <ListView Grid.Row="2" ItemsSource="{Binding Assets}" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="182" />
+                            <ColumnDefinition Width="20" />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding IsSelected}" />
+                        <Grid Grid.Column="1" Width="14" Height="13" Background="Transparent">
+                            <Image Width="12" Height="12" Margin="0,-1,0,-1"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Source="{Binding ViewerImage}" ToolTip="{Binding ViewerType}" />
+                        </Grid>
+                        <TextBlock Grid.Column="2" Text="{Binding Label}" Margin="0,0,0,1" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsUnofficial}" Value="True">
+                                            <Setter Property="FontStyle" Value="Italic" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Grid.Column="3" HorizontalAlignment="Right" Margin="0,0,2,1" Text="{Binding OpenTicketCount}" VerticalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding OpenTicketCount}" Value="0">
+                                            <Setter Property="Foreground" Value="LightGray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <UniformGrid Grid.Row="3" Columns="3" IsEnabled="{Binding IsGameLoaded}">
+            <Button Content="_All" Margin="2" Command="{Binding CheckAllCommand}" ToolTip="Select All Achievements"/>
+            <Button Content="_None" Margin="2" Command="{Binding UncheckAllCommand}" ToolTip="Deselect All Achievements" />
+            <Button Content="With _Tickets" Margin="2" Command="{Binding CheckWithTicketsCommand}">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="ToolTip" Value="Select only achievements with open tickets" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CanCheckWithTickets}" Value="False">
+                                <Setter Property="ToolTip" Value="UserName and Web API Key must be provided to view ticket information" />
+                                <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </UniformGrid>
+
+        <Grid Grid.Column="1" Grid.RowSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Margin="4,0,0,0" FontSize="11" Text="{Binding MemoryAddressesLabel}" />
+            <ContentPresenter Grid.Row="1" Content="{Binding MemoryAddresses}" />
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Margin="4,0,4,0" ToolTip="Specifies which code notes to display">
+                <TextBlock Text="Filter:" FontSize="11" VerticalAlignment="Center" Margin="0,1,4,0" />
+                <ComboBox Width="130" Height="21" SelectedValue="{Binding SelectedCodeNotesFilter}" ItemsSource="{Binding CodeNoteFilters}" SelectedValuePath="Id">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Label}" FontSize="12" Margin="0,-1,0,0" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="4,0,4,0" ToolTip="Specifies when to dump code note information for displayed code notes">
+                <TextBlock Text="Dump Notes:" FontSize="11" VerticalAlignment="Center" Margin="0,1,4,0"  />
+                <ComboBox Width="125" Height="21" SelectedValue="{Binding SelectedNoteDump}" ItemsSource="{Binding NoteDumps}" SelectedValuePath="Id">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Label}" FontSize="12" Margin="0,-1,0,0" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Column="2" Margin="4,0,4,0" ToolTip="Specifies how to format generated function names">
+                <TextBlock Text="Function Names:" FontSize="11" VerticalAlignment="Center" Margin="0,1,4,0"  />
+                <ComboBox Width="90" Height="21" SelectedValue="{Binding SelectedNameStyle}" ItemsSource="{Binding NameStyles}" SelectedValuePath="Id">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Label}" FontSize="12" Margin="0,-1,0,0" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+            <Button Grid.Column="4" HorizontalAlignment="Right" Margin="2" Width="80" IsEnabled="{Binding IsGameLoaded}" 
+                    Content="_Create" Command="{Binding OkCommand}" ToolTip="Creates a new script file with the current settings" />
+        </Grid>
+    </Grid>
+</UserControl>

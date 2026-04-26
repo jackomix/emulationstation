@@ -1,0 +1,176 @@
+﻿using Jamiras.Components;
+using System;
+using System.Text;
+
+namespace RATools.Parser.Expressions
+{
+    public class ErrorExpression : ExpressionBase
+    {
+        public ErrorExpression(string message)
+            : base(ExpressionType.Error)
+        {
+            Message = message;
+        }
+
+        public ErrorExpression(string message, int line, int column, int endLine, int endColumn)
+            : this(message, new TextRange(line, column, endLine, endColumn))
+        {
+        }
+
+        public ErrorExpression(string message, ExpressionBase expression)
+            : this(message, expression.Location)
+        {
+        }
+
+        public ErrorExpression(string message, TextRange location)
+            : this(message)
+        {
+            Location = location;
+        }
+
+        public ErrorExpression(ExpressionBase error, ExpressionBase expression)
+            : base(ExpressionType.Error)
+        {
+            Location = expression.Location;
+
+            var parseError = error as ErrorExpression;
+            if (parseError != null)
+            {
+                Message = parseError.Message;
+                InnerError = parseError.InnerError;
+
+                if (parseError.Location.Start.Line != 0)
+                {
+                    Location = parseError.Location;
+                }
+            }
+            else
+            {
+                Message = "Unknown error: " + error.Type;
+            }
+        }
+
+        public static ErrorExpression WrapError(ErrorExpression error, string message, ExpressionBase expression)
+        {
+            if (error.Location.End == expression.Location.End && error.Location.Start == expression.Location.Start)
+            {
+                return error;
+            }
+
+            return new ErrorExpression(message, expression) { InnerError = error };
+        }
+
+        /// <summary>
+        /// Gets the message.
+        /// </summary>
+        public string Message { get; private set; }
+
+        /// <summary>
+        /// Gets a secondary error that caused this error.
+        /// </summary>
+        public ErrorExpression InnerError { get; internal set; }
+
+        /// <summary>
+        /// Gets the root error that caused this error.
+        /// </summary>
+        public ErrorExpression InnermostError
+        {
+            get
+            {
+                var error = InnerError;
+                if (error != null)
+                {
+                    while (error.InnerError != null)
+                        error = error.InnerError;
+                }
+
+                return error;
+            }
+        }
+
+        /// <summary>
+        /// Appends the textual representation of this expression to <paramref name="builder" />.
+        /// </summary>
+        internal override void AppendString(StringBuilder builder)
+        {
+            builder.Append(Message);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="ErrorExpression" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="ErrorExpression" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="ErrorExpression" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        protected override bool Equals(ExpressionBase obj)
+        {
+            var that = obj as ErrorExpression;
+            return that != null && Message == that.Message;
+        }
+    }
+
+    internal class UnknownVariableParseErrorExpression : ErrorExpression
+    {
+        public UnknownVariableParseErrorExpression(string message, ExpressionBase expression)
+            : base(message, expression)
+        {
+        }
+    }
+
+    internal class UnexpectedCharacterParseErrorExpression : ErrorExpression
+    {
+        public UnexpectedCharacterParseErrorExpression(PositionalTokenizer tokenizer)
+            : base("Unexpected character: " + tokenizer.NextChar,
+                  new TextRange(tokenizer.Location, new TextLocation(tokenizer.Line, tokenizer.Column + 1)))
+        {
+            _tokenizer = tokenizer;
+
+            tokenizer.PushState();
+            tokenizer.Advance();
+        }
+
+        private readonly PositionalTokenizer _tokenizer;
+
+        public void Ignore()
+        {
+            _tokenizer.PopState();
+        }
+    }
+
+    internal class ConversionErrorExpression : ErrorExpression
+    {
+        public ConversionErrorExpression(ExpressionBase value, ExpressionType expectedType)
+            : this(value, expectedType.ToLowerString(), value.Location)
+        {
+        }
+
+        public ConversionErrorExpression(ExpressionBase value, string expectedType, TextRange location)
+            : base(String.Format("Cannot convert {0} to {1}", value.Type.ToLowerString(), expectedType), location)
+        {
+        }
+
+        public ConversionErrorExpression(ExpressionBase value, ExpressionType expectedType, TextRange location, string parameterName)
+            : this(value, expectedType.ToLowerString(), location, parameterName)
+        {
+        }
+
+        public ConversionErrorExpression(ExpressionBase value, string expectedType, TextRange location, string parameterName)
+            : base(String.Format("{0}: Cannot convert {1} to {2}", parameterName, value.Type.ToLowerString(), expectedType), location)
+        {
+        }
+    }
+
+    internal class ReservedWordErrorExpression : ErrorExpression
+    {
+        public ReservedWordErrorExpression(ExpressionBase keyword)
+            : this((KeywordExpression)keyword)
+        {
+        }
+
+        public ReservedWordErrorExpression(KeywordExpression keyword)
+            : base(String.Format("{0} is a reserved word", keyword.Keyword), keyword.Location)
+        {
+        }
+    }
+}

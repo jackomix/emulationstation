@@ -1,0 +1,125 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<StartupObject>LAHEE.Program</StartupObject>
+		<ApplicationIcon>Src\icon.ico</ApplicationIcon>
+		<ApplicationManifest>Src\app.manifest</ApplicationManifest>
+		<ErrorReport>none</ErrorReport>
+		<Title>Local Achievements Home Edition Enhanced</Title>
+		<Authors>Akechi Haruka</Authors>
+		<Company />
+		<Description>RetroAchievements API Emulator</Description>
+		<Copyright>2024-2026 Akechi Haruka</Copyright>
+		<IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
+		<AssemblyVersion>2.4.2</AssemblyVersion>
+		<FileVersion>2.4.2</FileVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Version>2.4.2</Version>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="LICENSE.txt" />
+		<None Remove="README.txt" />
+		<None Remove="README.md" />
+		<None Remove="screenshot.jpg" />
+		<None Update="LAHEE.local.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Remove="RATools\**"/>
+		<None Remove="screenshot3.png"/>
+		<None Remove="screenshot2.png"/>
+		<None Remove="Readme\**"/>
+		<None Update="LAHEE.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Remove="Haruka.Common\**"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Web\css\bootstrap.css" />
+		<Content Include="Web\css\bootstrap.css.map" />
+		<Content Include="Web\css\bootstrap.min.css" />
+		<Content Include="Web\css\bootstrap.min.css.map" />
+		<Content Include="Web\css\lahee.css" />
+		<Content Include="Web\favicon.ico" />
+		<Content Include="Web\index.html" />
+		<Content Include="Web\js\lahee.js" />
+		<Content Include="Web\lahee.png" />
+		<Content Include="Web\sounds\162482__kastenfrosch__achievement.mp3" />
+		<Content Include="Web\sounds\540121__jj_om__blank-sound.ogg" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="HttpMultipartParser" Version="9.2.0"/>
+		<PackageReference Include="JetBrains.Annotations" Version="2025.2.4"/>
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.1"/>
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1"/>
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.1"/>
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1"/>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
+		<PackageReference Include="NReco.Logging.File" Version="1.3.1"/>
+		<PackageReference Include="System.Drawing.Common" Version="10.0.1"/>
+		<PackageReference Include="Watson.Core" Version="6.5.1"/>
+		<PackageReference Include="Watson.Lite" Version="6.5.2"/>
+		<PackageReference Include="websocketsharp.core" Version="1.0.1"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appsettings.debug.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+    <ItemGroup>
+		<Compile Remove="RATools\**"/>
+		<Compile Remove="Readme\**"/>
+		<Compile Remove="Haruka.Common\**"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Remove="RATools\**"/>
+		<EmbeddedResource Remove="Readme\**"/>
+		<EmbeddedResource Remove="Haruka.Common\**"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="Haruka.Common\Haruka.Common.csproj"/>
+		<ProjectReference Include="RATools\Core\Core\Source\Jamiras.Core.csproj"/>
+		<ProjectReference Include="RATools\Source\Data\RATools.Data.csproj"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Src\"/>
+    </ItemGroup>
+
+    <Target Name="SetHash" AfterTargets="InitializeSourceControlInformation">
+
+		<Exec Command="git describe --always --dirty --exclude='*' --abbrev=8" ConsoleToMSBuild="True" IgnoreExitCode="False">
+			<Output PropertyName="Revision" TaskParameter="ConsoleOutput" />
+		</Exec>
+
+		<ItemGroup>
+			<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+				<_Parameter1>GitHash</_Parameter1>
+				<_Parameter2>$(Revision)</_Parameter2>
+			</AssemblyAttribute>
+		</ItemGroup>
+
+	</Target>
+
+</Project>
