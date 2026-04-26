@@ -223,6 +223,10 @@ public:
 	static bool						testAccount(const std::string& username, const std::string& password, std::string& tokenOrError);
 
 	static std::string				getRetroAchievementsHubPath();
+	static bool						isLocalEngineActive();
+	static bool						sLocalEngineActive;
+
+	static int						getLocalGameId(FileData* file);
 
 private:
 	static std::string				getCheevosHashFromFile(int consoleId, const std::string& fileName);

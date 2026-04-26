@@ -1638,7 +1638,8 @@ bool SystemView::onAction(const std::string& action)
 	{
 		if (SystemConf::getInstance()->getBool("global.retroachievements") && !Settings::getInstance()->getBool("RetroachievementsMenuitem") && SystemConf::getInstance()->get("global.retroachievements.username") != "")
 		{
-			if (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED")
+			bool isLocal = Settings::getInstance()->getString("RetroAchievementsServerURL").find("127.0.0.1") != std::string::npos;
+			if (!isLocal && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED")
 				mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
 			else
 				GuiRetroAchievements::show(mWindow);

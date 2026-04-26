@@ -259,6 +259,7 @@ void Settings::setDefaults()
 	mBoolMap["ShowSaveStates"] = true;
 	mBoolMap["global.retroachievements"] = true;
 	mStringMap["global.retroachievements.username"] = "Player";
+	mBoolMap["RetroachievementsMenuitem"] = true;
 #else
 	mStringMap["ShowFlags"] = "1";
 #endif

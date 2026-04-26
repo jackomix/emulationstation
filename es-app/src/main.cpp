@@ -467,8 +467,20 @@ void startLAHEEServer()
 
 	LOG(LogInfo) << "Starting LAHEE Server...";
 
-	std::string cmd = "chmod +x \"" + binaryPath + "\" ; nohup \"" + binaryPath + "\" --roms \"" + romsRoot + "\" --hub \"" + romsRoot + "/RetroAchievements\" > /tmp/lahee.log 2>&1 & echo $! > /tmp/lahee.pid";
+	std::string cmd = "chmod +x \"" + binaryPath + "\" ; nohup \"" + binaryPath + "\" --roms \"" + romsRoot + "\" --hub \"" + romsRoot + "/RetroAchievements\" --trusted > /tmp/lahee.log 2>&1 & echo $! > /tmp/lahee.pid";
 	Utils::Platform::ProcessStartInfo(cmd).run();
+
+	// Heartbeat: Wait for server to be ready (max 5 seconds)
+	LOG(LogInfo) << "Waiting for LAHEE heartbeat...";
+	for (int i = 0; i < 10; i++) 
+	{
+		if (RetroAchievements::isLocalEngineActive()) 
+		{
+			LOG(LogInfo) << "LAHEE Engine is online.";
+			break;
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
 }
 
 #include "utils/MathExpr.h"
@@ -612,6 +624,14 @@ int main(int argc, char* argv[])
 	startLAHEEServer();
 
 	SystemConf* systemConf = SystemConf::getInstance();
+	
+	// NATIVE INTEGRATION: Force local server if hub exists
+	if (!RetroAchievements::getRetroAchievementsHubPath().empty())
+	{
+		systemConf->setBool("global.retroachievements", true);
+		if (Settings::getInstance()->getString("RetroAchievementsServerURL").empty())
+			Settings::getInstance()->setString("RetroAchievementsServerURL", "http://127.0.0.1:8000/laheer/");
+	}
 
 #ifdef _ENABLE_KODI_
 	if (systemConf->getBool("kodi.enabled", true) && systemConf->getBool("kodi.atstartup"))

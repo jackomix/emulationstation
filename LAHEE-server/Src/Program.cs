@@ -46,6 +46,12 @@ class Program {
                 Environment.CurrentDirectory = dataDir;
             }
 
+            // Ensure TrustedMode is correctly initialized from flags
+            bool trusted = Config.GetBool("LAHEE", "TrustedMode");
+            if (trusted) {
+                Log.Main?.LogInformation("Trusted Mode enabled via CLI.");
+            }
+
             string badgeDirectory = Config.Get("LAHEE", "BadgeDirectory") ?? "Badge";
             if (!Directory.Exists(badgeDirectory)) {
                 Directory.CreateDirectory(badgeDirectory);

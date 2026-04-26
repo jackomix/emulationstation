@@ -264,7 +264,8 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			Settings::getInstance()->getBool("RetroachievementsMenuitem") &&
 			SystemConf::getInstance()->get("global.retroachievements.username") != "")
 			addEntry(_("RETROACHIEVEMENTS").c_str(), true, [this] {
-					if (!checkNetwork())
+					bool isLocal = Settings::getInstance()->getString("RetroAchievementsServerURL").find("127.0.0.1") != std::string::npos;
+					if (!isLocal && !checkNetwork())
 						return;
 					GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
@@ -1466,6 +1467,10 @@ void GuiMenu::openUpdatesSettings()
 
 bool GuiMenu::checkNetwork()
 {
+	bool isLocal = Settings::getInstance()->getString("RetroAchievementsServerURL").find("127.0.0.1") != std::string::npos;
+	if (isLocal)
+		return true;
+
 	if (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED")
 	{
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));

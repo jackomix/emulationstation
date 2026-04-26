@@ -18,6 +18,7 @@
 #include <assert.h>
 #include "SystemConf.h"
 #include "InputManager.h"
+#include "RetroAchievements.h"
 #include "scrapers/ThreadedScraper.h"
 #include "Gamelist.h" 
 #include "ApiSystem.h"
@@ -272,6 +273,13 @@ const bool FileData::hasCheevos()
 {
 	if (Utils::String::toInteger(getMetadata(MetaDataId::CheevosId)) > 0)
 		return getSourceFileData()->getSystem()->isCheevosSupported();
+
+	// NATIVE DISCOVERY: Check if local LAHEE hub has a set for this game
+	if (RetroAchievements::isLocalEngineActive())
+	{
+		if (RetroAchievements::getLocalGameId(this) > 0)
+			return true;
+	}
 
 	return false;
 }
