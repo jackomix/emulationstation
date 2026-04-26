@@ -6,8 +6,9 @@ namespace LAHEE.Util;
 
 static class Extensions {
     public static string GetParameter(this HttpRequestBase req, string str) {
-        if (req.Query != null && req.Query.Elements != null && req.Query.Elements.ContainsKey(str)) {
-            return req.Query.Elements[str];
+        if (req.Query != null && req.Query.Elements != null) {
+            string val = req.Query.Elements[str];
+            if (val != null) return val;
         }
 
         if (req.DataAsString == null) {
