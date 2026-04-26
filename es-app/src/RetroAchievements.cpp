@@ -108,7 +108,10 @@ int RetroAchievements::getLocalGameId(FileData* file) {
 	std::string hubPath = getRetroAchievementsHubPath();
 	if (hubPath.empty()) return 0;
 	std::string md5 = file->getMetadata(MetaDataId::Md5);
-	if (md5.empty()) return 0;
+	if (md5.empty()) {
+		md5 = getCheevosHash(file->getSourceFileData()->getSystem(), file->getPath());
+		if (md5 == "00000000000000000000000000000000") return 0;
+	}
 	std::string dataDir = hubPath + "/Data";
 	auto files = Utils::FileSystem::getDirContent(dataDir);
 	for (auto fileName : files) {

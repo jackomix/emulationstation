@@ -92,6 +92,9 @@ static class Network {
         AddRARoute("getusersummary", Routes.RAUserSummary);
         AddRARoute("getgameinfoanduserprogress", Routes.RAGameInfoAndUserProgress);
         AddRARoute("laheeswitchuser", Routes.LaheeSwitchUser);
+
+        server.Start();
+        Log.Network.LogInformation("Webserver listening on " + LocalUrl);
     }
 
     private static void WatsonLogger(string obj) {

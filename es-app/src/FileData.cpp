@@ -274,11 +274,10 @@ const bool FileData::hasCheevos()
 	if (Utils::String::toInteger(getMetadata(MetaDataId::CheevosId)) > 0)
 		return getSourceFileData()->getSystem()->isCheevosSupported();
 
-	// NATIVE DISCOVERY: Check if local LAHEE hub has a set for this game
+	// NATIVE DISCOVERY: Always show the menu if LAHEE is active, so we can fetch/view
 	if (RetroAchievements::isLocalEngineActive())
 	{
-		if (RetroAchievements::getLocalGameId(this) > 0)
-			return true;
+		return true;
 	}
 
 	return false;

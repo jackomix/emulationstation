@@ -628,9 +628,26 @@ int main(int argc, char* argv[])
 	// NATIVE INTEGRATION: Force local server if hub exists
 	if (!RetroAchievements::getRetroAchievementsHubPath().empty())
 	{
-		systemConf->setBool("global.retroachievements", true);
-		if (Settings::getInstance()->getString("RetroAchievementsServerURL").empty())
+		bool changed = false;
+		if (!systemConf->getBool("global.retroachievements")) {
+			systemConf->setBool("global.retroachievements", true);
+			changed = true;
+		}
+		if (systemConf->get("global.retroachievements.username").empty()) {
+			systemConf->set("global.retroachievements.username", "Player");
+			changed = true;
+		}
+		if (systemConf->get("global.retroachievements.password").empty()) {
+			systemConf->set("global.retroachievements.password", "lahee");
+			changed = true;
+		}
+		if (Settings::getInstance()->getString("RetroAchievementsServerURL").empty()) {
 			Settings::getInstance()->setString("RetroAchievementsServerURL", "http://127.0.0.1:8000/laheer/");
+			Settings::getInstance()->saveFile();
+		}
+		if (changed) {
+			systemConf->saveSystemConf();
+		}
 	}
 
 #ifdef _ENABLE_KODI_
