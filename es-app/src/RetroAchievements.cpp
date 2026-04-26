@@ -72,8 +72,8 @@ bool RetroAchievements::isLocalEngineActive() {
 	std::string hubPath = getRetroAchievementsHubPath();
 	if (hubPath.empty()) return false;
 
-	// pidof is much more reliable than file existence or HTTP pings for local status
-	sLocalEngineActive = !ApiSystem::getInstance()->executeSystem("pidof LAHEE").empty();
+	// Use getShOutput to check for running process
+	sLocalEngineActive = !Utils::Platform::getShOutput("pidof LAHEE").empty();
 	return sLocalEngineActive;
 }
 
