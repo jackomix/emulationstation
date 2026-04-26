@@ -80,7 +80,9 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		{
 			// Use executeScript for shell expansion and pipe logging to Hub
 			std::string cmd = "mount -o remount,rw / ; python3 \"" + hubPath + "/Server/lahee_patch_ra.py\" > \"" + hubPath + "/patch_ra.log\" 2>&1 ; mount -o remount,ro /";
-			bool success = ApiSystem::getInstance()->executeScript(cmd);
+			std::string fullCmd = "sh -c \"" + cmd + "\"";
+			int ret = Utils::Platform::ProcessStartInfo(fullCmd).run();
+			bool success = (ret == 0);
 			
 			std::string msg = success ? _("RETROARCH PATCHED. PLEASE RESTART.") : _("PATCH FAILED. CHECK patch_ra.log IN HUB.");
 			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("OK"), nullptr));
@@ -89,7 +91,9 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		addEntry(_("UNPATCH RETROARCH"), true, [this, hubPath]
 		{
 			std::string cmd = "mount -o remount,rw / ; python3 \"" + hubPath + "/Server/lahee_unpatch_ra.py\" > \"" + hubPath + "/unpatch_ra.log\" 2>&1 ; mount -o remount,ro /";
-			bool success = ApiSystem::getInstance()->executeScript(cmd);
+			std::string fullCmd = "sh -c \"" + cmd + "\"";
+			int ret = Utils::Platform::ProcessStartInfo(fullCmd).run();
+			bool success = (ret == 0);
 			
 			std::string msg = success ? _("RETROARCH UNPATCHED.") : _("UNPATCH FAILED. CHECK unpatch_ra.log IN HUB.");
 			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("OK"), nullptr));
@@ -131,7 +135,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 					std::string sedCmd = "sed -i 's/cheevos_username = .*/cheevos_username = \"" + selected + "\"/g' \"" + path + "\" ; " +
 					                     "sed -i 's/cheevos_password = .*/cheevos_password = \"lahee\"/g' \"" + path + "\" ; " +
 										 "sed -i 's/cheevos_token = .*/cheevos_token = \"\"/g' \"" + path + "\"";
-					ApiSystem::getInstance()->executeScript(sedCmd);
+					std::string fullSed = "sh -c '" + sedCmd + "'";
+					Utils::Platform::ProcessStartInfo(fullSed).run();
 					LOG(LogInfo) << "Injected profile " << selected << " into " << path;
 				}
 			}
