@@ -140,6 +140,24 @@ static HttpReqOptions getHttpOptions()
 	return options;
 }
 
+#include "SystemData.h"
+
+std::string RetroAchievements::getRetroAchievementsHubPath()
+{
+	for (auto pSystem : SystemData::sSystemVector)
+	{
+		if (!pSystem->isCollection())
+		{
+			std::string romsRoot = Utils::FileSystem::getParent(pSystem->getStartPath());
+			std::string hubPath = romsRoot + "/RetroAchievements";
+			if (Utils::FileSystem::exists(hubPath))
+				return hubPath;
+		}
+	}
+
+	return "";
+}
+
 std::string RetroAchievements::getApiUrl(const std::string& method, const std::string& parameters)
 {
 	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");

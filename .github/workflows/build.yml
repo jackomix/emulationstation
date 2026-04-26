@@ -9,42 +9,36 @@ on:
 
 jobs:
   build-r36s:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Build in ARM64 Container
+      - name: Install dependencies
         run: |
-          docker run --rm --privileged --platform linux/arm64 \
-            -v ${{ github.workspace }}:/src \
-            ubuntu:22.04 bash -c "
-              export DEBIAN_FRONTEND=noninteractive &&
-              apt-get update &&
-              apt-get install -y --no-install-recommends \
-                build-essential cmake git libsdl2-dev libsdl2-mixer-dev libfreeimage-dev \
-                libfreetype6-dev libcurl4-openssl-dev rapidjson-dev \
-                libasound2-dev libvlc-dev libvlccore-dev vlc-bin \
-                libboost-all-dev libeigen3-dev \
-                libgles2-mesa-dev libcec-dev libudev-dev gettext ca-certificates &&
-              cd /src &&
-              mkdir -p build &&
-              cd build &&
-              cmake \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DGLES2=ON \
-                -DENABLE_AMBERELEC=ON \
-                -DRG351P=ON \
-                .. &&
-              make -j\$(nproc) &&
-              cd /src &&
-              strip emulationstation
-            "
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake git libsdl2-dev libsdl2-mixer-dev libfreeimage-dev \
+            libfreetype6-dev libcurl4-openssl-dev rapidjson-dev \
+            libasound2-dev libvlc-dev libvlccore-dev vlc-bin \
+            libboost-all-dev libeigen3-dev \
+            libgles2-mesa-dev libcec-dev libudev-dev gettext ca-certificates
+
+      - name: Build
+        run: |
+          mkdir -p build
+          cd build
+          cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGLES2=ON \
+            -DENABLE_AMBERELEC=ON \
+            -DRG351P=ON \
+            ..
+          make -j$(nproc)
+          cd ..
+          strip emulationstation
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4

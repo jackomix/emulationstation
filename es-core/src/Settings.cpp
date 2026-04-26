@@ -253,11 +253,13 @@ void Settings::setDefaults()
 	mBoolMap["SlideshowScreenSaverRecurse"] = false;
 	mBoolMap["SlideshowScreenSaverGameName"] = true;
 	mStringMap["ScreenSaverDecorations"] = "systems";
-
 #ifdef _ENABLEAMBERELEC
 	mStringMap["LogLevel"] = "minimal";
 	mBoolMap["ShowManualIcon"] = false;
 	mBoolMap["ShowSaveStates"] = true;
+	mBoolMap["global.retroachievements"] = true;
+	mStringMap["global.retroachievements.username"] = "Player";
+#else
 	mStringMap["ShowFlags"] = "1";
 #endif
 	mBoolMap["ShowCheevosIcon"] = true;

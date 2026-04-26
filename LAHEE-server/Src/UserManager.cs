@@ -7,6 +7,7 @@ namespace LAHEE;
 
 class UserManager {
     public static string UserDataDirectory { get; private set; }
+    public static UserData ActiveUser { get; set; }
 
     private static Dictionary<string, UserData> userData;
     private static Dictionary<string, UserData> activeTokens;
@@ -19,7 +20,32 @@ class UserManager {
 
         Load(UserDataDirectory);
 
+        if (userData.Count == 0) {
+            Log.User.LogInformation("No users found. Creating default \"Player\" profile...");
+            RegisterNewUser("Player");
+            Save();
+        }
+
+        ActiveUser = userData.Values.First();
+        RestoreActiveUser();
+
         Log.User.LogInformation("Finished loading data: {users} User(s) with {achiev} Achievements total", userData.Count, userData.Sum((r) => r.Value.GameData?.Sum((ru => ru.Value.Achievements.Count))));
+    }
+
+    private static void RestoreActiveUser() {
+        string path = Path.Combine(UserDataDirectory, "..", "active_user.txt");
+        if (File.Exists(path)) {
+            string name = File.ReadAllText(path).Trim();
+            if (userData.ContainsKey(name)) {
+                ActiveUser = userData[name];
+                Log.User.LogInformation("Restored active user: {u}", name);
+            }
+        }
+    }
+
+    public static void SaveActiveUser() {
+        string path = Path.Combine(UserDataDirectory, "..", "active_user.txt");
+        File.WriteAllText(path, ActiveUser.UserName);
     }
 
     public static void Load(string dir) {
@@ -126,6 +152,14 @@ class UserManager {
     }
 
     public static UserData GetUserDataFromToken(string str) {
+        return GetUserDataFromToken(str, null);
+    }
+
+    public static UserData GetUserDataFromToken(string str, HttpContextBase ctx) {
+        if (Program.Config.GetBool("LAHEE", "TrustedMode") && ctx != null && ctx.Request.Source.IpAddress == "127.0.0.1") {
+            return ActiveUser;
+        }
+
         if (Program.Config.GetBool("LAHEE", "AutoSessionOnSingleUser") && userData.Count == 1) {
             UserData u = userData.Values.First();
             Log.User.LogDebug("AutoSession enabled, user is {u}", u);

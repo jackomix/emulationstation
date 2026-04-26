@@ -23,7 +23,8 @@ public class AppConfig {
                 { "--hub", "LAHEE:HubDirectory" },
                 { "--data", "LAHEE:DataDirectory" },
                 { "--badges", "LAHEE:BadgeDirectory" },
-                { "--user", "LAHEE:UserDirectory" }
+                { "--user", "LAHEE:UserDirectory" },
+                { "--trusted", "LAHEE:TrustedMode" }
             };
             builder.AddCommandLine(args, switchMappings);
         }

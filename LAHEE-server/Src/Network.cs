@@ -91,6 +91,7 @@ static class Network {
         AddRARoute("gameinfolist", Routes.RAGameInfoList);
         AddRARoute("getusersummary", Routes.RAUserSummary);
         AddRARoute("getgameinfoanduserprogress", Routes.RAGameInfoAndUserProgress);
+        AddRARoute("laheeswitchuser", Routes.LaheeSwitchUser);
     }
 
     private static void WatsonLogger(string obj) {
@@ -220,6 +221,8 @@ static class Routes {
         //string password = ctx.Request.GetParameter("p");
         string token = ctx.Request.GetParameter("t");
 
+        bool isTrusted = Program.Config.GetBool("LAHEE", "TrustedMode") && ctx.Request.Source.IpAddress == "127.0.0.1";
+
         UserData user = UserManager.GetUserData(username);
         if (user == null) {
             Log.User.LogWarning("No user found with username {n}, creating a new user.", username);
@@ -234,7 +237,11 @@ static class Routes {
             return;
         }
 
-        if (token != null) {
+        if (isTrusted) {
+            // In trusted mode, we accept any login from localhost and return a persistent token
+            token = "local_trusted_session";
+            UserManager.RegisterSessionToken(user, token);
+        } else if (token != null) {
             UserManager.RegisterSessionToken(user, token);
         } else {
             token = UserManager.RegisterSessionToken(user);
@@ -305,7 +312,7 @@ static class Routes {
             return;
         }
 
-        UserData user = UserManager.GetUserDataFromToken(token);
+        UserData user = UserManager.GetUserDataFromToken(token, ctx);
         if (user == null) {
             Log.User.LogWarning("Session token not found: {token}!", token);
             await ctx.Response.SendJson(new RAErrorResponse("Session token not found!"));
@@ -363,7 +370,7 @@ static class Routes {
             return;
         }
 
-        UserData user = UserManager.GetUserDataFromToken(token);
+        UserData user = UserManager.GetUserDataFromToken(token, ctx);
         if (user == null) {
             Log.User.LogWarning("Session token not found: {token}!", token);
             await ctx.Response.SendJson(new RAErrorResponse("Session token not found!"));
@@ -426,7 +433,7 @@ static class Routes {
             return;
         }
 
-        UserData user = UserManager.GetUserDataFromToken(token);
+        UserData user = UserManager.GetUserDataFromToken(token, ctx);
         if (user == null) {
             Log.User.LogWarning("Session token not found: {token}!", token);
             await ctx.Response.SendJson(new RAErrorResponse("Session token not found!"));
@@ -479,7 +486,7 @@ static class Routes {
             return;
         }
 
-        UserData user = UserManager.GetUserDataFromToken(token);
+        UserData user = UserManager.GetUserDataFromToken(token, ctx);
         if (user == null) {
             Log.User.LogWarning("Session token not found: {token}!", token);
             await ctx.Response.SendJson(new RAErrorResponse("Session token not found!"));
@@ -759,7 +766,7 @@ static class Routes {
             return;
         }
 
-        UserData user = UserManager.GetUserDataFromToken(token);
+        UserData user = UserManager.GetUserDataFromToken(token, ctx);
         if (user == null) {
             Log.User.LogWarning("Session token not found: {token}!", token);
             await ctx.Response.SendJson(new RAErrorResponse("Session token not found!"));
@@ -934,7 +941,7 @@ static class Routes {
             return;
         }
 
-        UserData user = UserManager.GetUserDataFromToken(token);
+        UserData user = UserManager.GetUserDataFromToken(token, ctx);
         if (user == null) {
             Log.User.LogWarning("Session token not found: {token}!", token);
             await ctx.Response.SendJson(new RAErrorResponse("Session token not found!"));
@@ -1169,5 +1176,21 @@ static class Routes {
             NumAchievements = game.GetAchievementCount()
         };
         await ctx.Response.SendJson(response);
+    }
+
+    internal static async Task LaheeSwitchUser(HttpContextBase ctx) {
+        string username = ctx.Request.GetParameter("u");
+        UserData user = UserManager.GetUserData(username);
+        if (user == null) {
+            Log.User.LogWarning("Switch request for unknown user {u}, creating...", username);
+            user = UserManager.RegisterNewUser(username);
+            UserManager.Save();
+        }
+
+        UserManager.ActiveUser = user;
+        UserManager.SaveActiveUser();
+        Log.User.LogInformation("Active user switched to: {u}", user.UserName);
+
+        await ctx.Response.SendJson(new { Success = true, ActiveUser = user.UserName });
     }
 }

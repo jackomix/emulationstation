@@ -8,6 +8,7 @@
 #include "Settings.h"
 
 #include "guis/GuiMsgBox.h"
+#include "guis/GuiTextEditPopup.h"
 #include "components/SwitchComponent.h"
 #include "components/OptionListComponent.h"
 
@@ -19,22 +20,70 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	std::string username = SystemConf::getInstance()->get("global.retroachievements.username");
 	std::string password = SystemConf::getInstance()->get("global.retroachievements.password");
 
-	if (Settings::getInstance()->getBool("AutoStartLAHEE") && username.empty() && password.empty())
-	{
-		username = "Player";
-		password = "lahee";
-		SystemConf::getInstance()->set("global.retroachievements.username", username);
-		SystemConf::getInstance()->set("global.retroachievements.password", password);
-	}
+	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
+	bool isLocal = serverUrl.find("127.0.0.1") != std::string::npos;
 
 	// retroachievements_enable
 	auto retroachievements_enabled = std::make_shared<SwitchComponent>(mWindow);
 	retroachievements_enabled->setState(retroachievementsEnabled);
 	addWithLabel(_("RETROACHIEVEMENTS"), retroachievements_enabled);
 
-	// retroachievements, username, password
-	addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
-	addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
+	if (isLocal)
+	{
+		auto hubPath = RetroAchievements::getRetroAchievementsHubPath();
+		auto userDir = hubPath + "/User";
+
+		auto profile_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("ACTIVE PROFILE"), false);
+		
+		auto files = Utils::FileSystem::getDirContent(userDir);
+		bool profileFound = false;
+		for (auto file : files)
+		{
+			if (Utils::FileSystem::getExtension(file) == ".json")
+			{
+				std::string name = Utils::FileSystem::getStem(file);
+				profile_choices->add(name, name, username == name);
+				if (username == name) profileFound = true;
+			}
+		}
+
+		if (!profileFound)
+		{
+			profile_choices->add("Player", "Player", true);
+			if (username.empty()) username = "Player";
+		}
+
+		addWithLabel(_("ACTIVE PROFILE"), profile_choices);
+
+		addEntry(_("ADD NEW PROFILE"), true, [this, profile_choices, userDir]
+		{
+			mWindow->pushGui(new GuiTextEditPopup(mWindow, _("NEW PROFILE NAME"), "", [this, profile_choices, userDir](std::string name)
+			{
+				if (name.empty()) return;
+				// Create a dummy user file so it shows up in the list next time
+				// Actually, LAHEE will create it, but we want it in the UI now.
+				profile_choices->add(name, name, true);
+				SystemConf::getInstance()->set("global.retroachievements.username", name);
+			}, false));
+		});
+
+		addSaveFunc([profile_choices] 
+		{ 
+			std::string selected = profile_choices->getSelected();
+			SystemConf::getInstance()->set("global.retroachievements.username", selected);
+			
+			// Notify LAHEE immediately
+			HttpReqOptions options;
+			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(selected), &options);
+			request.wait(); // Fast on localhost
+		});
+	}
+	else
+	{
+		// retroachievements, username, password
+		addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
+		addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
+	}
 
 	addSwitch(_("AUTO-START LAHEE"), _("Automatically launch the local LAHEE server at startup."), "AutoStartLAHEE", true, nullptr);
 
