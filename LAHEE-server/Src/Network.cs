@@ -48,7 +48,7 @@ static class Network {
         server.Routes.PreAuthentication.Static.Add(HttpMethod.GET, BASE_DIR + "dorequest.php", Routes.RARequestRoute, Routes.DefaultErrorRoute);
         
         server.Events.RequestReceived += (sender, args) => {
-            Log.Network.LogInformation("INCOMING: {m} {u} from {s}", args.HttpContext.Request.Method, args.HttpContext.Request.Url.RawWithQuery, args.HttpContext.Request.Source.IpAddress);
+            Log.Network.LogInformation("INCOMING: {m} {u} from {s}", args.Request.Method, args.Request.Url.RawWithQuery, args.Request.Source.IpAddress);
         };
 
         server.Routes.Default = Routes.DefaultNotFoundRoute;

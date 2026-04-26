@@ -144,8 +144,31 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 			rapidjson::Document doc;
 			doc.Parse(Utils::FileSystem::readAllText(userFile).c_str());
 			if (!doc.HasParseError() && doc.IsObject()) {
-				ret.RecentlyPlayedCount = jsonInt(doc, "RecentlyPlayedCount");
 				ret.Points = jsonString(doc, "Points");
+				
+				if (doc.HasMember("RecentlyPlayed") && doc["RecentlyPlayed"].IsArray()) {
+					for (auto& gp : doc["RecentlyPlayed"].GetArray()) {
+						RecentlyPlayed item;
+						item.GameID = jsonString(gp, "GameID");
+						item.Title = jsonString(gp, "Title");
+						item.ImageIcon = jsonString(gp, "ImageIcon");
+						ret.RecentlyPlayed.push_back(item);
+					}
+				}
+				ret.RecentlyPlayedCount = (int)ret.RecentlyPlayed.size();
+
+				if (doc.HasMember("Awarded") && doc["Awarded"].IsObject()) {
+					for (auto it = doc["Awarded"].MemberBegin(); it != doc["Awarded"].MemberEnd(); ++it) {
+						Awarded item;
+						item.NumPossibleAchievements = jsonInt(it->value, "NumPossibleAchievements");
+						item.PossibleScore = jsonInt(it->value, "PossibleScore");
+						item.NumAchieved = jsonInt(it->value, "NumAchieved");
+						item.ScoreAchieved = jsonInt(it->value, "ScoreAchieved");
+						item.NumAchievedHardcore = jsonInt(it->value, "NumAchievedHardcore");
+						item.ScoreAchievedHardcore = jsonInt(it->value, "ScoreAchievedHardcore");
+						ret.Awarded[it->name.GetString()] = item;
+					}
+				}
 				return ret;
 			}
 		}
