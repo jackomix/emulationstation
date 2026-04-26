@@ -107,9 +107,9 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 			});
 		}
 
-		if (hasCheevos)
+		if (hasCheevos || (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS) && SystemConf::getInstance()->getBool("global.retroachievements") && RetroAchievements::isLocalEngineActive()))
 		{
-			if (!game->isFeatureSupported(EmulatorFeatures::cheevos))
+			if (hasCheevos && !game->isFeatureSupported(EmulatorFeatures::cheevos))
 			{
 				std::string coreList = game->getSourceFileData()->getSystem()->getCompatibleCoreNames(EmulatorFeatures::cheevos);
 				std::string msg = _U("\uF06A  ");

@@ -633,7 +633,7 @@ int main(int argc, char* argv[])
 			systemConf->setBool("global.retroachievements", true);
 			changed = true;
 		}
-		if (systemConf->get("global.retroachievements.username").empty()) {
+		if (systemConf->get("global.retroachievements.username").empty() || systemConf->get("global.retroachievements.username") == "123") {
 			systemConf->set("global.retroachievements.username", "Player");
 			changed = true;
 		}
@@ -641,8 +641,8 @@ int main(int argc, char* argv[])
 			systemConf->set("global.retroachievements.password", "lahee");
 			changed = true;
 		}
-		if (Settings::getInstance()->getString("RetroAchievementsServerURL").empty()) {
-			Settings::getInstance()->setString("RetroAchievementsServerURL", "http://127.0.0.1:8000/laheer/");
+		if (Settings::getInstance()->getString("RetroAchievementsServerURL").empty() || Settings::getInstance()->getString("RetroAchievementsServerURL").find("laheer") != std::string::npos) {
+			Settings::getInstance()->setString("RetroAchievementsServerURL", "http://127.0.0.1:8000/");
 			Settings::getInstance()->saveFile();
 		}
 		if (changed) {
