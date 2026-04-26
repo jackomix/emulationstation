@@ -47,10 +47,28 @@ static class Network {
         server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, BASE_DIR + "dorequest.php", Routes.RARequestRoute, Routes.DefaultErrorRoute);
         server.Routes.PreAuthentication.Static.Add(HttpMethod.GET, BASE_DIR + "dorequest.php", Routes.RARequestRoute, Routes.DefaultErrorRoute);
         
-        server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, BASE_DIR + "/dorequest.php", Routes.RARequestRoute, Routes.DefaultErrorRoute);
-        server.Routes.PreAuthentication.Static.Add(HttpMethod.GET, BASE_DIR + "/dorequest.php", Routes.RARequestRoute, Routes.DefaultErrorRoute);
+        server.Events.RequestReceived += (sender, args) => {
+            Log.Network.LogInformation("INCOMING: {m} {u} from {s}", args.HttpContext.Request.Method, args.HttpContext.Request.Url.RawWithQuery, args.HttpContext.Request.Source.IpAddress);
+        };
 
-        server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, BASE_DIR + "doupload.php", Routes.RAUploadRoute, Routes.DefaultErrorRoute);
+        server.Routes.Default = Routes.DefaultNotFoundRoute;
+
+        // Support BOTH single and double slash paths to accommodate various binary patch styles
+        string cleanBase = BASE_DIR.TrimEnd('/');
+        string raPath1 = cleanBase + "/dorequest.php";
+        string raPath2 = cleanBase + "//dorequest.php";
+        string upPath1 = cleanBase + "/doupload.php";
+        string upPath2 = cleanBase + "//doupload.php";
+
+        server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, raPath1, Routes.RARequestRoute, Routes.DefaultErrorRoute);
+        server.Routes.PreAuthentication.Static.Add(HttpMethod.GET, raPath1, Routes.RARequestRoute, Routes.DefaultErrorRoute);
+        server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, raPath2, Routes.RARequestRoute, Routes.DefaultErrorRoute);
+        server.Routes.PreAuthentication.Static.Add(HttpMethod.GET, raPath2, Routes.RARequestRoute, Routes.DefaultErrorRoute);
+
+        server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, upPath1, Routes.RAUploadRoute, Routes.DefaultErrorRoute);
+        server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, upPath2, Routes.RAUploadRoute, Routes.DefaultErrorRoute);
+
+        Log.Network.LogInformation("RA Routes: {r1} AND {r2}", raPath1, raPath2);
 
         // Content
         server.Routes.PreAuthentication.Content = new CacheableContentRouteManager(Program.Config.GetInt("Watson", "ResourceCacheSeconds"));

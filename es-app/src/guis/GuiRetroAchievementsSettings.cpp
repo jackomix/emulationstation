@@ -78,18 +78,21 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		
 		addEntry(_("PATCH RETROARCH"), true, [this, hubPath]
 		{
-			std::string scriptPath = hubPath + "/Server/lahee_patch_ra.py";
-			std::string cmd = "python3 \"" + scriptPath + "\"";
-			Utils::Platform::ProcessStartInfo(cmd).run();
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("RETROARCH PATCHED. PLEASE RESTART."), _("OK"), nullptr));
+			// Use executeScript for shell expansion and pipe logging to Hub
+			std::string cmd = "mount -o remount,rw / ; python3 \"" + hubPath + "/Server/lahee_patch_ra.py\" > \"" + hubPath + "/patch_ra.log\" 2>&1 ; mount -o remount,ro /";
+			bool success = ApiSystem::getInstance()->executeScript(cmd);
+			
+			std::string msg = success ? _("RETROARCH PATCHED. PLEASE RESTART.") : _("PATCH FAILED. CHECK patch_ra.log IN HUB.");
+			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("OK"), nullptr));
 		});
 
 		addEntry(_("UNPATCH RETROARCH"), true, [this, hubPath]
 		{
-			std::string scriptPath = hubPath + "/Server/lahee_unpatch_ra.py";
-			std::string cmd = "python3 \"" + scriptPath + "\"";
-			Utils::Platform::ProcessStartInfo(cmd).run();
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("RETROARCH UNPATCHED."), _("OK"), nullptr));
+			std::string cmd = "mount -o remount,rw / ; python3 \"" + hubPath + "/Server/lahee_unpatch_ra.py\" > \"" + hubPath + "/unpatch_ra.log\" 2>&1 ; mount -o remount,ro /";
+			bool success = ApiSystem::getInstance()->executeScript(cmd);
+			
+			std::string msg = success ? _("RETROARCH UNPATCHED.") : _("UNPATCH FAILED. CHECK unpatch_ra.log IN HUB.");
+			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("OK"), nullptr));
 		});
 
 		addGroup(_("ENGINE STATUS"));
@@ -104,27 +107,39 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 			addEntry(_("RESTART ENGINE"), true, [this]
 			{
 				// Kill any stuck PID and try again
-				Utils::FileSystem::removeFile("/tmp/lahee.pid");
 				Utils::Platform::ProcessStartInfo("killall LAHEE").run();
-				// The main loop will handle restart or we can trigger it here
 				delete this;
 			});
 		}
 
-		// Save handler for profile switching
+		// Direct RetroArch Config Injection handler
 		addSaveFunc([profile_choices] 
 		{ 
 			std::string selected = profile_choices->getSelected();
-			if (SystemConf::getInstance()->get("global.retroachievements.username") != selected)
-			{
-				SystemConf::getInstance()->set("global.retroachievements.username", selected);
-				SystemConf::getInstance()->saveSystemConf(); // WRITE TO DISK IMMEDIATELY
-				
-				// Notify the engine
-				HttpReqOptions options;
-				HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(selected), &options);
-				request.wait(); 
+			SystemConf::getInstance()->set("global.retroachievements.username", selected);
+			SystemConf::getInstance()->saveSystemConf();
+			
+			// NATIVE INJECTION: Force overwrite in RetroArch's real config file
+			std::vector<std::string> cfgPaths = { 
+				"/home/ark/.config/retroarch/retroarch.cfg",
+				"/home/ark/.config/retroarch32/retroarch.cfg",
+				"/storage/.config/retroarch/retroarch.cfg"
+			};
+
+			for (const auto& path : cfgPaths) {
+				if (Utils::FileSystem::exists(path)) {
+					std::string sedCmd = "sed -i 's/cheevos_username = .*/cheevos_username = \"" + selected + "\"/g' \"" + path + "\" ; " +
+					                     "sed -i 's/cheevos_password = .*/cheevos_password = \"lahee\"/g' \"" + path + "\" ; " +
+										 "sed -i 's/cheevos_token = .*/cheevos_token = \"\"/g' \"" + path + "\"";
+					ApiSystem::getInstance()->executeScript(sedCmd);
+					LOG(LogInfo) << "Injected profile " << selected << " into " << path;
+				}
 			}
+			
+			// Notify the engine
+			HttpReqOptions options;
+			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(selected), &options);
+			request.wait(); 
 		});
 	}
 	else
