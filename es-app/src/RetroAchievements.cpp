@@ -6,6 +6,7 @@
 #include "PlatformId.h"
 #include "SystemData.h"
 #include "FileData.h"
+#include "utils/Platform.h"
 #include "utils/StringUtil.h"
 #include "utils/ZipFile.h"
 #include "Log.h"
