@@ -291,3 +291,26 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 	}
 	return false;
 }
+
+void RetroAchievements::updateRetroArchConfig() {
+	std::string selected = SystemConf::getInstance()->get("global.retroachievements.username");
+	if (selected.empty()) selected = "Player";
+
+	std::vector<std::string> cfgPaths = {
+		"/home/ark/.config/retroarch/retroarch.cfg",
+		"/home/ark/.config/retroarch32/retroarch.cfg",
+		"/storage/.config/retroarch/retroarch.cfg"
+	};
+
+	for (const auto& path : cfgPaths) {
+		if (Utils::FileSystem::exists(path)) {
+			std::string sedCmd = "sed -i 's/cheevos_username = .*/cheevos_username = \"" + selected + "\"/g' \"" + path + "\" ; " +
+								 "sed -i 's/cheevos_password = .*/cheevos_password = \"lahee\"/g' \"" + path + "\" ; " +
+								 "sed -i 's/cheevos_token = .*/cheevos_token = \"\"/g' \"" + path + "\" ; " +
+								 "sed -i 's/cheevos_enable = .*/cheevos_enable = \"true\"/g' \"" + path + "\"";
+			std::string fullSed = "sh -c '" + sedCmd + "'";
+			Utils::Platform::getShOutput(fullSed);
+			LOG(LogInfo) << "Forced RetroArch profile " << selected << " into " << path;
+		}
+	}
+}

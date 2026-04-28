@@ -227,6 +227,7 @@ public:
 	static bool						sLocalEngineActive;
 
 	static int						getLocalGameId(FileData* file);
+	static void						updateRetroArchConfig();
 
 private:
 	static std::string				getCheevosHashFromFile(int consoleId, const std::string& fileName);

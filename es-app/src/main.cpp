@@ -647,6 +647,7 @@ int main(int argc, char* argv[])
 		if (changed) {
 			systemConf->saveSystemConf();
 		}
+		RetroAchievements::updateRetroArchConfig();
 	}
 
 	startLAHEEServer();
