@@ -88,7 +88,7 @@ public static class RAOfficialServer {
 
             string badgeDir = Program.Config.Get("LAHEE", "BadgeDirectory");
             string sourceIcon = Path.Combine(badgeDir, gameId + ".png");
-            string targetIcon = Path.Combine(imagesDir, romName + "-image.png");
+            string targetIcon = Path.Combine(imagesDir, romName + "-icon.png");
 
             if (File.Exists(sourceIcon)) {
                 File.Copy(sourceIcon, targetIcon, true);
