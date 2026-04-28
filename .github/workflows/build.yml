@@ -48,7 +48,10 @@ jobs:
       - name: Build LAHEE Server
         run: |
           cd LAHEE-server
+          # Handheld version (Linux ARM64)
           dotnet publish ./LAHEE.csproj -c Release -r linux-arm64 --self-contained true -o ./publish
+          # PC Scraper version (Windows x64)
+          dotnet publish ./LAHEE.csproj -c Release -r win-x64 --self-contained true -o ./publish-win
           cd ..
 
       - name: Package Release
@@ -58,7 +61,11 @@ jobs:
           mkdir -p release/RetroAchievements/Badges
           mkdir -p release/RetroAchievements/UserPic
           cp emulationstation release/
+          # Copy Handheld files
           cp -r LAHEE-server/publish/* release/RetroAchievements/Server/
+          # Copy PC binary (for the scraper script)
+          cp LAHEE-server/publish-win/LAHEE.exe release/RetroAchievements/Server/
+          
           cp -r LAHEE-server/Web release/RetroAchievements/Server/
           cp LAHEE-server/lahee_startup.sh release/RetroAchievements/Server/
           cp LAHEE-server/ScrapeAchievements.ps1 release/RetroAchievements/
