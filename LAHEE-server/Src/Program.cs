@@ -233,11 +233,9 @@ reloaduser                                                                      
                     string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".md", ".bin", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp" };
                     var roms = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories)
                         .Where(f => {
-                            string name = Path.GetFileName(f).ToLower();
                             string ext = Path.GetExtension(f).ToLower();
                             string dir = Path.GetDirectoryName(f).ToLower();
                             return extensions.Contains(ext) && 
-                                   !name.StartsWith("readme") && 
                                    !dir.Contains("retroachievements");
                         });
 
