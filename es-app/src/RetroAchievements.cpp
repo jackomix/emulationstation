@@ -74,7 +74,11 @@ bool RetroAchievements::isLocalEngineActive() {
 	if (hubPath.empty()) return false;
 
 	// Use getShOutput to check for running process
-	sLocalEngineActive = !Utils::Platform::getShOutput("pidof LAHEE").empty();
+	std::string output = Utils::Platform::getShOutput("pidof LAHEE");
+	sLocalEngineActive = !output.empty();
+	if (sLocalEngineActive) {
+		LOG(LogInfo) << "LAHEE heartbeat confirmed (PID: " << output << ")";
+	}
 	return sLocalEngineActive;
 }
 

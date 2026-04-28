@@ -82,9 +82,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 			std::string cmd = "mount -o remount,rw / ; python3 \"" + hubPath + "/Server/lahee_patch_ra.py\" > \"" + hubPath + "/patch_ra.log\" 2>&1 ; mount -o remount,ro /";
 			std::string fullCmd = "sh -c \"" + cmd + "\"";
 			int ret = Utils::Platform::ProcessStartInfo(fullCmd).run();
-			bool success = (ret == 0);
 			
-			std::string msg = success ? _("RETROARCH PATCHED. PLEASE RESTART.") : _("PATCH FAILED. CHECK patch_ra.log IN HUB.");
+			std::string msg = (ret == 0) ? _("RETROARCH PATCHED. PLEASE RESTART.") : _("PATCH FAILED. CHECK patch_ra.log IN HUB.");
 			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("OK"), nullptr));
 		});
 
@@ -93,9 +92,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 			std::string cmd = "mount -o remount,rw / ; python3 \"" + hubPath + "/Server/lahee_unpatch_ra.py\" > \"" + hubPath + "/unpatch_ra.log\" 2>&1 ; mount -o remount,ro /";
 			std::string fullCmd = "sh -c \"" + cmd + "\"";
 			int ret = Utils::Platform::ProcessStartInfo(fullCmd).run();
-			bool success = (ret == 0);
 			
-			std::string msg = success ? _("RETROARCH UNPATCHED.") : _("UNPATCH FAILED. CHECK unpatch_ra.log IN HUB.");
+			std::string msg = (ret == 0) ? _("RETROARCH UNPATCHED.") : _("UNPATCH FAILED. CHECK unpatch_ra.log IN HUB.");
 			mWindow->pushGui(new GuiMsgBox(mWindow, msg, _("OK"), nullptr));
 		});
 
@@ -108,15 +106,21 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		
 		if (!isOnline)
 		{
-			addEntry(_("RESTART ENGINE"), true, [this]
+			addEntry(_("RESTART ENGINE"), true, [this, hubPath]
 			{
 				// Kill any stuck PID and try again
 				Utils::Platform::ProcessStartInfo("killall LAHEE").run();
+				
+				std::string launcherPath = hubPath + "/Server/lahee_startup.sh";
+				std::string romsRoot = Utils::FileSystem::getParent(hubPath);
+				std::string cmd = "bash \"" + launcherPath + "\" --roms \"" + romsRoot + "\" --hub \"" + hubPath + "\" --trusted";
+				Utils::Platform::ProcessStartInfo(cmd).run();
+
 				delete this;
 			});
 		}
 
-		// Direct RetroArch Config Injection handler
+		// Save handler for profile switching
 		addSaveFunc([profile_choices] 
 		{ 
 			std::string selected = profile_choices->getSelected();
@@ -132,6 +136,7 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 
 			for (const auto& path : cfgPaths) {
 				if (Utils::FileSystem::exists(path)) {
+					// Use sh -c to handle multi-command sed
 					std::string sedCmd = "sed -i 's/cheevos_username = .*/cheevos_username = \"" + selected + "\"/g' \"" + path + "\" ; " +
 					                     "sed -i 's/cheevos_password = .*/cheevos_password = \"lahee\"/g' \"" + path + "\" ; " +
 										 "sed -i 's/cheevos_token = .*/cheevos_token = \"\"/g' \"" + path + "\"";

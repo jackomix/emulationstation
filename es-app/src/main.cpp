@@ -402,6 +402,7 @@ void playVideo()
 
 		int curTime = SDL_GetTicks();
 		int deltaTime = curTime - lastTime;
+		lastTime = curTime;
 
 		if (vid.isPlaying())
 		{
@@ -460,14 +461,14 @@ void startLAHEEServer()
 	if (romsRoot.empty())
 		return;
 
-	std::string binaryPath = romsRoot + "/RetroAchievements/Server/LAHEE";
+	std::string launcherPath = romsRoot + "/RetroAchievements/Server/lahee_startup.sh";
 
-	if (!Utils::FileSystem::exists(binaryPath))
+	if (!Utils::FileSystem::exists(launcherPath))
 		return;
 
-	LOG(LogInfo) << "Starting LAHEE Server...";
+	LOG(LogInfo) << "Starting LAHEE Server via launcher...";
 
-	std::string cmd = "chmod +x \"" + binaryPath + "\" ; nohup \"" + binaryPath + "\" --roms \"" + romsRoot + "\" --hub \"" + romsRoot + "/RetroAchievements\" --trusted > /tmp/lahee.log 2>&1 & echo $! > /tmp/lahee.pid";
+	std::string cmd = "bash \"" + launcherPath + "\" --roms \"" + romsRoot + "\" --hub \"" + romsRoot + "/RetroAchievements\" --trusted";
 	Utils::Platform::ProcessStartInfo(cmd).run();
 
 	// Heartbeat: Wait for server to be ready (max 5 seconds)
@@ -621,11 +622,8 @@ int main(int argc, char* argv[])
 		window.pushGui(new GuiMsgBox(&window, errorMsg, _("QUIT"), [] { Utils::Platform::quitES(); }));
 	}
 
-	startLAHEEServer();
-
 	SystemConf* systemConf = SystemConf::getInstance();
-	
-	// NATIVE INTEGRATION: Force local server if hub exists
+	// NATIVE INTEGRATION: Force local server if hub exists. Do this early!
 	if (!RetroAchievements::getRetroAchievementsHubPath().empty())
 	{
 		bool changed = false;
@@ -633,7 +631,8 @@ int main(int argc, char* argv[])
 			systemConf->setBool("global.retroachievements", true);
 			changed = true;
 		}
-		if (systemConf->get("global.retroachievements.username").empty() || systemConf->get("global.retroachievements.username") == "123") {
+		std::string currentU = systemConf->get("global.retroachievements.username");
+		if (currentU.empty() || currentU == "123" || currentU == "0") {
 			systemConf->set("global.retroachievements.username", "Player");
 			changed = true;
 		}
@@ -649,6 +648,8 @@ int main(int argc, char* argv[])
 			systemConf->saveSystemConf();
 		}
 	}
+
+	startLAHEEServer();
 
 #ifdef _ENABLE_KODI_
 	if (systemConf->getBool("kodi.enabled", true) && systemConf->getBool("kodi.atstartup"))
