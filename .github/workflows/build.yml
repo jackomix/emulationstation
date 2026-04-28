@@ -50,8 +50,8 @@ jobs:
           cd LAHEE-server
           # Handheld version (Linux ARM64)
           dotnet publish ./LAHEE.csproj -c Release -r linux-arm64 --self-contained true -o ./publish
-          # PC Scraper version (Windows x64)
-          dotnet publish ./LAHEE.csproj -c Release -r win-x64 --self-contained true -o ./publish-win
+          # PC Scraper version (Windows x64) - SINGLE FILE
+          dotnet publish ./LAHEE.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true -o ./publish-win
           cd ..
 
       - name: Package Release
