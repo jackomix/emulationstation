@@ -3,6 +3,7 @@
 
 $PSScriptRoot = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 $ServerPath = Join-Path $PSScriptRoot "Server\LAHEE.exe"
+$ConfigFile = Join-Path $PSScriptRoot "LAHEE.json"
 # Assume ROMs are in the folder containing the RetroAchievements hub
 $RomsPath = (Get-Item $PSScriptRoot).Parent.FullName
 
@@ -13,6 +14,42 @@ if (-not (Test-Path $ServerPath)) {
     exit
 }
 
+# --- CREDENTIAL CHECK ---
+$needsConfig = $true
+if (Test-Path $ConfigFile) {
+    $json = Get-Content $ConfigFile | ConvertFrom-Json
+    if ($json.LAHEE.RAFetch.WebApiKey -and $json.LAHEE.RAFetch.Username) {
+        $needsConfig = $false
+    }
+}
+
+if ($needsConfig) {
+    Write-Host "==============================================="
+    Write-Host "      RetroAchievements API Key Required       "
+    Write-Host "==============================================="
+    Write-Host "LAHEE needs your RA API key to fetch data."
+    Write-Host "Get it here: https://retroachievements.org/settings"
+    Write-Host ""
+    $raUser = Read-Host "RetroAchievements Username"
+    $raKey = Read-Host "RetroAchievements Web API Key"
+    $raPass = Read-Host "RetroAchievements Password (for image downloads)"
+    
+    $configTemplate = @{
+        LAHEE = @{
+            RAFetch = @{
+                Url = "https://retroachievements.org"
+                Username = $raUser
+                WebApiKey = $raKey
+                Password = $raPass
+            }
+        }
+    }
+    
+    $configTemplate | ConvertTo-Json -Depth 10 | Out-File $ConfigFile -Encoding UTF8
+    Write-Host "Config saved to $ConfigFile"
+    Write-Host "-----------------------------------------------"
+}
+
 Write-Host "==============================================="
 Write-Host "          LAHEE Achievement Scraper            "
 Write-Host "==============================================="
@@ -21,7 +58,6 @@ Write-Host "ROMs:   $RomsPath"
 Write-Host "-----------------------------------------------"
 
 # Run LAHEE in scrape mode
-# We pass --hub to ensure it uses the local Data/Badges folders
 & $ServerPath --hub "$PSScriptRoot" scrape "$RomsPath"
 
 Write-Host "-----------------------------------------------"
