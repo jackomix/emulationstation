@@ -102,18 +102,21 @@ class Program {
         Console.CancelKeyPress += Console_CancelKeyPress;
 
         // Support for running commands from command line arguments
-        if (args.Length > 0 && !args[0].StartsWith("--")) {
-            string fullCmd = string.Join(" ", args);
+        // We look for the first argument that DOES NOT start with --
+        string[] cmdArgs = args.Where(a => !a.StartsWith("--")).ToArray();
+        if (cmdArgs.Length > 0) {
+            string fullCmd = string.Join(" ", cmdArgs);
             Log.Main.LogInformation("Running command from CLI: {cmd}", fullCmd);
             try {
-                ExecuteConsoleCommand(ParseConsoleCommand(fullCmd));
+                ExecuteConsoleCommand(cmdArgs);
             } catch (Exception ex) {
                 Log.Main.LogError("Error executing CLI command: {e}", ex);
             }
             
-            // If the command is 'fetch', we exit after completion
-            if (args[0].ToLower() == "fetch") {
-                Log.Main.LogInformation("Fetch command completed. Exiting.");
+            // If the command is 'fetch' or 'scrape', we exit after completion
+            string cmd = cmdArgs[0].ToLower();
+            if (cmd == "fetch" || cmd == "scrape") {
+                Log.Main.LogInformation("{c} command completed. Exiting.", cmd);
                 Console_CancelKeyPress(null, null);
                 return;
             }
