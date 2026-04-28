@@ -64,12 +64,18 @@ public static class RAOfficialServer {
             return;
         }
 
-        Log.RCheevos.LogInformation("Identified as GameID: {id}. Fetching data...", resolve.GameID);
+        Log.RCheevos.LogInformation("Identified as GameID: {id}. Querying Game Metadata...", resolve.GameID);
 
-        // 2. Fetch full data using existing method
+        // 2. Fetch friendly Title for filenames
+        string apiWeb = Program.Config.Get("LAHEE:RAFetch:WebApiKey");
+        RAApiGameResponse gameMeta = Query<RAApiGameResponse>(HttpMethod.Get, Url, "API/API_GetGame.php?y=" + apiWeb + "&i=" + resolve.GameID, null);
+        string friendlyTitle = (gameMeta != null && !string.IsNullOrEmpty(gameMeta.Title)) ? gameMeta.Title : resolve.GameID.ToString();
+
+        // 3. Fetch full data
         FetchData(resolve.GameID.ToString(), null, false, false, null);
 
-        // 3. Export icon to ES images folder
+        // 4. Export icon to ES images folder
+        Log.RCheevos.LogInformation("Exporting icon for \"{t}\" to EmulationStation...", friendlyTitle);
         ExportIconToES(filePath, resolve.GameID);
     }
 

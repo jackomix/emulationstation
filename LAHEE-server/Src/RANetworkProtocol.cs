@@ -37,6 +37,12 @@ class RAApiResolveHashResponse : RAAnyResponse {
     public uint GameID;
 }
 
+class RAApiGameResponse : RAAnyResponse {
+    public uint ID;
+    public string Title;
+    public string ImageIcon;
+}
+
 class RAPatchResponse : RAAnyResponse {
     public GameData PatchData;
 }
