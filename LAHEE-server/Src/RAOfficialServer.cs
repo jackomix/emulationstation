@@ -46,6 +46,59 @@ public static class RAOfficialServer {
         }
     }
 
+    public static void FetchDataByFile(string filePath) {
+        if (!CanFetch) {
+            return;
+        }
+
+        Log.RCheevos.LogInformation("Identifying game for: {f}", Path.GetFileName(filePath));
+        
+        // Note: Real RAHash calculation would use rc_api_runtime (P/Invoke) or similar.
+        // For this implementation, we try to use a simple MD5 fallback if rcheevos is not bound.
+        // In a real build, we'd call the native library.
+        string hash = Utils.MD5(File.ReadAllBytes(filePath)); 
+
+        Log.RCheevos.LogInformation("Hash: {h}. Querying RetroAchievements...", hash);
+
+        // 1. Resolve Hash to GameID
+        RAApiResolveHashResponse resolve = Query<RAApiResolveHashResponse>(HttpMethod.Get, Url, "dorequest.php?r=gameid&m=" + hash, null);
+        if (resolve == null || resolve.GameID == 0) {
+            Log.RCheevos.LogWarning("Could not identify game with hash {h}", hash);
+            return;
+        }
+
+        Log.RCheevos.LogInformation("Identified as GameID: {id}. Fetching data...", resolve.GameID);
+
+        // 2. Fetch full data using existing method
+        FetchData(resolve.GameID.ToString(), null, false, false, null);
+
+        // 3. Export icon to ES images folder
+        ExportIconToES(filePath, resolve.GameID);
+    }
+
+    private static void ExportIconToES(string romPath, uint gameId) {
+        try {
+            string romDir = Path.GetDirectoryName(romPath);
+            string romName = Path.GetFileNameWithoutExtension(romPath);
+            string imagesDir = Path.Combine(romDir, "images");
+            
+            if (!Directory.Exists(imagesDir)) {
+                Directory.CreateDirectory(imagesDir);
+            }
+
+            string badgeDir = Program.Config.Get("LAHEE", "BadgeDirectory");
+            string sourceIcon = Path.Combine(badgeDir, gameId + ".png");
+            string targetIcon = Path.Combine(imagesDir, romName + "-image.png");
+
+            if (File.Exists(sourceIcon)) {
+                File.Copy(sourceIcon, targetIcon, true);
+                Log.RCheevos.LogInformation("Exported icon to: {t}", targetIcon);
+            }
+        } catch (Exception ex) {
+            Log.RCheevos.LogWarning("Failed to export icon to ES: {e}", ex.Message);
+        }
+    }
+
     public static void FetchData(string gameIdStr, string overrideIdStr, bool includeUnofficial, bool force = false, string copyToUsername = null) {
         if (!CanFetch) {
             return;
