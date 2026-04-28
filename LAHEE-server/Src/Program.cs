@@ -102,9 +102,19 @@ class Program {
         Console.CancelKeyPress += Console_CancelKeyPress;
 
         // Support for running commands from command line arguments
-        // We look for the first argument that DOES NOT start with --
-        string[] cmdArgs = args.Where(a => !a.StartsWith("--")).ToArray();
-        if (cmdArgs.Length > 0) {
+        // We need to be careful to skip flag VALUES (like the path after --hub)
+        List<string> commandList = new List<string>();
+        for (int i = 0; i < args.Length; i++) {
+            if (args[i].StartsWith("--")) {
+                // Known flags with values: skip next arg
+                if (args[i] == "--hub" || args[i] == "--roms" || args[i] == "--data") i++;
+                continue;
+            }
+            commandList.Add(args[i]);
+        }
+
+        if (commandList.Count > 0) {
+            string[] cmdArgs = commandList.ToArray();
             string fullCmd = string.Join(" ", cmdArgs);
             Log.Main.LogInformation("Running command from CLI: {cmd}", fullCmd);
             try {
