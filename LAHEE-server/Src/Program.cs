@@ -209,6 +209,32 @@ reloaduser                                                                      
                 }
 
                 break;
+            case "scrape":
+                if (args.Length >= 2) {
+                    string scanDir = args[1];
+                    Log.Main.LogInformation("Starting bulk scrape in: {d}", scanDir);
+                    if (!Directory.Exists(scanDir)) {
+                        Log.Main.LogError("Directory not found!");
+                        break;
+                    }
+                    string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".md", ".bin", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp" };
+                    var roms = Directory.EnumerateFiles(scanDir, "*.*", SearchOption.AllDirectories)
+                        .Where(f => extensions.Contains(Path.GetExtension(f).ToLower()));
+
+                    foreach (var rom in roms) {
+                        try {
+                            Log.Main.LogInformation("Processing: {f}", Path.GetFileName(rom));
+                            // Use RAOfficialServer to fetch by hash (LAHEE should calculate it)
+                            RAOfficialServer.FetchDataByFile(rom);
+                        } catch (Exception ex) {
+                            Log.Main.LogWarning("Failed to scrape {f}: {e}", rom, ex.Message);
+                        }
+                    }
+                    Log.Main.LogInformation("Bulk scrape complete.");
+                } else {
+                    Log.Main.LogError("Command requires a directory path.");
+                }
+                break;
             case "delete":
                 DeleteDataFromConsole(args[1]);
                 break;
