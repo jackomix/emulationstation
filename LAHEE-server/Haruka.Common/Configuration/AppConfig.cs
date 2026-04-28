@@ -32,12 +32,16 @@ public class AppConfig {
         config = builder.Build();
     }
 
+    public string Get(string key) {
+        return config.GetValue<string>(key);
+    }
+
     public string Get(string section, string value) {
-        return config.GetSection(section).GetSection(value)?.Value;
+        return config.GetSection(section).GetValue<string>(value);
     }
 
     public string Get(string section, string subsection, string value) {
-        return config.GetSection(section).GetSection(subsection).GetSection(value).Value;
+        return config.GetSection(section).GetSection(subsection).GetValue<string>(value);
     }
 
     public int GetInt(string section, string value) {

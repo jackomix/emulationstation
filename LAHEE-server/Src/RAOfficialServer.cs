@@ -11,16 +11,16 @@ public static class RAOfficialServer {
     private const string SERVER_ACCOUNT_USER_ID = "019Z8BMP7E37YNRVDSP8SV266G";
 
     public static string Url {
-        get { return Program.Config.Get("LAHEE", "RAFetch", "Url"); }
+        get { return Program.Config.Get("LAHEE:RAFetch:Url"); }
     }
 
     public static string SessionToken { get; private set; }
 
     public static bool CanFetch {
         get {
-            string apiWeb = Program.Config.Get("LAHEE", "RAFetch", "WebApiKey");
-            string username = Program.Config.Get("LAHEE", "RAFetch", "Username");
-            string password = Program.Config.Get("LAHEE", "RAFetch", "Password");
+            string apiWeb = Program.Config.Get("LAHEE:RAFetch:WebApiKey");
+            string username = Program.Config.Get("LAHEE:RAFetch:Username");
+            string password = Program.Config.Get("LAHEE:RAFetch:Password");
 
             if (String.IsNullOrWhiteSpace(Url)) {
                 Log.Main.LogError("Invalid RAFetch Url in configuration.");
