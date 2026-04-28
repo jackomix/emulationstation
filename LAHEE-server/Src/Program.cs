@@ -230,13 +230,21 @@ reloaduser                                                                      
                         Log.Main.LogError("Directory not found!");
                         break;
                     }
-                    string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp" };
+                    string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp", ".md", ".bin" };
+                    string[] consoleFolders = { "megadrive", "genesis", "sega", "psx", "playstation", "segacd", "megacd", "pce", "pcengine", "jaguar", "saturn", "3do", "sms", "master-system", "gamegear", "gg" };
+
                     var roms = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories)
                         .Where(f => {
                             string ext = Path.GetExtension(f).ToLower();
-                            string dir = Path.GetDirectoryName(f).ToLower();
+                            string dirPath = Path.GetDirectoryName(f).ToLower();
+                            string dirName = Path.GetFileName(dirPath);
+                            
+                            bool isGeneric = ext == ".md" || ext == ".bin";
+                            bool inConsoleFolder = consoleFolders.Any(c => dirName.Contains(c));
+
                             return extensions.Contains(ext) && 
-                                   !dir.Contains("retroachievements");
+                                   !dirPath.Contains("retroachievements") &&
+                                   (!isGeneric || inConsoleFolder);
                         });
 
                     foreach (var rom in roms) {
