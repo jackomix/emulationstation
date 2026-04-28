@@ -2,8 +2,9 @@
 # Run this on your PC to fetch achievement data for your ROMs folder
 
 $PSScriptRoot = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-$ServerPath = Join-Path $PSScriptRoot "Server\LAHEE.exe"
-$ConfigFile = Join-Path $PSScriptRoot "LAHEE.json"
+$ServerDir = Join-Path $PSScriptRoot "Server"
+$ServerPath = Join-Path $ServerDir "LAHEE.exe"
+$ConfigFile = Join-Path $ServerDir "LAHEE.json"
 # Assume ROMs are in the folder containing the RetroAchievements hub
 $RomsPath = (Get-Item $PSScriptRoot).Parent.FullName
 

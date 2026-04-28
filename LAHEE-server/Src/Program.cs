@@ -230,7 +230,7 @@ reloaduser                                                                      
                         Log.Main.LogError("Directory not found!");
                         break;
                     }
-                    string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".md", ".bin", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp" };
+                    string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp" };
                     var roms = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories)
                         .Where(f => {
                             string ext = Path.GetExtension(f).ToLower();
