@@ -128,23 +128,7 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 			SystemConf::getInstance()->saveSystemConf();
 			
 			// NATIVE INJECTION: Force overwrite in RetroArch's real config file
-			std::vector<std::string> cfgPaths = { 
-				"/home/ark/.config/retroarch/retroarch.cfg",
-				"/home/ark/.config/retroarch32/retroarch.cfg",
-				"/storage/.config/retroarch/retroarch.cfg"
-			};
-
-			for (const auto& path : cfgPaths) {
-				if (Utils::FileSystem::exists(path)) {
-					// Use sh -c to handle multi-command sed
-					std::string sedCmd = "sed -i 's/cheevos_username = .*/cheevos_username = \"" + selected + "\"/g' \"" + path + "\" ; " +
-					                     "sed -i 's/cheevos_password = .*/cheevos_password = \"lahee\"/g' \"" + path + "\" ; " +
-										 "sed -i 's/cheevos_token = .*/cheevos_token = \"\"/g' \"" + path + "\"";
-					std::string fullSed = "sh -c '" + sedCmd + "'";
-					Utils::Platform::ProcessStartInfo(fullSed).run();
-					LOG(LogInfo) << "Injected profile " << selected << " into " << path;
-				}
-			}
+			RetroAchievements::updateRetroArchConfig();
 			
 			// Notify the engine
 			HttpReqOptions options;
