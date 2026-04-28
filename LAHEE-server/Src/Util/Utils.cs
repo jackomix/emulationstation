@@ -95,6 +95,29 @@ class Utils {
         return Math.Floor(diff.TotalSeconds);
     }
 
+    public static string GenerateRAHash(string filePath) {
+        byte[] data = File.ReadAllBytes(filePath);
+        string ext = Path.GetExtension(filePath).ToLower();
+
+        // RAHasher specific logic:
+        // NES: Skip 16 byte iNES header
+        if (ext == ".nes" && data.Length > 16) {
+            byte[] body = new byte[data.Length - 16];
+            Buffer.BlockCopy(data, 16, body, 0, body.Length);
+            return MD5(body);
+        }
+
+        // Most other systems (GB, GBC, GBA, SMS, GG, MD) use full file MD5
+        return MD5(data);
+    }
+
+    public static string MD5(byte[] data) {
+        using (var md5 = System.Security.Cryptography.MD5.Create()) {
+            byte[] hashBytes = md5.ComputeHash(data);
+            return Convert.ToHexString(hashBytes).ToLower();
+        }
+    }
+
     public static string MD5(string data) {
         using (MD5 md5 = System.Security.Cryptography.MD5.Create()) {
             byte[] inputBytes = Encoding.ASCII.GetBytes(data);

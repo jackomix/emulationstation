@@ -53,12 +53,9 @@ public static class RAOfficialServer {
 
         Log.RCheevos.LogInformation("Identifying game for: {f}", Path.GetFileName(filePath));
         
-        // Note: Real RAHash calculation would use rc_api_runtime (P/Invoke) or similar.
-        // For this implementation, we try to use a simple MD5 fallback if rcheevos is not bound.
-        // In a real build, we'd call the native library.
-        string hash = Utils.MD5(File.ReadAllBytes(filePath)); 
+        string hash = Utils.GenerateRAHash(filePath); 
 
-        Log.RCheevos.LogInformation("Hash: {h}. Querying RetroAchievements...", hash);
+        Log.RCheevos.LogInformation("RAHash: {h}. Querying RetroAchievements...", hash);
 
         // 1. Resolve Hash to GameID
         RAApiResolveHashResponse resolve = Query<RAApiResolveHashResponse>(HttpMethod.Get, Url, "dorequest.php?r=gameid&m=" + hash, null);
