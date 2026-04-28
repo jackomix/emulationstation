@@ -110,7 +110,7 @@ public static class RAOfficialServer {
         }
     }
 
-    public static void FetchData(string gameIdStr, string overrideIdStr, bool includeUnofficial, bool force = false, string customTitle = null) {
+    public static void FetchData(string gameIdStr, string overrideIdStr, bool includeUnofficial, bool force = false, string customTitle = null, string copyToUsername = null) {
         if (!CanFetch) {
             return;
         }
