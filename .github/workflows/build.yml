@@ -61,6 +61,7 @@ jobs:
           cp -r LAHEE-server/publish/* release/RetroAchievements/Server/
           cp -r LAHEE-server/Web release/RetroAchievements/Server/
           cp LAHEE-server/lahee_startup.sh release/RetroAchievements/Server/
+          cp LAHEE-server/ScrapeAchievements.ps1 release/RetroAchievements/
           chmod +x release/RetroAchievements/Server/lahee_startup.sh
           # Ensure scripts are executable
           chmod +x release/emulationstation
