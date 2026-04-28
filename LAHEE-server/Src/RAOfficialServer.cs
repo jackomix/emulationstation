@@ -70,9 +70,12 @@ public static class RAOfficialServer {
         string apiWeb = Program.Config.Get("LAHEE:RAFetch:WebApiKey");
         RAApiGameResponse gameMeta = Query<RAApiGameResponse>(HttpMethod.Get, Url, "API/API_GetGame.php?y=" + apiWeb + "&i=" + resolve.GameID, null);
         string friendlyTitle = (gameMeta != null && !string.IsNullOrEmpty(gameMeta.Title)) ? gameMeta.Title : resolve.GameID.ToString();
+        
+        // Sanitize for Windows/Linux filesystem safety
+        string safeTitle = new string(friendlyTitle.Where(ch => !Path.GetInvalidFileNameChars().Contains(ch)).ToArray());
 
-        // 3. Fetch full data
-        FetchData(resolve.GameID.ToString(), null, false, false, null);
+        // 3. Fetch full data (passing safeTitle to use for filename)
+        FetchData(resolve.GameID.ToString(), null, false, false, safeTitle);
 
         // 4. Export icon to ES images folder
         Log.RCheevos.LogInformation("Exporting icon for \"{t}\" to EmulationStation...", friendlyTitle);
@@ -107,13 +110,13 @@ public static class RAOfficialServer {
         }
     }
 
-    public static void FetchData(string gameIdStr, string overrideIdStr, bool includeUnofficial, bool force = false, string copyToUsername = null) {
+    public static void FetchData(string gameIdStr, string overrideIdStr, bool includeUnofficial, bool force = false, string customTitle = null) {
         if (!CanFetch) {
             return;
         }
 
-        string apiWeb = Program.Config.Get("LAHEE", "RAFetch", "WebApiKey");
-        string username = Program.Config.Get("LAHEE", "RAFetch", "Username");
+        string apiWeb = Program.Config.Get("LAHEE:RAFetch:WebApiKey");
+        string username = Program.Config.Get("LAHEE:RAFetch:Username");
 
         if (!UInt32.TryParse(gameIdStr, out uint fetchId)) {
             Log.Main.LogError("Not a valid game ID: {i}", gameIdStr);
@@ -139,8 +142,10 @@ public static class RAOfficialServer {
             return;
         }
 
+        string useTitle = customTitle ?? patch.Title;
+
         GameData gameData = new GameData() {
-            Title = patch.Title,
+            Title = useTitle,
             ID = patch.GameID,
             ConsoleID = patch.ConsoleID,
             ImageIconURL = patch.ImageIconURL,
