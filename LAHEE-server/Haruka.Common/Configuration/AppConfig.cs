@@ -33,7 +33,16 @@ public class AppConfig {
     }
 
     public string Get(string key) {
-        return config.GetValue<string>(key);
+        string val = config.GetValue<string>(key);
+        if (val != null) return val;
+
+        // Provide defaults for core LAHEE keys to prevent crashes
+        if (key == "LAHEE:UserDirectory") return "User";
+        if (key == "LAHEE:DataDirectory") return "Data";
+        if (key == "LAHEE:BadgeDirectory") return "Badge";
+        if (key == "LAHEE:RAFetch:Url") return "https://retroachievements.org";
+        
+        return null;
     }
 
     public string Get(string section, string value) {
