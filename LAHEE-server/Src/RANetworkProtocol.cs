@@ -33,6 +33,10 @@ class RAGameIDResponse : RAAnyResponse {
     public uint GameID;
 }
 
+class RAApiResolveHashResponse : RAAnyResponse {
+    public uint GameID;
+}
+
 class RAPatchResponse : RAAnyResponse {
     public GameData PatchData;
 }

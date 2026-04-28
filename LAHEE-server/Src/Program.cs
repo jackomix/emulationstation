@@ -218,7 +218,7 @@ reloaduser                                                                      
                         break;
                     }
                     string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".md", ".bin", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp" };
-                    var roms = Directory.EnumerateFiles(scanDir, "*.*", SearchOption.AllDirectories)
+                    var roms = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories)
                         .Where(f => extensions.Contains(Path.GetExtension(f).ToLower()));
 
                     foreach (var rom in roms) {
