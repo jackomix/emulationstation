@@ -87,6 +87,11 @@ public static class RAOfficialServer {
             string sourceIcon = Path.Combine(badgeDir, gameId + ".png");
             string targetIcon = Path.Combine(imagesDir, romName + "-icon.png");
 
+            if (File.Exists(targetIcon)) {
+                Log.RCheevos.LogInformation("Icon already exists, skipping: {t}", targetIcon);
+                return;
+            }
+
             if (File.Exists(sourceIcon)) {
                 File.Copy(sourceIcon, targetIcon, true);
                 Log.RCheevos.LogInformation("Exported icon to: {t}", targetIcon);
