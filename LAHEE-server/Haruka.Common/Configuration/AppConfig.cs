@@ -37,20 +37,26 @@ public class AppConfig {
         if (val != null) return val;
 
         // Provide defaults for core LAHEE keys to prevent crashes
-        if (key == "LAHEE:UserDirectory") return "User";
-        if (key == "LAHEE:DataDirectory") return "Data";
-        if (key == "LAHEE:BadgeDirectory") return "Badge";
-        if (key == "LAHEE:RAFetch:Url") return "https://retroachievements.org";
+        if (key == "LAHEE:UserDirectory" || key == "UserDirectory") return "User";
+        if (key == "LAHEE:DataDirectory" || key == "DataDirectory") return "Data";
+        if (key == "LAHEE:BadgeDirectory" || key == "BadgeDirectory") return "Badge";
+        if (key == "LAHEE:RAFetch:Url" || key == "RAFetch:Url") return "https://retroachievements.org";
         
         return null;
     }
 
     public string Get(string section, string value) {
-        return config.GetSection(section).GetValue<string>(value);
+        string key = section + ":" + value;
+        string val = config.GetSection(section).GetValue<string>(value);
+        if (val != null) return val;
+        return Get(key);
     }
 
     public string Get(string section, string subsection, string value) {
-        return config.GetSection(section).GetSection(subsection).GetValue<string>(value);
+        string key = section + ":" + subsection + ":" + value;
+        string val = config.GetSection(section).GetSection(subsection).GetValue<string>(value);
+        if (val != null) return val;
+        return Get(key);
     }
 
     public int GetInt(string section, string value) {
