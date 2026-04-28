@@ -106,8 +106,8 @@ class Program {
         List<string> commandList = new List<string>();
         for (int i = 0; i < args.Length; i++) {
             if (args[i].StartsWith("--")) {
-                // Known flags with values: skip next arg
-                if (args[i] == "--hub" || args[i] == "--roms" || args[i] == "--data") i++;
+                // Known flags with values: skip next arg if it exists
+                if ((args[i] == "--hub" || args[i] == "--roms" || args[i] == "--data") && i + 1 < args.Length) i++;
                 continue;
             }
             commandList.Add(args[i]);
