@@ -314,11 +314,12 @@ void RetroAchievements::updateRetroArchConfig() {
 
 	for (const auto& path : cfgPaths) {
 		if (Utils::FileSystem::exists(path)) {
-			// ROBUST INJECTION: Delete the line if it exists, then append the correct value.
-			// This handles missing lines, differently formatted lines, and ensures our value is at the bottom (RA priority).
+			// ROBUST INJECTION: Delete the lines if they exist, then append the correct values.
+			// cheevos_custom_host is CRITICAL for LAHEE to work.
 			std::string cmd = "sed -i '/cheevos_username/d' \"" + path + "\" ; echo 'cheevos_username = \"" + selected + "\"' >> \"" + path + "\" ; " +
 			                  "sed -i '/cheevos_password/d' \"" + path + "\" ; echo 'cheevos_password = \"lahee\"' >> \"" + path + "\" ; " +
 							  "sed -i '/cheevos_token/d' \"" + path + "\" ; echo 'cheevos_token = \"\"' >> \"" + path + "\" ; " +
+							  "sed -i '/cheevos_custom_host/d' \"" + path + "\" ; echo 'cheevos_custom_host = \"http://127.0.0.1:8000/laheer/\"' >> \"" + path + "\" ; " +
 							  "sed -i '/cheevos_enable/d' \"" + path + "\" ; echo 'cheevos_enable = \"true\"' >> \"" + path + "\"";
 			
 			std::string fullCmd = "sh -c '" + cmd + "'";
