@@ -39,7 +39,7 @@ public class AppConfig {
         // Provide defaults for core LAHEE keys to prevent crashes
         if (key == "LAHEE:UserDirectory" || key == "UserDirectory") return "User";
         if (key == "LAHEE:DataDirectory" || key == "DataDirectory") return "Data";
-        if (key == "LAHEE:BadgeDirectory" || key == "BadgeDirectory") return "Badge";
+        if (key == "LAHEE:BadgeDirectory" || key == "BadgeDirectory") return "Images";
         if (key == "LAHEE:RAFetch:Url" || key == "RAFetch:Url") return "https://retroachievements.org";
         
         return null;

@@ -162,14 +162,19 @@ public static class RAOfficialServer {
             dirName = fetchId + " - " + displayTitle;
         }
         
-        // Sanitize folder name
+        // Group by Console
+        string consoleName = GetConsoleName(patch.ConsoleID);
+        
+        // Sanitize names
+        consoleName = new string(consoleName.Where(ch => !Path.GetInvalidFileNameChars().Contains(ch)).ToArray());
         dirName = new string(dirName.Where(ch => !Path.GetInvalidFileNameChars().Contains(ch)).ToArray());
         
-        string gameDir = Path.Combine(Program.Config.Get("LAHEE", "DataDirectory"), dirName);
-        string badgeDir = Path.Combine(gameDir, "Badge");
+        string dataDir = Program.Config.Get("LAHEE:DataDirectory") ?? "Data";
+        string gameDir = Path.Combine(dataDir, consoleName, dirName);
+        string imageDir = Path.Combine(gameDir, "Images");
 
-        if (!Directory.Exists(badgeDir)) {
-            Directory.CreateDirectory(badgeDir);
+        if (!Directory.Exists(imageDir)) {
+            Directory.CreateDirectory(imageDir);
         }
 
         GameData gameData = new GameData() {
@@ -217,7 +222,12 @@ public static class RAOfficialServer {
         File.WriteAllText(outputFile, JsonConvert.SerializeObject(gameData));
         File.WriteAllLines(hashFile, hashes);
 
-        Log.RCheevos.LogInformation("Downloading assets for \"{t}\"...", displayTitle);
+        if (Program.IsMachineMode) {
+            Console.WriteLine($"STATUS:Downloading achievements for \"{displayTitle}\"...");
+            Console.Out.Flush();
+        } else {
+            Log.RCheevos.LogInformation("Downloading assets for \"{t}\"...", displayTitle);
+        }
 
         // Save Icon
         if (!string.IsNullOrEmpty(patch.ImageIconURL)) {
@@ -229,10 +239,20 @@ public static class RAOfficialServer {
         }
 
         // Save Badges (Skip _lock)
-        foreach (AchievementData ach in gameData.GetAllAchievements()) {
+        var allAch = gameData.GetAllAchievements().ToList();
+        int achTotal = allAch.Count;
+        int achCurrent = 0;
+
+        foreach (AchievementData ach in allAch) {
+            achCurrent++;
             if (!string.IsNullOrEmpty(ach.BadgeName)) {
+                if (Program.IsMachineMode) {
+                    Console.WriteLine($"ACH_PROGRESS:{achCurrent}:{achTotal}");
+                    Console.Out.Flush();
+                }
+
                 string bUrl = Url + "/Badge/" + ach.BadgeName + ".png";
-                string bPath = Path.Combine(badgeDir, ach.BadgeName + ".png");
+                string bPath = Path.Combine(imageDir, ach.BadgeName + ".png");
                 if (!File.Exists(bPath)) {
                     byte[] data = DownloadAsset(bUrl);
                     if (data != null) File.WriteAllBytes(bPath, data);
@@ -260,6 +280,44 @@ public static class RAOfficialServer {
                     userGameData.UnlockAchievement(ad.ID, true, ad.When);
                 }
             }
+        }
+    }
+
+    private static string GetConsoleName(uint consoleId) {
+        switch (consoleId) {
+            case 1: return "Mega Drive";
+            case 2: return "NES";
+            case 3: return "SNES";
+            case 4: return "Game Boy";
+            case 5: return "Game Boy Advance";
+            case 6: return "Nintendo 64";
+            case 7: return "Master System";
+            case 8: return "Game Gear";
+            case 9: return "PC Engine";
+            case 10: return "Atari 2600";
+            case 12: return "PlayStation";
+            case 13: return "PlayStation Portable";
+            case 14: return "PlayStation 2";
+            case 21: return "Nintendo DS";
+            case 23: return "Game Boy Color";
+            case 24: return "Virtual Boy";
+            case 25: return "MSX";
+            case 27: return "Sega Genesis";
+            case 28: return "Sega CD";
+            case 29: return "Sega 32X";
+            case 33: return "Dreamcast";
+            case 37: return "Arcade";
+            case 38: return "Apple II";
+            case 39: return "Sega Saturn";
+            case 40: return "WonderSwan";
+            case 41: return "WonderSwan Color";
+            case 43: return "Neo Geo Pocket";
+            case 44: return "Neo Geo Pocket Color";
+            case 49: return "Nintendo 3DS";
+            case 51: return "Sega Saturn";
+            case 63: return "Atari 7800";
+            case 69: return "Sega CD";
+            default: return "Console " + consoleId;
         }
     }
 

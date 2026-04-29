@@ -88,7 +88,13 @@ function Start-Scrape {
                 $curr = [int]$matches[1]
                 $total = [int]$matches[2]
                 $percent = ($curr / $total) * 100
-                Write-Progress -Activity "Scraping Achievements" -Status "Processing game $curr of $total" -PercentComplete $percent
+                Write-Progress -Activity "Bulk Scraping Games" -Status "Game $curr of $total" -PercentComplete $percent -Id 1
+            }
+            elseif ($line -match "ACH_PROGRESS:(\d+):(\d+)") {
+                $currA = [int]$matches[1]
+                $totalA = [int]$matches[2]
+                $percentA = ($currA / $totalA) * 100
+                Write-Progress -Activity "Downloading Achievements" -Status "Achievement $currA of $totalA" -PercentComplete $percentA -ParentId 1 -Id 2
             }
             elseif ($line -match "STATUS:(.*)") {
                 Write-Host "[+] $($matches[1])" -ForegroundColor Green
@@ -96,14 +102,19 @@ function Start-Scrape {
             elseif ($line -match "ERROR:(.*)") {
                 Write-Host "[!] $($matches[1])" -ForegroundColor Red
             }
+            elseif ($line -match "DEBUG:(.*)") {
+                Write-Host "[DEBUG] $($matches[1])" -ForegroundColor Gray
+            }
         }
         $process.WaitForExit()
     }
     finally {
-        if (-not $process.HasExited) {
+        # FORCE CLEANUP: Ensure LAHEE is killed if script stops
+        if ($process -and -not $process.HasExited) {
             $process.Kill()
         }
-        Write-Progress -Activity "Scraping Achievements" -Completed
+        Write-Progress -Activity "Bulk Scraping Games" -Completed
+        Write-Progress -Activity "Downloading Achievements" -Completed
     }
 
     Write-Host "`n[ FINISHED ] All identified sets have been downloaded." -ForegroundColor Cyan

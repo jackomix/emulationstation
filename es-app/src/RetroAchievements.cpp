@@ -304,12 +304,15 @@ void RetroAchievements::updateRetroArchConfig() {
 
 	for (const auto& path : cfgPaths) {
 		if (Utils::FileSystem::exists(path)) {
-			std::string sedCmd = "sed -i 's/cheevos_username = .*/cheevos_username = \"" + selected + "\"/g' \"" + path + "\" ; " +
-								 "sed -i 's/cheevos_password = .*/cheevos_password = \"lahee\"/g' \"" + path + "\" ; " +
-								 "sed -i 's/cheevos_token = .*/cheevos_token = \"\"/g' \"" + path + "\" ; " +
-								 "sed -i 's/cheevos_enable = .*/cheevos_enable = \"true\"/g' \"" + path + "\"";
-			std::string fullSed = "sh -c '" + sedCmd + "'";
-			Utils::Platform::getShOutput(fullSed);
+			// ROBUST INJECTION: Delete the line if it exists, then append the correct value.
+			// This handles missing lines, differently formatted lines, and ensures our value is at the bottom (RA priority).
+			std::string cmd = "sed -i '/cheevos_username/d' \"" + path + "\" ; echo 'cheevos_username = \"" + selected + "\"' >> \"" + path + "\" ; " +
+			                  "sed -i '/cheevos_password/d' \"" + path + "\" ; echo 'cheevos_password = \"lahee\"' >> \"" + path + "\" ; " +
+							  "sed -i '/cheevos_token/d' \"" + path + "\" ; echo 'cheevos_token = \"\"' >> \"" + path + "\" ; " +
+							  "sed -i '/cheevos_enable/d' \"" + path + "\" ; echo 'cheevos_enable = \"true\"' >> \"" + path + "\"";
+			
+			std::string fullCmd = "sh -c '" + cmd + "'";
+			Utils::Platform::getShOutput(fullCmd);
 			LOG(LogInfo) << "Forced RetroArch profile " << selected << " into " << path;
 		}
 	}

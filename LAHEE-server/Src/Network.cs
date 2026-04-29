@@ -42,11 +42,6 @@ static class Network {
 
         server.Routes.PreAuthentication.Static.Add(HttpMethod.OPTIONS, BASE_DIR + "dorequest.php", Routes.DisableCors, Routes.DefaultErrorRoute);
         
-        // Handle BOTH single and double slashes created by length-matched binary patching
-        // This is the simplest way to support the surgical folder method
-        server.Routes.PreAuthentication.Static.Add(HttpMethod.POST, BASE_DIR + "dorequest.php", Routes.RARequestRoute, Routes.DefaultErrorRoute);
-        server.Routes.PreAuthentication.Static.Add(HttpMethod.GET, BASE_DIR + "dorequest.php", Routes.RARequestRoute, Routes.DefaultErrorRoute);
-        
         server.Routes.Default = Routes.DefaultNotFoundRoute;
 
         // Support BOTH single and double slash paths to accommodate various binary patch styles
