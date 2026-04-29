@@ -124,6 +124,9 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		addSaveFunc([profile_choices] 
 		{ 
 			std::string selected = profile_choices->getSelected();
+			Settings::getInstance()->setString("RetroAchievementsUsername", selected);
+			Settings::getInstance()->saveFile();
+
 			SystemConf::getInstance()->set("global.retroachievements.username", selected);
 			SystemConf::getInstance()->saveSystemConf();
 			
