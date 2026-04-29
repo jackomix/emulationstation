@@ -244,21 +244,13 @@ reloaduser                                                                      
                             try {
                                 string ext = Path.GetExtension(f).ToLower();
                                 string dirPath = Path.GetDirectoryName(f).ToLower();
-                                string dirName = Path.GetFileName(dirPath);
 
                                 if (!extensions.Contains(ext)) continue;
                                 if (dirPath.Contains("retroachievements")) continue;
 
-                                bool isGeneric = ext == ".md" || ext == ".bin";
-                                bool inConsoleFolder = consoleFolders.Any(c => dirName.Contains(c)) || 
-                                                       dirName == "nes" || dirName == "snes" || dirName == "gb" || dirName == "gbc" || dirName == "gba" || dirName == "n64";
-
-                                if (!isGeneric || inConsoleFolder) {
-                                    allRoms.Add(f);
-                                } else if (Program.IsMachineMode) {
-                                    // Console.WriteLine($"STATUS:Skipping generic file {Path.GetFileName(f)} (not in console folder)");
-                                }
-                            } catch { /* skip single file errors */ }
+                                // No more whitelist. If it's a ROM extension, try it!
+                                allRoms.Add(f);
+                            } catch { /* skip single file errors (Access Denied etc) */ }
                         }
                     } catch (Exception ex) {
                         if (Program.IsMachineMode) Console.WriteLine($"ERROR:Enumeration failed: {ex.Message}");
