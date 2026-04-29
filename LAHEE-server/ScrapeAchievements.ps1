@@ -28,8 +28,8 @@ function Get-Credentials {
     $raUser = Read-Host "RetroAchievements Username [$($currentConfig.LAHEE.RAFetch.Username)]"
     if ([string]::IsNullOrWhiteSpace($raUser)) { $raUser = $currentConfig.LAHEE.RAFetch.Username }
 
-    $raKey = Read-Host "RetroAchievements Web API Key (hidden)" -AsSecureString
-    $raKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($raKey))
+    Write-Host "RetroAchievements Web API Key (Get it from retroachievements.org/settings)"
+    $raKey = Read-Host "Paste API Key"
     if ([string]::IsNullOrWhiteSpace($raKey)) { $raKey = $currentConfig.LAHEE.RAFetch.WebApiKey }
 
     $raPass = Read-Host "RetroAchievements Password/Token (hidden)" -AsSecureString

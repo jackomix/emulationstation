@@ -238,23 +238,34 @@ reloaduser                                                                      
                     string[] consoleFolders = { "megadrive", "genesis", "sega", "psx", "playstation", "segacd", "megacd", "pce", "pcengine", "jaguar", "saturn", "3do", "sms", "master-system", "gamegear", "gg" };
 
                     List<string> allRoms = new List<string>();
-                    try {
-                        var files = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories);
-                        foreach (var f in files) {
-                            try {
+                    
+                    // ROBUST RECURSIVE SEARCH: Manually walk directories to handle Access Denied errors
+                    Queue<string> dirs = new Queue<string>();
+                    dirs.Enqueue(scanDir);
+
+                    while (dirs.Count > 0) {
+                        string currentDir = dirs.Dequeue();
+                        if (currentDir.ToLower().Contains("retroachievements")) continue;
+
+                        // 1. Get files in this specific folder
+                        try {
+                            foreach (string f in Directory.GetFiles(currentDir)) {
                                 string ext = Path.GetExtension(f).ToLower();
-                                string dirPath = Path.GetDirectoryName(f).ToLower();
+                                if (extensions.Contains(ext)) {
+                                    allRoms.Add(f);
+                                }
+                            }
+                        } catch { /* skip inaccessible files */ }
 
-                                if (!extensions.Contains(ext)) continue;
-                                if (dirPath.Contains("retroachievements")) continue;
-
-                                // No more whitelist. If it's a ROM extension, try it!
-                                allRoms.Add(f);
-                            } catch { /* skip single file errors (Access Denied etc) */ }
-                        }
-                    } catch (Exception ex) {
-                        if (Program.IsMachineMode) Console.WriteLine($"ERROR:Enumeration failed: {ex.Message}");
-                        else Log.Main.LogError("Enumeration failed: {e}", ex.Message);
+                        // 2. Get subfolders to scan later
+                        try {
+                            foreach (string d in Directory.GetDirectories(currentDir)) {
+                                // Skip obvious system junk
+                                string name = Path.GetFileName(d);
+                                if (name.StartsWith("$") || name == "System Volume Information") continue;
+                                dirs.Enqueue(d);
+                            }
+                        } catch { /* skip inaccessible folders */ }
                     }
 
                     int total = allRoms.Count;
