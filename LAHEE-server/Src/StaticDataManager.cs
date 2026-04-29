@@ -261,7 +261,7 @@ static class StaticDataManager {
     public static string FindBadgePath(string filename) {
         string dataDir = GetDirectory();
         string badgeName = Path.GetFileName(filename);
-        
+
         // RECURSIVE LOOKUP: Find 12345.png in any subfolder of Data/
         var results = Directory.GetFiles(dataDir, badgeName, System.IO.SearchOption.AllDirectories);
         if (results.Length > 0) return results[0];
