@@ -1132,8 +1132,8 @@ static class Routes {
 
     internal static async Task RABadge(HttpContextBase ctx) {
         string filename = ctx.Request.Url.RawWithoutQuery;
-        if (filename.StartsWith(BASE_DIR + "Badge/")) {
-            filename = filename.Substring((BASE_DIR + "Badge/").Length);
+        if (filename.StartsWith(Network.BASE_DIR + "Badge/")) {
+            filename = filename.Substring((Network.BASE_DIR + "Badge/").Length);
         } else if (filename.StartsWith("/Badge/")) {
             filename = filename.Substring(7);
         }

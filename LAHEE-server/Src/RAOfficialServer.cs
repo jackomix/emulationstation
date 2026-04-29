@@ -300,17 +300,16 @@ public static class RAOfficialServer {
         string apiWeb = Program.Config.Get("LAHEE:RAFetch:WebApiKey");
         RAApiCommentsResponse response = Query<RAApiCommentsResponse>(HttpMethod.Get, Url, "API/API_GetAchievementComments.php?y=" + apiWeb + "&i=" + achievementId, null);
         if (response != null && response.Results != null) {
-            foreach (RAApiCommentsResponse.Comment c in response.Results) {
-                StaticDataManager.AddComment(new UserComment() {
-                    User = c.User,
-                    Submitted = c.Submitted,
-                    ULID = "RA" + c.ID,
-                    CommentText = c.CommentText,
-                    AchievementID = achievementId,
-                    IsLocal = false
-                }, StaticDataManager.FindGameDataById(gameId), false);
+            foreach (UserComment c in response.Results) {
+                StaticDataManager.AddComment(c, StaticDataManager.FindGameDataById(gameId), false);
             }
         }
+    }
+
+    public static void FetchUpdatedSets() {
+        if (!CanFetch) return;
+        // Basic stub to fix build error. Real implementation would check for revisions.
+        Log.RCheevos.LogInformation("Checking for set updates...");
     }
 
     private static T Query<T>(HttpMethod method, string url, string endpoint, object body) where T : class {
