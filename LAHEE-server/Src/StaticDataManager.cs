@@ -250,7 +250,7 @@ static class StaticDataManager {
 
     public static uint GetGameIdFromFilePath(string filePath) {
         string fileName = Path.GetFileName(filePath);
-        string idPart = fileName.Split('-', '.')[0];
+        string idPart = fileName.Split('-', '.')[0].Trim();
         if (!UInt32.TryParse(idPart, out uint gameId)) {
             Log.Data.LogWarning("No valid game id found in path: {F}", filePath);
         }

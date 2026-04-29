@@ -92,10 +92,14 @@ public static class RAOfficialServer {
                 Directory.CreateDirectory(imagesDir);
             }
 
-            // Find source icon in nested structure
+            // Find source icon in nested structure with EXACT ID matching
             string dataDir = Program.Config.Get("LAHEE", "DataDirectory");
-            var results = Directory.GetFiles(dataDir, "icon.png", SearchOption.AllDirectories);
-            string sourceIcon = results.FirstOrDefault(f => Path.GetFileName(Path.GetDirectoryName(f)).StartsWith(gameId.ToString()));
+            var results = Directory.GetFiles(dataDir, "icon.png", System.IO.SearchOption.AllDirectories);
+            string sourceIcon = results.FirstOrDefault(f => {
+                string folderName = Path.GetFileName(Path.GetDirectoryName(f));
+                // Match "123 - Title" or just "123" exactly
+                return folderName == gameId.ToString() || folderName.StartsWith(gameId + " - ");
+            });
             
             if (sourceIcon == null) {
                 // Fallback to legacy
