@@ -237,21 +237,36 @@ reloaduser                                                                      
                     string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp", ".md", ".bin" };
                     string[] consoleFolders = { "megadrive", "genesis", "sega", "psx", "playstation", "segacd", "megacd", "pce", "pcengine", "jaguar", "saturn", "3do", "sms", "master-system", "gamegear", "gg" };
 
-                    var allRoms = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories)
-                        .Where(f => {
-                            string ext = Path.GetExtension(f).ToLower();
-                            string dirPath = Path.GetDirectoryName(f).ToLower();
-                            string dirName = Path.GetFileName(dirPath);
-                            
-                            bool isGeneric = ext == ".md" || ext == ".bin";
-                            bool inConsoleFolder = consoleFolders.Any(c => dirName.Contains(c));
+                    List<string> allRoms = new List<string>();
+                    try {
+                        var files = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories);
+                        foreach (var f in files) {
+                            try {
+                                string ext = Path.GetExtension(f).ToLower();
+                                string dirPath = Path.GetDirectoryName(f).ToLower();
+                                string dirName = Path.GetFileName(dirPath);
 
-                            return extensions.Contains(ext) && 
-                                   !dirPath.Contains("retroachievements") &&
-                                   (!isGeneric || inConsoleFolder);
-                        }).ToList();
+                                if (!extensions.Contains(ext)) continue;
+                                if (dirPath.Contains("retroachievements")) continue;
+
+                                bool isGeneric = ext == ".md" || ext == ".bin";
+                                bool inConsoleFolder = consoleFolders.Any(c => dirName.Contains(c)) || 
+                                                       dirName == "nes" || dirName == "snes" || dirName == "gb" || dirName == "gbc" || dirName == "gba" || dirName == "n64";
+
+                                if (!isGeneric || inConsoleFolder) {
+                                    allRoms.Add(f);
+                                } else if (Program.IsMachineMode) {
+                                    // Console.WriteLine($"STATUS:Skipping generic file {Path.GetFileName(f)} (not in console folder)");
+                                }
+                            } catch { /* skip single file errors */ }
+                        }
+                    } catch (Exception ex) {
+                        if (Program.IsMachineMode) Console.WriteLine($"ERROR:Enumeration failed: {ex.Message}");
+                        else Log.Main.LogError("Enumeration failed: {e}", ex.Message);
+                    }
 
                     int total = allRoms.Count;
+                    if (Program.IsMachineMode) Console.WriteLine($"STATUS:Found {total} games to process.");
                     int current = 0;
 
                     foreach (var rom in allRoms) {
