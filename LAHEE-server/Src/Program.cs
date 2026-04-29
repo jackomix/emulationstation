@@ -237,6 +237,7 @@ reloaduser                                                                      
                     string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp", ".md", ".bin" };
                     string[] consoleFolders = { "megadrive", "genesis", "sega", "psx", "playstation", "segacd", "megacd", "pce", "pcengine", "jaguar", "saturn", "3do", "sms", "master-system", "gamegear", "gg" };
 
+                    Log.Main.LogInformation("Scanning directory: {d}", scanDir);
                     List<string> allRoms = new List<string>();
                     
                     // ROBUST RECURSIVE SEARCH: Manually walk directories to handle Access Denied errors
@@ -247,28 +248,35 @@ reloaduser                                                                      
                         string currentDir = dirs.Dequeue();
                         if (currentDir.ToLower().Contains("retroachievements")) continue;
 
+                        Log.Main.LogDebug("Walking: {d}", currentDir);
+
                         // 1. Get files in this specific folder
                         try {
-                            foreach (string f in Directory.GetFiles(currentDir)) {
+                            string[] files = Directory.GetFiles(currentDir);
+                            foreach (string f in files) {
                                 string ext = Path.GetExtension(f).ToLower();
                                 if (extensions.Contains(ext)) {
                                     allRoms.Add(f);
                                 }
                             }
-                        } catch { /* skip inaccessible files */ }
+                        } catch (Exception ex) { 
+                            Log.Main.LogDebug("Access denied to files in {d}: {e}", currentDir, ex.Message);
+                        }
 
                         // 2. Get subfolders to scan later
                         try {
                             foreach (string d in Directory.GetDirectories(currentDir)) {
-                                // Skip obvious system junk
                                 string name = Path.GetFileName(d);
-                                if (name.StartsWith("$") || name == "System Volume Information") continue;
+                                if (name.StartsWith("$") || name == "System Volume Information" || name == "RECYCLE.BIN") continue;
                                 dirs.Enqueue(d);
                             }
-                        } catch { /* skip inaccessible folders */ }
+                        } catch (Exception ex) { 
+                            Log.Main.LogDebug("Access denied to subdirs in {d}: {e}", currentDir, ex.Message);
+                        }
                     }
 
                     int total = allRoms.Count;
+                    Log.Main.LogInformation("Search complete. Total ROMs found: {t}", total);
                     if (Program.IsMachineMode) Console.WriteLine($"STATUS:Found {total} games to process.");
                     int current = 0;
 
