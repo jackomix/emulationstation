@@ -283,7 +283,7 @@ public static class RAOfficialServer {
         }
     }
 
-    private static string GetConsoleName(uint consoleId) {
+    private static string GetConsoleName(int consoleId) {
         switch (consoleId) {
             case 1: return "Mega Drive";
             case 2: return "NES";
