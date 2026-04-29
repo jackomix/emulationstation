@@ -160,6 +160,8 @@ class Program {
                         string currentDir = dirs.Dequeue();
                         if (currentDir.ToLower().Contains("retroachievements")) continue;
 
+                        if (IsMachineMode) Console.WriteLine($"DEBUG:Walking {currentDir}");
+
                         try {
                             // Find ROMs
                             string[] files = Directory.GetFiles(currentDir);

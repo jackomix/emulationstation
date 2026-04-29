@@ -63,8 +63,10 @@ function Start-Scrape {
     Write-Host "Scanning ROMs in: $RomsPath" -ForegroundColor Gray
     Write-Host "Launching LAHEE Engine..." -ForegroundColor Gray
 
-    # CLEAN PATH: Remove trailing \ so it doesn't escape the CLI quotes
-    $cleanRomsPath = $RomsPath.TrimEnd('\')
+    # CLEAN PATH: Use forward slashes and ensure trailing slash for roots
+    # This prevents Windows from seeing G: as relative and avoids quote escaping bugs
+    $cleanRomsPath = $RomsPath.Replace('\', '/')
+    if (-not $cleanRomsPath.EndsWith('/')) { $cleanRomsPath += '/' }
 
     $processInfo = New-Object System.Diagnostics.ProcessStartInfo
     $processInfo.FileName = $ServerPath
