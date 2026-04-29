@@ -293,18 +293,9 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 }
 
 void RetroAchievements::updateRetroArchConfig() {
-	// 1. Try to get the active LAHEE profile
 	std::string selected = Settings::getInstance()->getString("RetroAchievementsUsername");
-	
-	// 2. Fallback to global config
-	if (selected.empty()) {
-		selected = SystemConf::getInstance()->get("global.retroachievements.username");
-	}
-
-	// 3. Ultimate fallback
-	if (selected.empty()) {
-		selected = "Player";
-	}
+	if (selected.empty()) selected = SystemConf::getInstance()->get("global.retroachievements.username");
+	if (selected.empty()) selected = "Player";
 
 	std::vector<std::string> cfgPaths = {
 		"/home/ark/.config/retroarch/retroarch.cfg",
@@ -314,17 +305,22 @@ void RetroAchievements::updateRetroArchConfig() {
 
 	for (const auto& path : cfgPaths) {
 		if (Utils::FileSystem::exists(path)) {
-			// ROBUST INJECTION: Delete the lines if they exist, then append the correct values.
-			// cheevos_custom_host is CRITICAL for LAHEE to work.
-			std::string cmd = "sed -i '/cheevos_username/d' \"" + path + "\" ; echo 'cheevos_username = \"" + selected + "\"' >> \"" + path + "\" ; " +
-			                  "sed -i '/cheevos_password/d' \"" + path + "\" ; echo 'cheevos_password = \"lahee\"' >> \"" + path + "\" ; " +
-							  "sed -i '/cheevos_token/d' \"" + path + "\" ; echo 'cheevos_token = \"\"' >> \"" + path + "\" ; " +
-							  "sed -i '/cheevos_custom_host/d' \"" + path + "\" ; echo 'cheevos_custom_host = \"http://127.0.0.1:8000/laheer/\"' >> \"" + path + "\" ; " +
-							  "sed -i '/cheevos_enable/d' \"" + path + "\" ; echo 'cheevos_enable = \"true\"' >> \"" + path + "\"";
-			
-			std::string fullCmd = "sh -c '" + cmd + "'";
-			Utils::Platform::getShOutput(fullCmd);
-			LOG(LogInfo) << "Forced RetroArch profile " << selected << " into " << path;
+			LOG(LogInfo) << "Injecting RetroArch config: " << selected << " into " << path;
+
+			// ROBUST INJECTION: Use a temporary script to avoid shell escaping hell.
+			std::string script = "sed -i '/cheevos_username/d' \"" + path + "\"\n" +
+			                     "echo 'cheevos_username = \"" + selected + "\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/cheevos_password/d' \"" + path + "\"\n" +
+			                     "echo 'cheevos_password = \"lahee\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/cheevos_token/d' \"" + path + "\"\n" +
+			                     "echo 'cheevos_token = \"\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/cheevos_custom_host/d' \"" + path + "\"\n" +
+			                     "echo 'cheevos_custom_host = \"http://127.0.0.1:8000/laheer/\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/cheevos_enable/d' \"" + path + "\"\n" +
+			                     "echo 'cheevos_enable = \"true\"' >> \"" + path + "\"\n";
+
+			Utils::FileSystem::writeAllText("/tmp/inject_ra.sh", script);
+			Utils::Platform::getShOutput("sh /tmp/inject_ra.sh");
 		}
 	}
 }
