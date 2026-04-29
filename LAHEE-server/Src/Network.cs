@@ -68,9 +68,12 @@ static class Network {
 
         // Content
         server.Routes.PreAuthentication.Content = new CacheableContentRouteManager(Program.Config.GetInt("Watson", "ResourceCacheSeconds"));
-        server.Routes.PreAuthentication.Content.Add(BASE_DIR + "Badge/", true);
         server.Routes.PreAuthentication.Content.Add(BASE_DIR + "UserPic/", true);
         server.Routes.PreAuthentication.Content.Add(BASE_DIR + "Web/", true);
+
+        // Recursive Badge Serving
+        server.Routes.PreAuthentication.Dynamic.Add(HttpMethod.GET, new System.Text.RegularExpressions.Regex(BASE_DIR + "Badge/.*"), Routes.RABadge);
+        server.Routes.PreAuthentication.Dynamic.Add(HttpMethod.GET, new System.Text.RegularExpressions.Regex("/Badge/.*"), Routes.RABadge);
 
         // Fast-fail for UserPic to prevent 10s hang
         server.Routes.PreAuthentication.Dynamic.Add(HttpMethod.GET, new System.Text.RegularExpressions.Regex(BASE_DIR + "UserPic/.*"), Routes.FastFailUserPic);
@@ -1125,6 +1128,31 @@ static class Routes {
             Response = gameIds.Select(StaticDataManager.FindGameDataById).Where(game => game != null).ToArray()
         };
         await ctx.Response.SendJson(response);
+    }
+
+    internal static async Task RABadge(HttpContextBase ctx) {
+        string filename = ctx.Request.Url.RawWithoutQuery;
+        if (filename.StartsWith(BASE_DIR + "Badge/")) {
+            filename = filename.Substring((BASE_DIR + "Badge/").Length);
+        } else if (filename.StartsWith("/Badge/")) {
+            filename = filename.Substring(7);
+        }
+
+        string physicalPath = StaticDataManager.FindBadgePath(filename);
+        if (physicalPath == null || !File.Exists(physicalPath)) {
+            ctx.Response.StatusCode = 404;
+            await ctx.Response.Send(ctx.Token);
+            return;
+        }
+
+        FileInfo fi = new FileInfo(physicalPath);
+        using (FileStream fs = new FileStream(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+            ctx.Response.StatusCode = 200;
+            ctx.Response.ContentLength = fi.Length;
+            ctx.Response.ContentType = "image/png";
+            ctx.Response.Headers.Add("Cache-Control", "max-age=" + Program.Config.GetInt("Watson", "ResourceCacheSeconds"));
+            await ctx.Response.Send(fi.Length, fs, ctx.Token);
+        }
     }
 
     internal static async Task RAUserSummary(HttpContextBase ctx) {

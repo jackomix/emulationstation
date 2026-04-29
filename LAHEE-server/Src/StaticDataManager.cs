@@ -51,7 +51,10 @@ static class StaticDataManager {
 
         Dictionary<LoadPriority, List<string>> loadQueue = Enum.GetValues<LoadPriority>().ToDictionary(p => p, _ => new List<string>());
 
-        foreach (string file in Directory.GetFiles(dir).Order()) {
+        // RECURSIVE SCAN: Search all subdirectories for metadata files
+        var allFiles = Directory.GetFiles(dir, "*.*", System.IO.SearchOption.AllDirectories).Order();
+
+        foreach (string file in allFiles) {
             Log.Data.LogDebug("Detected file: {F}", file);
             if (file.EndsWith(CUSTOM_ACHIEVEMENT_COUNTER_FILE)) {
                 ParseAchievementCounterFile(File.ReadAllText(file));
@@ -253,6 +256,22 @@ static class StaticDataManager {
         }
 
         return gameId;
+    }
+
+    public static string FindBadgePath(string filename) {
+        string dataDir = GetDirectory();
+        string badgeName = Path.GetFileName(filename);
+        
+        // RECURSIVE LOOKUP: Find 12345.png in any subfolder of Data/
+        var results = Directory.GetFiles(dataDir, badgeName, SearchOption.AllDirectories);
+        if (results.Length > 0) return results[0];
+
+        // Legacy fallback
+        string legacyBadgeDir = Program.Config.Get("LAHEE", "BadgeDirectory") ?? "Badge";
+        string legacyPath = Path.Combine(legacyBadgeDir, badgeName);
+        if (File.Exists(legacyPath)) return legacyPath;
+
+        return null;
     }
 
     private static void RegisterOrMergeGame(uint gameId, GameDataJsonV1 legacy) {

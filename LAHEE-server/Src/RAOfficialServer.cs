@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace LAHEE;
 
 public static class RAOfficialServer {
-    private const string SERVER_ACCOUNT_USER_ID = "019Z8BMP7E37YNRVDSP8SV266G";
+    private static string sessionToken;
 
     public static string Url {
         get { return Program.Config.Get("LAHEE:RAFetch:Url"); }
@@ -92,8 +92,17 @@ public static class RAOfficialServer {
                 Directory.CreateDirectory(imagesDir);
             }
 
-            string badgeDir = Program.Config.Get("LAHEE", "BadgeDirectory");
-            string sourceIcon = Path.Combine(badgeDir, gameId + ".png");
+            // Find source icon in nested structure
+            string dataDir = Program.Config.Get("LAHEE", "DataDirectory");
+            var results = Directory.GetFiles(dataDir, "icon.png", SearchOption.AllDirectories);
+            string sourceIcon = results.FirstOrDefault(f => Path.GetFileName(Path.GetDirectoryName(f)).StartsWith(gameId.ToString()));
+            
+            if (sourceIcon == null) {
+                // Fallback to legacy
+                string badgeDir = Program.Config.Get("LAHEE", "BadgeDirectory");
+                sourceIcon = Path.Combine(badgeDir, gameId + ".png");
+            }
+
             string targetIcon = Path.Combine(imagesDir, romName + "-icon.png");
 
             if (File.Exists(targetIcon)) {
@@ -142,10 +151,25 @@ public static class RAOfficialServer {
             return;
         }
 
-        string useTitle = customTitle ?? patch.Title;
+        // --- NEW NESTED STRUCTURE LOGIC ---
+        string displayTitle = customTitle ?? patch.Title;
+        string dirName = fetchId.ToString();
+        if (!string.IsNullOrEmpty(displayTitle) && displayTitle != fetchId.ToString()) {
+            dirName = fetchId + " - " + displayTitle;
+        }
+        
+        // Sanitize folder name
+        dirName = new string(dirName.Where(ch => !Path.GetInvalidFileNameChars().Contains(ch)).ToArray());
+        
+        string gameDir = Path.Combine(Program.Config.Get("LAHEE", "DataDirectory"), dirName);
+        string badgeDir = Path.Combine(gameDir, "Badge");
+
+        if (!Directory.Exists(badgeDir)) {
+            Directory.CreateDirectory(badgeDir);
+        }
 
         GameData gameData = new GameData() {
-            Title = useTitle,
+            Title = displayTitle,
             ID = patch.GameID,
             ConsoleID = patch.ConsoleID,
             ImageIconURL = patch.ImageIconURL,
@@ -158,28 +182,14 @@ public static class RAOfficialServer {
         };
 
         List<string> hashes = new List<string>();
-
         RAApiHashesResponse hashResponse = Query<RAApiHashesResponse>(HttpMethod.Get, Url, "API/API_GetGameHashes.php?y=" + apiWeb + "&i=" + fetchId, null);
-        if (hashResponse == null) {
-            return;
-        }
-
-        foreach (RAApiHashesResponse.Hash h in hashResponse.Results) {
-            if (!hashes.Contains(h.MD5)) {
-                hashes.Add(h.MD5);
+        if (hashResponse != null) {
+            foreach (RAApiHashesResponse.Hash h in hashResponse.Results) {
+                if (!hashes.Contains(h.MD5)) hashes.Add(h.MD5);
             }
         }
 
-        Dictionary<string, string> imageDownloads = new Dictionary<string, string>();
-        imageDownloads.Add(gameData.ImageIcon, gameData.ImageIconURL);
-        foreach (AchievementData ad in gameData.GetAllAchievements()) {
-            imageDownloads[ad.BadgeName] = ad.BadgeURL;
-            imageDownloads[Path.GetFileNameWithoutExtension(ad.BadgeName) + "_lock.png"] = ad.BadgeLockedURL;
-        }
-
         FetchCodeNotes(gameData);
-
-        // Achievement data modifications:
 
         // apply overridden ID for set merges
         gameData.ID = overrideId;
@@ -190,41 +200,41 @@ public static class RAOfficialServer {
             ad.BadgeLockedURL = StaticDataManager.LocalifyUrl(ad.BadgeLockedURL);
         }
 
-        // modify game ids in subsets
         foreach (SetData set in patch.Sets) {
             set.GameID = StaticDataManager.RAIntegrationAssertionWorkaround(overrideId);
         }
 
-        // remove "unsupported emulator"
         gameData.DeleteAchievementById(StaticDataManager.UNSUPPORTED_EMULATOR_ACHIEVEMENT_ID);
 
-        Log.RCheevos.LogInformation("Finished getting data from \"{u}\"", Url);
+        // Save Data Files
+        string outputFile = Path.Combine(gameDir, fetchId + ".set.json");
+        string hashFile = Path.Combine(gameDir, fetchId + ".hash.txt");
 
-        string fileBase = Program.Config.Get("LAHEE", "DataDirectory") + "\\" + overrideId + "-" + new string(gameData.Title.Where(ch => !Program.INVALID_FILE_NAME_CHARS.Contains(ch)).ToArray());
-        string fileData = fileBase + ".set.json";
-        string fileHash = fileBase + ".hash.txt";
-        if (!File.Exists(fileData) || force) {
-            Log.RCheevos.LogInformation("Creating file {f}", fileData);
-            File.WriteAllText(fileData, JsonConvert.SerializeObject(gameData));
-        } else {
-            Log.RCheevos.LogWarning("File {f} already exists, not overwriting! Delete to force an update!", fileData);
+        File.WriteAllText(outputFile, JsonConvert.SerializeObject(gameData));
+        File.WriteAllLines(hashFile, hashes);
+
+        Log.RCheevos.LogInformation("Downloading assets for \"{t}\"...", displayTitle);
+
+        // Save Icon
+        if (!string.IsNullOrEmpty(patch.ImageIconURL)) {
+            string iconUrl = Url + patch.ImageIconURL;
+            byte[] iconData = DownloadAsset(iconUrl);
+            if (iconData != null) {
+                File.WriteAllBytes(Path.Combine(gameDir, "icon.png"), iconData);
+            }
         }
 
-        if (!File.Exists(fileHash) || force) {
-            Log.RCheevos.LogInformation("Creating file {f}", fileHash);
-            File.WriteAllLines(fileHash, hashes);
-        } else {
-            Log.RCheevos.LogWarning("File {f} already exists, not overwriting! Delete to force an update!", fileHash);
+        // Save Badges (Skip _lock)
+        foreach (AchievementData ach in gameData.GetAllAchievements()) {
+            if (!string.IsNullOrEmpty(ach.BadgeName)) {
+                string bUrl = Url + "/Badge/" + ach.BadgeName + ".png";
+                string bPath = Path.Combine(badgeDir, ach.BadgeName + ".png");
+                if (!File.Exists(bPath)) {
+                    byte[] data = DownloadAsset(bUrl);
+                    if (data != null) File.WriteAllBytes(bPath, data);
+                }
+            }
         }
-
-        Log.RCheevos.LogInformation("Finished copying achievement definition data for \"{n}\"", gameData.Title);
-
-        Log.RCheevos.LogInformation("Downloading image files... This may take a while...");
-        foreach (KeyValuePair<string, string> image in imageDownloads) {
-            CheckAndQueryImage(image.Key, image.Value);
-        }
-
-        Log.RCheevos.LogInformation("Finished copying achievement image data for \"{n}\"", gameData.Title);
 
         StaticDataManager.InitializeAchievements();
 
@@ -245,236 +255,78 @@ public static class RAOfficialServer {
                 foreach (RAStartSessionResponse.RAStartSessionAchievementData ad in al.HardcoreUnlocks) {
                     userGameData.UnlockAchievement(ad.ID, true, ad.When);
                 }
-            } else {
-                Log.RCheevos.LogWarning("Failed to copy achievement data for \"{u}\"", username);
             }
-
-            UserManager.Save();
-        }
-
-        Log.Main.LogInformation("Operation completed.");
-    }
-
-    private static void CheckAndQueryImage(string filename, string url) {
-        string path = Program.Config.Get("LAHEE", "BadgeDirectory");
-        string basename = Path.GetFileNameWithoutExtension(filename) + ".png";
-        string targetPath = path + "\\" + basename;
-        Log.RCheevos.LogTrace("Checking image file: {f} at {f2}", basename, targetPath);
-        if (File.Exists(targetPath)) {
-            return;
-        }
-
-        Log.RCheevos.LogDebug("Downloading image file: {u}", url);
-        try {
-            HttpClient http = new HttpClient();
-            HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, url);
-            req.Headers.Add("User-Agent", Program.NAME);
-
-            HttpResponseMessage resp = http.Send(req);
-            long? len = resp.Content.Headers.ContentLength;
-            if (len == null) {
-                throw new IOException("missing content-length");
-            }
-
-            byte[] data = new byte[len.Value];
-            resp.Content.ReadAsStream().ReadExactly(data);
-
-            File.WriteAllBytes(targetPath, data);
-        } catch (Exception ex) {
-            Log.RCheevos.LogWarning(ex, "Failed to download image: {i}", url);
         }
     }
 
-    private static TResponse Query<TResponse>(HttpMethod method, string host, string path, object request) where TResponse : class {
-        HttpClient http = new HttpClient();
-        HttpRequestMessage req = new HttpRequestMessage(method, host + "/" + path);
-        req.Headers.Add("User-Agent", Program.NAME);
-
-        Log.RCheevos.LogDebug("HTTP " + req.Method + " request to {u}", req.RequestUri);
-
-        if (request != null) {
-            req.Content = new StringContent(request.ToString()!);
-            Log.RCheevos.LogTrace("Content: {d}", request);
-        }
-
+    private static byte[] DownloadAsset(string url) {
         try {
-            HttpResponseMessage resp = http.Send(req);
-            Log.RCheevos.LogDebug("Server returned HTTP {h}", resp.StatusCode);
-            string content = new StreamReader(resp.Content.ReadAsStream()).ReadToEnd();
-            Log.RCheevos.LogTrace("Content: {d}", content);
-
-            if (resp.StatusCode != HttpStatusCode.OK) {
-                throw new Exception("Response not OK: " + resp.StatusCode + ", Content: " + content);
+            using (WebClient client = new WebClient()) {
+                return client.DownloadData(url);
             }
-
-            TResponse r = JsonConvert.DeserializeObject<TResponse>(content);
-            if (r is RAAnyResponse ra && !ra.Success) {
-                RAErrorResponse error = JsonConvert.DeserializeObject<RAErrorResponse>(content);
-                throw new Exception("RA request failed: " + error.Error + "(" + error.Code + ")");
-            }
-
-            return r;
         } catch (Exception ex) {
-            Log.Network.LogError(ex, "Network error");
+            Log.RCheevos.LogWarning("Failed to download asset {u}: {e}", url, ex.Message);
             return null;
-        }
-    }
-
-    public static void FetchComments(uint gameId, int achievementId) {
-        GameData game = StaticDataManager.FindGameDataById(gameId);
-        if (game == null) {
-            throw new ProtocolException("Unknown game id: " + gameId);
-        }
-
-        string apiWeb = Program.Config.Get("LAHEE", "RAFetch", "WebApiKey");
-
-        if (String.IsNullOrWhiteSpace(Url)) {
-            throw new ProtocolException("Invalid RAFetch Url in configuration.");
-        }
-
-        if (String.IsNullOrWhiteSpace(apiWeb)) {
-            throw new ProtocolException("Invalid RAFetch WebApiKey in configuration. Get it from here: " + Url + "/settings");
-        }
-
-        RAApiCommentsResponse resp = Query<RAApiCommentsResponse>(HttpMethod.Get, Url, "API/API_GetComments.php?y=" + apiWeb + "&t=2&i=" + achievementId + "&sort=-submitted", null);
-        if (resp != null) {
-            bool addedComments = false;
-            foreach (UserComment uc in resp.Results) {
-                if (uc.ULID.Equals(SERVER_ACCOUNT_USER_ID)) { // skip all "comments" that depict status changes (score changed, icon changed, ...)
-                    continue;
-                }
-
-                uc.AchievementID = achievementId;
-                uc.LaheeUUID = Guid.NewGuid();
-                StaticDataManager.AddComment(uc, game, false);
-                addedComments = true;
-            }
-
-            if (!addedComments) {
-                throw new ProtocolException("No comments exist for this achievement on the official RA website.");
-            }
-
-            StaticDataManager.SaveCommentFile(game);
-        } else {
-            throw new ProtocolException("Failed to fetch comments for " + achievementId);
         }
     }
 
     private static string LogInToRealServer() {
-        if (SessionToken != null) {
-            return SessionToken;
+        if (sessionToken != null) return sessionToken;
+
+        string username = Program.Config.Get("LAHEE:RAFetch:Username");
+        string password = Program.Config.Get("LAHEE:RAFetch:Password");
+
+        RALoginResponse response = Query<RALoginResponse>(HttpMethod.Get, Url, "dorequest.php?r=login2&u=" + username + "&p=" + password, null);
+        if (response != null && response.Success) {
+            sessionToken = response.Token;
+            return sessionToken;
         }
 
-        string username = Program.Config.Get("LAHEE", "RAFetch", "Username");
-        string password = Program.Config.Get("LAHEE", "RAFetch", "Password");
-
-        RALoginResponse login = Query<RALoginResponse>(HttpMethod.Get, Url, "dorequest.php?r=login2&u=" + username + "&p=" + password, null);
-        if (login == null) {
-            return null;
-        }
-
-        Log.RCheevos.LogInformation("Logged into RA server at {u} as {n}", Url, login.DisplayName);
-
-        SessionToken = login.Token;
-
-        return login.Token;
+        Log.RCheevos.LogError("Failed to log in to real server!");
+        return null;
     }
 
     public static List<CodeNote> FetchCodeNotes(GameData game) {
-        ArgumentNullException.ThrowIfNull(game);
-
-        string sessionToken = LogInToRealServer();
-        if (sessionToken == null) {
-            return null;
+        string apiWeb = Program.Config.Get("LAHEE:RAFetch:WebApiKey");
+        RACodeNotesResponse response = Query<RACodeNotesResponse>(HttpMethod.Get, Url, "API/API_GetCodeNotes.php?y=" + apiWeb + "&i=" + game.ID, null);
+        if (response != null && response.Success) {
+            game.CodeNotes = response.CodeNotes;
+            return response.CodeNotes;
         }
-
-        string username = Program.Config.Get("LAHEE", "RAFetch", "Username");
-
-        RACodeNotesResponse notes = Query<RACodeNotesResponse>(HttpMethod.Get, Url, "dorequest.php?r=codenotes2&u=" + username + "&t=" + sessionToken + "&g=" + game.ID, null);
-        if (notes == null) {
-            return null;
-        }
-
-        game.CodeNotes = notes.CodeNotes;
-
-        return notes.CodeNotes;
+        return null;
     }
 
-    public static void FetchUpdatedSets() {
+    public static void FetchComments(uint gameId, int achievementId) {
+        string apiWeb = Program.Config.Get("LAHEE:RAFetch:WebApiKey");
+        RAApiCommentsResponse response = Query<RAApiCommentsResponse>(HttpMethod.Get, Url, "API/API_GetAchievementComments.php?y=" + apiWeb + "&i=" + achievementId, null);
+        if (response != null && response.Results != null) {
+            foreach (RAApiCommentsResponse.Comment c in response.Results) {
+                StaticDataManager.AddComment(new UserComment() {
+                    User = c.User,
+                    Submitted = c.Submitted,
+                    ULID = "RA" + c.ID,
+                    CommentText = c.CommentText,
+                    AchievementID = achievementId,
+                    IsLocal = false
+                }, StaticDataManager.FindGameDataById(gameId), false);
+            }
+        }
+    }
+
+    private static T Query<T>(HttpMethod method, string url, string endpoint, object body) where T : class {
         try {
-            Log.RCheevos.LogInformation("Checking for updated sets / revisions in the background...");
-
-            string apiWeb = Program.Config.Get("LAHEE", "RAFetch", "WebApiKey");
-            int cacheDays = Program.Config.GetInt("LAHEE", "RAFetch", "SetRevisionCheckCacheDays");
-            bool includeUnofficial = Program.Config.GetBool("LAHEE", "RAFetch", "SetRevisionCheckIncludeUnofficial");
-            uint[] ignoredGames = Program.Config.GetSection("LAHEE").GetSection("RAFetch").GetSection("SetRevisionCheckIgnoreGameIds").Get<uint[]>();
-
-            foreach (GameData game in StaticDataManager.GetAllGameData()) {
-                if (ignoredGames.Contains(game.ID)) {
-                    continue;
+            string fullUrl = url.TrimEnd('/') + "/" + endpoint;
+            using (WebClient client = new WebClient()) {
+                string content = client.DownloadString(fullUrl);
+                T r = JsonConvert.DeserializeObject<T>(content);
+                if (r is RAAnyResponse any && !any.Success && r is RAErrorResponse error) {
+                    throw new Exception("RA request failed: " + error.Error + " (" + error.Code + ")");
                 }
-
-                if (StaticDataManager.Global.LastRevisionCheck.TryGetValue(game.ID, out DateTime lastCheck)) {
-                    if (lastCheck + TimeSpan.FromDays(cacheDays) > DateTime.Now) {
-                        continue;
-                    }
-                }
-
-                RAApiGameExtendedResponse remote = Query<RAApiGameExtendedResponse>(HttpMethod.Get, Url, "API/API_GetGameExtended.php?y=" + apiWeb + "&i=" + game.ID + "&f=3", null);
-                if (remote == null) {
-                    continue;
-                }
-
-                CheckRAGameExtendedResponse(game, remote, "core");
-
-                if (includeUnofficial) {
-                    remote = Query<RAApiGameExtendedResponse>(HttpMethod.Get, Url, "API/API_GetGameExtended.php?y=" + apiWeb + "&i=" + game.ID + "&f=5", null);
-                    if (remote == null) {
-                        continue;
-                    }
-
-                    CheckRAGameExtendedResponse(game, remote, "unofficial");
-                }
-
-                StaticDataManager.Global.LastRevisionCheck[game.ID] = DateTime.Now;
-
-                Thread.Sleep(5000);
+                return r;
             }
         } catch (Exception ex) {
-            Log.RCheevos.LogCritical(ex, "Failed to check for revisions");
-        } finally {
-            StaticDataManager.SaveGlobalData();
-        }
-
-        Log.RCheevos.LogInformation("Finished checking for revisions");
-    }
-
-    private static void CheckRAGameExtendedResponse(GameData game, RAApiGameExtendedResponse remote, string label) {
-        int missingAchievements = 0;
-        int updatedAchievements = 0;
-
-        foreach (uint achievementId in remote.Achievements.Keys) {
-            AchievementData ach = game.GetAchievementById(achievementId);
-            if (ach == null) {
-                Log.RCheevos.LogWarning("Game \"{g}\" is missing an achievement from {s}: {a}", game, label, remote.Achievements[achievementId]);
-                missingAchievements++;
-                continue;
-            }
-
-            String serverHash = remote.Achievements[achievementId].MemAddr;
-            String storedHash = Utils.MD5(ach.MemAddr);
-            if (!storedHash.Equals(serverHash, StringComparison.InvariantCultureIgnoreCase)) {
-                Log.RCheevos.LogWarning("Game \"{g}\" has an outdated achievement from {s}: {a}", game, label, remote.Achievements[achievementId]);
-                updatedAchievements++;
-            }
-        }
-
-        if (missingAchievements > 0) {
-            Program.AddNotification("Game \"" + game + "\" has " + missingAchievements + " new " + label + " achievement(s)!");
-        }
-
-        if (updatedAchievements > 0) {
-            Program.AddNotification("Game \"" + game + "\" has " + updatedAchievements + " " + label + " achievement(s) that were updated on the official server!");
+            Log.RCheevos.LogWarning("Query failed: {u}, {e}", endpoint, ex.Message);
+            return null;
         }
     }
 }

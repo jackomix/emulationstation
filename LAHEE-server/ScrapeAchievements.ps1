@@ -1,40 +1,41 @@
-# LAHEE Achievement Scraper
-# Run this on your PC to fetch achievement data for your ROMs folder
+# LAHEE Professional Achievement Scraper
+# Refactored for clean UX, progress bars, and credential management
 
 $PSScriptRoot = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
 $ServerDir = Join-Path $PSScriptRoot "Server"
 $ServerPath = Join-Path $ServerDir "LAHEE.exe"
 $ConfigFile = Join-Path $ServerDir "LAHEE.json"
-# Assume ROMs are in the folder containing the RetroAchievements hub
 $RomsPath = (Get-Item $PSScriptRoot).Parent.FullName
 
-if (-not (Test-Path $ServerPath)) {
-    Write-Error "Could not find LAHEE server binary at $ServerPath"
-    Write-Host "Ensure you have extracted the 'Server' folder correctly."
-    pause
-    exit
+# --- HELPER FUNCTIONS ---
+
+function Show-Header {
+    Clear-Host
+    Write-Host "===============================================" -ForegroundColor Cyan
+    Write-Host "       LAHEE NATIVE ACHIEVEMENT SCRAPER        " -ForegroundColor White -BackgroundColor Blue
+    Write-Host "===============================================" -ForegroundColor Cyan
 }
 
-# --- CREDENTIAL CHECK ---
-$needsConfig = $true
-if (Test-Path $ConfigFile) {
-    $json = Get-Content $ConfigFile | ConvertFrom-Json
-    if ($json.LAHEE.RAFetch.WebApiKey -and $json.LAHEE.RAFetch.Username) {
-        $needsConfig = $false
-    }
-}
-
-if ($needsConfig) {
-    Write-Host "==============================================="
-    Write-Host "      RetroAchievements API Key Required       "
-    Write-Host "==============================================="
-    Write-Host "LAHEE needs your RA API key to fetch data."
-    Write-Host "Get it here: https://retroachievements.org/settings"
-    Write-Host ""
-    $raUser = Read-Host "RetroAchievements Username"
-    $raKey = Read-Host "RetroAchievements Web API Key"
-    $raPass = Read-Host "RetroAchievements Password (for image downloads)"
+function Get-Credentials {
+    Show-Header
+    Write-Host "[ CONFIGURATION ]" -ForegroundColor Yellow
     
+    $currentConfig = @{ LAHEE = @{ RAFetch = @{ Username = ""; WebApiKey = ""; Password = "" } } }
+    if (Test-Path $ConfigFile) {
+        $currentConfig = Get-Content $ConfigFile | ConvertFrom-Json
+    }
+
+    $raUser = Read-Host "RetroAchievements Username [$($currentConfig.LAHEE.RAFetch.Username)]"
+    if ([string]::IsNullOrWhiteSpace($raUser)) { $raUser = $currentConfig.LAHEE.RAFetch.Username }
+
+    $raKey = Read-Host "RetroAchievements Web API Key (hidden)" -AsSecureString
+    $raKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($raKey))
+    if ([string]::IsNullOrWhiteSpace($raKey)) { $raKey = $currentConfig.LAHEE.RAFetch.WebApiKey }
+
+    $raPass = Read-Host "RetroAchievements Password/Token (hidden)" -AsSecureString
+    $raPass = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto([System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($raPass))
+    if ([string]::IsNullOrWhiteSpace($raPass)) { $raPass = $currentConfig.LAHEE.RAFetch.Password }
+
     $configTemplate = @{
         LAHEE = @{
             RAFetch = @{
@@ -47,20 +48,84 @@ if ($needsConfig) {
     }
     
     $configTemplate | ConvertTo-Json -Depth 10 | Out-File $ConfigFile -Encoding UTF8
-    Write-Host "Config saved to $ConfigFile"
-    Write-Host "-----------------------------------------------"
+    Write-Host "`n[+] Configuration saved to Server/LAHEE.json" -ForegroundColor Green
+    Start-Sleep -Seconds 2
 }
 
-Write-Host "==============================================="
-Write-Host "          LAHEE Achievement Scraper            "
-Write-Host "==============================================="
-Write-Host "Server: $ServerPath"
-Write-Host "ROMs:   $RomsPath"
-Write-Host "-----------------------------------------------"
+function Start-Scrape {
+    if (-not (Test-Path $ConfigFile)) {
+        Write-Host "[!] Credentials not found. Please configure them first." -ForegroundColor Red
+        Start-Sleep -Seconds 2
+        return
+    }
 
-# Run LAHEE in scrape mode
-& $ServerPath --hub "$PSScriptRoot" scrape "$RomsPath"
+    Show-Header
+    Write-Host "Scanning ROMs in: $RomsPath" -ForegroundColor Gray
+    Write-Host "Launching LAHEE Engine..." -ForegroundColor Gray
 
-Write-Host "-----------------------------------------------"
-Write-Host "Scrape complete!"
-pause
+    $processInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $processInfo.FileName = $ServerPath
+    $processInfo.Arguments = "--hub `"$PSScriptRoot`" --machine scrape `"$RomsPath`""
+    $processInfo.RedirectStandardOutput = $true
+    $processInfo.UseShellExecute = $false
+    $processInfo.CreateNoWindow = $true
+
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $processInfo
+
+    try {
+        $process.Start() | Out-Null
+        $stdout = $process.StandardOutput
+
+        while (-not $stdout.EndOfStream) {
+            $line = $stdout.ReadLine()
+            if ($line -match "PROGRESS:(\d+):(\d+)") {
+                $curr = [int]$matches[1]
+                $total = [int]$matches[2]
+                $percent = ($curr / $total) * 100
+                Write-Progress -Activity "Scraping Achievements" -Status "Processing game $curr of $total" -PercentComplete $percent
+            }
+            elseif ($line -match "STATUS:(.*)") {
+                Write-Host "[+] $($matches[1])" -ForegroundColor Green
+            }
+            elseif ($line -match "ERROR:(.*)") {
+                Write-Host "[!] $($matches[1])" -ForegroundColor Red
+            }
+        }
+        $process.WaitForExit()
+    }
+    finally {
+        if (-not $process.HasExited) {
+            $process.Kill()
+        }
+        Write-Progress -Activity "Scraping Achievements" -Completed
+    }
+
+    Write-Host "`n[ FINISHED ] All identified sets have been downloaded." -ForegroundColor Cyan
+    Write-Host "Press any key to return to menu..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+}
+
+# --- MAIN MENU LOOP ---
+
+if (-not (Test-Path $ServerPath)) {
+    Write-Error "Could not find LAHEE server binary at $ServerPath"
+    pause
+    exit
+}
+
+while ($true) {
+    Show-Header
+    Write-Host "[1] Start Bulk Scrape" -ForegroundColor White
+    Write-Host "[2] Configure Credentials (User/API Key)" -ForegroundColor White
+    Write-Host "[3] Exit" -ForegroundColor White
+    Write-Host ""
+    $choice = Read-Host "Select an option"
+
+    switch ($choice) {
+        "1" { Start-Scrape }
+        "2" { Get-Credentials }
+        "3" { exit }
+        default { Write-Host "Invalid selection." -ForegroundColor Red; Start-Sleep -Seconds 1 }
+    }
+}

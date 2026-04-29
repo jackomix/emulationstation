@@ -15,18 +15,22 @@ static class Log {
 
     private static ILoggerFactory factory;
 
-    public static void Initialize() {
+    public static void Initialize(bool machineMode = false) {
         IConfigurationSection loggingConfig = AppConfig.Primary.GetSection("Logging");
 
-        factory = LoggerFactory.Create(builder => builder
-            .AddConfiguration(loggingConfig)
-            .AddSimpleConsole(options => {
-                options.SingleLine = true;
-                options.TimestampFormat = "[HH:mm:ss.fff] ";
-            })
-            .AddDebug()
-            .AddFile(loggingConfig.GetSection("File"))
-        );
+        factory = LoggerFactory.Create(builder => {
+            if (machineMode) {
+                builder.SetMinimumLevel(LogLevel.None);
+            } else {
+                builder.AddConfiguration(loggingConfig);
+                builder.AddSimpleConsole(options => {
+                    options.SingleLine = true;
+                    options.TimestampFormat = "[HH:mm:ss.fff] ";
+                });
+                builder.AddDebug();
+                builder.AddFile(loggingConfig.GetSection("File"));
+            }
+        });
 
         Main = factory.CreateLogger("Main");
         Network = factory.CreateLogger("Net ");

@@ -15,6 +15,7 @@ class Program {
 
     public static AppConfig Config;
     public static List<string> Notifications = new List<string>();
+    public static bool IsMachineMode = false;
 
     static Program() {
         string gitHash = Assembly.Load(typeof(Program).Assembly.FullName!)
@@ -65,7 +66,9 @@ class Program {
             return;
         }
 
-        Log.Initialize();
+        IsMachineMode = args.Contains("--machine");
+        Log.Initialize(IsMachineMode);
+
         try {
             UserManager.Initialize();
             StaticDataManager.Initialize();
@@ -225,15 +228,16 @@ reloaduser                                                                      
             case "scrape":
                 if (args.Length >= 2) {
                     string scanDir = args[1];
-                    Log.Main.LogInformation("Starting bulk scrape in: {d}", scanDir);
+                    if (!Program.IsMachineMode) Log.Main.LogInformation("Starting bulk scrape in: {d}", scanDir);
                     if (!Directory.Exists(scanDir)) {
-                        Log.Main.LogError("Directory not found!");
+                        if (Program.IsMachineMode) Console.WriteLine("ERROR:Directory not found!");
+                        else Log.Main.LogError("Directory not found!");
                         break;
                     }
                     string[] extensions = { ".nes", ".sfc", ".smc", ".gb", ".gbc", ".gba", ".gen", ".sms", ".gg", ".pce", ".vboy", ".wsc", ".iso", ".chd", ".pbp", ".md", ".bin" };
                     string[] consoleFolders = { "megadrive", "genesis", "sega", "psx", "playstation", "segacd", "megacd", "pce", "pcengine", "jaguar", "saturn", "3do", "sms", "master-system", "gamegear", "gg" };
 
-                    var roms = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories)
+                    var allRoms = Directory.EnumerateFiles(scanDir, "*.*", System.IO.SearchOption.AllDirectories)
                         .Where(f => {
                             string ext = Path.GetExtension(f).ToLower();
                             string dirPath = Path.GetDirectoryName(f).ToLower();
@@ -245,18 +249,29 @@ reloaduser                                                                      
                             return extensions.Contains(ext) && 
                                    !dirPath.Contains("retroachievements") &&
                                    (!isGeneric || inConsoleFolder);
-                        });
+                        }).ToList();
 
-                    foreach (var rom in roms) {
+                    int total = allRoms.Count;
+                    int current = 0;
+
+                    foreach (var rom in allRoms) {
+                        current++;
                         try {
-                            Log.Main.LogInformation("Processing: {f}", Path.GetFileName(rom));
-                            // Use RAOfficialServer to fetch by hash (LAHEE should calculate it)
+                            if (Program.IsMachineMode) {
+                                Console.WriteLine($"PROGRESS:{current}:{total}");
+                                Console.WriteLine($"STATUS:Processing {Path.GetFileName(rom)}...");
+                                Console.Out.Flush();
+                            } else {
+                                Log.Main.LogInformation("Processing ({c}/{t}): {f}", current, total, Path.GetFileName(rom));
+                            }
                             RAOfficialServer.FetchDataByFile(rom);
                         } catch (Exception ex) {
-                            Log.Main.LogWarning("Failed to scrape {f}: {e}", rom, ex.Message);
+                            if (Program.IsMachineMode) Console.WriteLine($"ERROR:Failed to scrape {Path.GetFileName(rom)}: {ex.Message}");
+                            else Log.Main.LogWarning("Failed to scrape {f}: {e}", rom, ex.Message);
                         }
                     }
-                    Log.Main.LogInformation("Bulk scrape complete.");
+                    if (Program.IsMachineMode) Console.WriteLine("STATUS:Bulk scrape complete.");
+                    else Log.Main.LogInformation("Bulk scrape complete.");
                 } else {
                     Log.Main.LogError("Command requires a directory path.");
                 }
