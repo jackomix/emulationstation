@@ -31,7 +31,7 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		
 		auto userDir = hubPath + "/User";
 		auto currentUsername = SystemConf::getInstance()->get("global.retroachievements.username");
-		if (currentUsername.empty() || currentUsername == "0") currentUsername = "Player";
+		if (currentUsername.empty()) currentUsername = "Player";
 
 		auto profile_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SELECT PROFILE"), false);
 		

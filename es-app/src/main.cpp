@@ -647,7 +647,6 @@ int main(int argc, char* argv[])
 		if (changed) {
 			systemConf->saveSystemConf();
 		}
-		// FORCE SYNC: Ensure RetroArch gets the values even if they were just set to Player
 		RetroAchievements::updateRetroArchConfig();
 	}
 

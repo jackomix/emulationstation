@@ -293,8 +293,18 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 }
 
 void RetroAchievements::updateRetroArchConfig() {
-	std::string selected = SystemConf::getInstance()->get("global.retroachievements.username");
-	if (selected.empty()) selected = "Player";
+	// 1. Try to get the active LAHEE profile
+	std::string selected = Settings::getInstance()->getString("RetroAchievementsUsername");
+	
+	// 2. Fallback to global config
+	if (selected.empty()) {
+		selected = SystemConf::getInstance()->get("global.retroachievements.username");
+	}
+
+	// 3. Ultimate fallback
+	if (selected.empty()) {
+		selected = "Player";
+	}
 
 	std::vector<std::string> cfgPaths = {
 		"/home/ark/.config/retroarch/retroarch.cfg",
