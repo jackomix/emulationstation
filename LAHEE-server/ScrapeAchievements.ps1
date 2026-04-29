@@ -63,9 +63,12 @@ function Start-Scrape {
     Write-Host "Scanning ROMs in: $RomsPath" -ForegroundColor Gray
     Write-Host "Launching LAHEE Engine..." -ForegroundColor Gray
 
+    # CLEAN PATH: Remove trailing \ so it doesn't escape the CLI quotes
+    $cleanRomsPath = $RomsPath.TrimEnd('\')
+
     $processInfo = New-Object System.Diagnostics.ProcessStartInfo
     $processInfo.FileName = $ServerPath
-    $processInfo.Arguments = "--hub `"$PSScriptRoot`" --machine scrape `"$RomsPath`""
+    $processInfo.Arguments = "--hub `"$PSScriptRoot`" --machine scrape `"$cleanRomsPath`""
     $processInfo.RedirectStandardOutput = $true
     $processInfo.UseShellExecute = $false
     $processInfo.CreateNoWindow = $true
