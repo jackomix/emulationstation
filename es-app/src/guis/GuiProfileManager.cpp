@@ -3,17 +3,18 @@
 #include "Window.h"
 #include "guis/GuiTextEditPopupKeyboard.h"
 #include "guis/GuiMsgBox.h"
+#include "guis/GuiMenu.h"
 #include "HttpReq.h"
+#include "CollectionSystemManager.h"
+#include "views/ViewController.h"
 
 GuiProfileManager::GuiProfileManager(Window* window) : GuiSettings(window, _("PROFILE MANAGER").c_str())
 {
 	populateList();
 }
-#include "CollectionSystemManager.h"
 
-GuiProfileManager::GuiProfileManager(Window* window) : GuiSettings(window, _("PROFILE MANAGER").c_str())
+GuiProfileManager::~GuiProfileManager()
 {
-	populateList();
 }
 
 void GuiProfileManager::populateList()
@@ -26,27 +27,31 @@ void GuiProfileManager::populateList()
 	{
 		bool isActive = (name == active);
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
-
+		
 		mMenu.addEntry(displayName, false, [this, name] {
 			ProfileManager::getInstance()->setActiveProfile(name);
-
+			
 			// Notify LAHEE
 			HttpReqOptions options;
 			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
 			request.wait();
 
-			// Refresh Collections
+			// Refresh Collections & Carousel
 			CollectionSystemManager::get()->refreshFavorites();
 			ViewController::get()->reloadAll();
 
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this, name] { 
-				// FORCE REFRESH: Close everything and re-open Main Menu
-				auto window = mWindow;
-				while(window->peekGui() != nullptr && window->peekGui() != window->getGuiStack().at(0))
+				// CLOSE EVERYTHING AND RE-OPEN START MENU
+				Window* window = mWindow;
+				
+				// Standard ES way to close a GUI is to delete it if it's top-level
+				// We want to return to a clean state.
+				while(window->getGuiStackSize() > 0)
 					delete window->peekGui();
-
+				
 				window->pushGui(new GuiMenu(window));
-			}));		}, isActive ? "iconFavorite" : "", false, false, name);
+			}));
+		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
 }
 
