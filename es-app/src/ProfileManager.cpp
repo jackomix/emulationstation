@@ -252,6 +252,8 @@ void ProfileManager::migrateLegacySaves()
 	}
 }
 
+std::string ProfileManager::getActiveProfile() { return mActiveProfile; }
+
 std::string ProfileManager::getProfilesPath() { return mProfilesRoot; }
 std::string ProfileManager::getSavePath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/Saves"; }
 std::string ProfileManager::getStatePath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/States"; }
