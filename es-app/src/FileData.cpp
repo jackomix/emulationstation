@@ -1,4 +1,5 @@
 #include "FileData.h"
+#include "ProfileManager.h"
 
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
