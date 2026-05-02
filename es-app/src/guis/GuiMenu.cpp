@@ -442,6 +442,11 @@ void GuiMenu::openScreensaverOptions()
 	mWindow->pushGui(new GuiGeneralScreensaverOptions(mWindow));
 }
 
+void GuiMenu::openProfileManager()
+{
+	mWindow->pushGui(new GuiProfileManager(mWindow));
+}
+
 void GuiMenu::openCollectionSystemSettings()
 {
 	if (ThreadedScraper::isRunning() || ThreadedHasher::isRunning())
