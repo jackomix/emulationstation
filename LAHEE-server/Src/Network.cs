@@ -1235,7 +1235,7 @@ static class Routes {
         if (!string.IsNullOrEmpty(profileRoot)) {
             // Traverse up from Hub to Roms, then down to Profiles
             string romsRoot = Path.GetDirectoryName(profileRoot);
-            string userPath = Path.Combine(romsRoot, "Profiles", username, "User");
+            string userPath = Path.Combine(romsRoot, "Profiles", username, "Achievements");
             if (!Directory.Exists(userPath)) Directory.CreateDirectory(userPath);
             UserManager.UserDataDirectory = userPath;
             Log.User.LogInformation("Achievement storage redirected to: {p}", userPath);
