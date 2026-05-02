@@ -93,6 +93,7 @@ public:
 	void updateCollectionFolderMetadata(SystemData* sys);
 
 	void reloadCollection(const std::string collectionName, bool repopulateGamelist = true);
+	void refreshFavorites();
     void populateAutoCollection(CollectionSystemData* sysData);
 	bool deleteCustomCollection(CollectionSystemData* data);
 

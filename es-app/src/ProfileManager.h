@@ -5,6 +5,14 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
+
+struct ProfileStats {
+	int playtime;
+	std::string last_played;
+	std::string most_played_genre;
+};
 
 class ProfileManager
 {
@@ -32,11 +40,12 @@ public:
 
 	bool isFavorite(const std::string& path);
 	void setFavorite(const std::string& path, bool favorite);
-	void loadFavorites();
-	void saveFavorites();
-
+	
 	std::string getStat(const std::string& key);
 	void updateStats(const std::string& romPath, int playTimeSeconds);
+
+	void loadAllMetadata();
+	void saveAllMetadata();
 
 private:
 	ProfileManager();
@@ -44,7 +53,9 @@ private:
 
 	std::string mActiveProfile;
 	std::string mProfilesRoot;
-	std::vector<std::string> mFavorites;
+	
+	std::unordered_set<std::string> mFavoritesCache;
+	ProfileStats mStatsCache;
 
 	void setupDefaultProfile();
 	void migrateLegacySaves();

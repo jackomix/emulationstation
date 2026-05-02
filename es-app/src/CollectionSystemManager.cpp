@@ -1524,6 +1524,11 @@ bool CollectionSystemManager::isDynamicCollection(const std::string collectionNa
 	return data->second.decl.isCustom && data->second.filteredIndex != nullptr;
 }
 
+void CollectionSystemManager::refreshFavorites()
+{
+	reloadCollection("favorites");
+}
+
 void CollectionSystemManager::reloadCollection(const std::string collectionName, bool repopulateGamelist)
 {
 	auto autoc = mAutoCollectionSystemsData.find(collectionName);

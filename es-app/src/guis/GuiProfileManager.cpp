@@ -9,9 +9,11 @@ GuiProfileManager::GuiProfileManager(Window* window) : GuiSettings(window, _("PR
 {
 	populateList();
 }
+#include "CollectionSystemManager.h"
 
-GuiProfileManager::~GuiProfileManager()
+GuiProfileManager::GuiProfileManager(Window* window) : GuiSettings(window, _("PROFILE MANAGER").c_str())
 {
+	populateList();
 }
 
 void GuiProfileManager::populateList()
@@ -24,21 +26,24 @@ void GuiProfileManager::populateList()
 	{
 		bool isActive = (name == active);
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
-		
+
 		mMenu.addEntry(displayName, false, [this, name] {
 			ProfileManager::getInstance()->setActiveProfile(name);
-			
+
 			// Notify LAHEE
 			HttpReqOptions options;
 			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
 			request.wait();
+
+			// Refresh Collections
+			CollectionSystemManager::get()->refreshFavorites();
 
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this, name] { 
 				// FORCE REFRESH: Close everything and re-open Main Menu
 				auto window = mWindow;
 				while(window->peekGui() != nullptr && window->peekGui() != window->getGuiStack().at(0))
 					delete window->peekGui();
-				
+
 				window->pushGui(new GuiMenu(window));
 			}));
 		}, isActive ? "iconFavorite" : "", false, false, name);

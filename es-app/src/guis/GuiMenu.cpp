@@ -215,7 +215,20 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 	// ACTIVE PROFILE
 	std::string activeUser = ProfileManager::getInstance()->getActiveProfile();
-	addEntry(_("ACTIVE PROFILE: ").c_str() + activeUser, true, [this] { openProfileManager(); }, "iconProfile");
+	std::string avatarPath = ProfileManager::getInstance()->getAvatarPath();
+
+	auto profileEntry = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 1));
+	auto avatar = std::make_shared<ImageComponent>(mWindow);
+	avatar->setImage(Utils::FileSystem::exists(avatarPath) ? avatarPath : ":/star_filled.svg");
+	avatar->setMaxSize(32, 32);
+	
+	auto profileName = std::make_shared<TextComponent>(mWindow, activeUser, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
+	
+	profileEntry->setEntry(avatar, Vector2i(0, 0), false, true);
+	profileEntry->setEntry(profileName, Vector2i(1, 0), false, true);
+	profileEntry->setSize(mMenu.getSize().x(), 48);
+
+	addEntry(_("ACTIVE PROFILE: ").c_str(), true, [this] { openProfileManager(); }, "iconProfile");
 
 	// KODI >
 	// GAMES SETTINGS >
