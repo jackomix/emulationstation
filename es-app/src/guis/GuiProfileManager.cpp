@@ -33,11 +33,13 @@ void GuiProfileManager::populateList()
 			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
 			request.wait();
 
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this] { 
-				// Force UI refresh
-				Window* window = mWindow;
-				delete this;
-				window->pushGui(new GuiMenu(window)); 
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this, name] { 
+				// FORCE REFRESH: Close everything and re-open Main Menu
+				auto window = mWindow;
+				while(window->peekGui() != nullptr && window->peekGui() != window->getGuiStack().at(0))
+					delete window->peekGui();
+				
+				window->pushGui(new GuiMenu(window));
 			}));
 		}, isActive ? "iconFavorite" : "", false, false, name);
 	}

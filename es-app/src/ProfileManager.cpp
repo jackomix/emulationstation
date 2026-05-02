@@ -82,6 +82,10 @@ bool ProfileManager::createProfile(const std::string& name)
 	Utils::FileSystem::createDirectory(path + "/States");
 	Utils::FileSystem::createDirectory(path + "/Screenshots");
 	
+	// Init Metadata
+	Utils::FileSystem::writeAllText(path + "/favorites.txt", "");
+	Utils::FileSystem::writeAllText(path + "/stats.json", "{\"playtime\": 0, \"last_played\": \"\", \"most_played_genre\": \"\"}");
+	
 	LOG(LogInfo) << "Created new profile: " << name;
 	return true;
 }
@@ -181,3 +185,4 @@ std::string ProfileManager::getSavePath(const std::string& profile) { return mPr
 std::string ProfileManager::getStatePath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/States"; }
 std::string ProfileManager::getScreenshotPath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/Screenshots"; }
 std::string ProfileManager::getFavoritesPath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/favorites.txt"; }
+std::string ProfileManager::getAvatarPath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/avatar.png"; }

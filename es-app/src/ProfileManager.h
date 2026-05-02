@@ -28,6 +28,7 @@ public:
 	std::string getStatePath(const std::string& profile = "");
 	std::string getScreenshotPath(const std::string& profile = "");
 	std::string getFavoritesPath(const std::string& profile = "");
+	std::string getAvatarPath(const std::string& profile = "");
 
 private:
 	ProfileManager();
