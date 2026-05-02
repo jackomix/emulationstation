@@ -30,12 +30,21 @@ public:
 	std::string getFavoritesPath(const std::string& profile = "");
 	std::string getAvatarPath(const std::string& profile = "");
 
+	bool isFavorite(const std::string& path);
+	void setFavorite(const std::string& path, bool favorite);
+	void loadFavorites();
+	void saveFavorites();
+
+	std::string getStat(const std::string& key);
+	void updateStats(const std::string& romPath, int playTimeSeconds);
+
 private:
 	ProfileManager();
 	static ProfileManager* sInstance;
 
 	std::string mActiveProfile;
 	std::string mProfilesRoot;
+	std::vector<std::string> mFavorites;
 
 	void setupDefaultProfile();
 	void migrateLegacySaves();

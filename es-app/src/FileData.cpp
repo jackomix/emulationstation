@@ -255,7 +255,37 @@ const std::string FileData::getThumbnailPath(bool fallbackWithImage)
 
 const bool FileData::getFavorite() const
 {
-	return getMetadata(MetaDataId::Favorite) == "true";
+	return ProfileManager::getInstance()->isFavorite(getPath());
+}
+
+std::string FileData::getMetadata(MetaDataId key) const
+{
+	if (getType() == GAME)
+	{
+		if (key == MetaDataId::Favorite)
+			return ProfileManager::getInstance()->isFavorite(getPath()) ? "true" : "false";
+		
+		if (key == MetaDataId::PlayCount || key == MetaDataId::GameTime || key == MetaDataId::LastPlayed)
+		{
+			std::string keyStr = (key == MetaDataId::PlayCount) ? "playcount" : (key == MetaDataId::GameTime ? "playtime" : "last_played");
+			return ProfileManager::getInstance()->getStat(keyStr);
+		}
+	}
+	return mMetadata.get(key);
+}
+
+void FileData::setMetadata(MetaDataId key, const std::string& value)
+{
+	if (getType() == GAME)
+	{
+		if (key == MetaDataId::Favorite)
+		{
+			ProfileManager::getInstance()->setFavorite(getPath(), value == "true");
+			return;
+		}
+		// PlayCount/GameTime/LastPlayed are updated via updateStats loop after game ends
+	}
+	mMetadata.set(key, value);
 }
 
 const bool FileData::getHidden() const
@@ -821,13 +851,16 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		int timesPlayed = gameToUpdate->getMetadata().getInt(MetaDataId::PlayCount) + 1;
 		gameToUpdate->setMetadata(MetaDataId::PlayCount, std::to_string(static_cast<long long>(timesPlayed)));
 
-		// How long have you played that game? (more than 10 seconds, otherwise
-		// you might have experienced a loading problem)
+		// Update global metadata
 		time_t tend = time(NULL);
 		long elapsedSeconds = difftime(tend, tstart);
 		long gameTime = gameToUpdate->getMetadata().getInt(MetaDataId::GameTime) + elapsedSeconds;
 		if (elapsedSeconds >= 10)
+		{
 			gameToUpdate->setMetadata(MetaDataId::GameTime, std::to_string(static_cast<long>(gameTime)));
+			// NATIVE PROFILE STATS:
+			ProfileManager::getInstance()->updateStats(gameToUpdate->getPath(), (int)elapsedSeconds);
+		}
 
 		//update last played time
 		gameToUpdate->setMetadata(MetaDataId::LastPlayed, Utils::Time::DateTime(Utils::Time::now()));

@@ -60,6 +60,51 @@ void ProfileManager::init()
 		else
 			setupDefaultProfile();
 	}
+
+	loadFavorites();
+}
+
+void ProfileManager::loadFavorites()
+{
+	mFavorites.clear();
+	std::string path = getFavoritesPath();
+	if (!Utils::FileSystem::exists(path)) return;
+
+	std::string content = Utils::FileSystem::readAllText(path);
+	std::stringstream ss(content);
+	std::string line;
+	while (std::getline(ss, line))
+	{
+		if (!line.empty()) mFavorites.push_back(line);
+	}
+}
+
+void ProfileManager::saveFavorites()
+{
+	std::string path = getFavoritesPath();
+	std::string content = "";
+	for (const auto& fav : mFavorites) content += fav + "\n";
+	Utils::FileSystem::writeAllText(path, content);
+}
+
+bool ProfileManager::isFavorite(const std::string& path)
+{
+	return std::find(mFavorites.begin(), mFavorites.end(), path) != mFavorites.end();
+}
+
+void ProfileManager::setFavorite(const std::string& path, bool favorite)
+{
+	auto it = std::find(mFavorites.begin(), mFavorites.end(), path);
+	if (favorite && it == mFavorites.end())
+	{
+		mFavorites.push_back(path);
+		saveFavorites();
+	}
+	else if (!favorite && it != mFavorites.end())
+	{
+		mFavorites.erase(it);
+		saveFavorites();
+	}
 }
 
 void ProfileManager::setupDefaultProfile()
@@ -115,6 +160,10 @@ void ProfileManager::migrateLegacySaves()
 }
 
 std::string ProfileManager::getActiveProfile() { return mActiveProfile; }
+
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 
 void ProfileManager::setActiveProfile(const std::string& name)
 {
@@ -186,3 +235,48 @@ std::string ProfileManager::getStatePath(const std::string& profile) { return mP
 std::string ProfileManager::getScreenshotPath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/Screenshots"; }
 std::string ProfileManager::getFavoritesPath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/favorites.txt"; }
 std::string ProfileManager::getAvatarPath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/avatar.png"; }
+
+std::string ProfileManager::getStat(const std::string& key)
+{
+	std::string path = mProfilesRoot + "/" + mActiveProfile + "/stats.json";
+	if (!Utils::FileSystem::exists(path)) return "";
+
+	rapidjson::Document doc;
+	doc.Parse(Utils::FileSystem::readAllText(path).c_str());
+	if (doc.HasParseError() || !doc.IsObject()) return "";
+
+	if (doc.HasMember(key.c_str()))
+	{
+		if (doc[key.c_str()].IsString()) return doc[key.c_str()].GetString();
+		if (doc[key.c_str()].IsInt()) return std::to_string(doc[key.c_str()].GetInt());
+	}
+	return "";
+}
+
+void ProfileManager::updateStats(const std::string& romPath, int playTimeSeconds)
+{
+	std::string path = mProfilesRoot + "/" + mActiveProfile + "/stats.json";
+	rapidjson::Document doc;
+	
+	std::string content = Utils::FileSystem::exists(path) ? Utils::FileSystem::readAllText(path) : "{}";
+	doc.Parse(content.c_str());
+	if (doc.HasParseError() || !doc.IsObject()) doc.SetObject();
+
+	// Update playtime
+	int currentPlayTime = 0;
+	if (doc.HasMember("playtime")) currentPlayTime = doc["playtime"].GetInt();
+	
+	if (!doc.HasMember("playtime")) doc.AddMember("playtime", currentPlayTime + playTimeSeconds, doc.GetAllocator());
+	else doc["playtime"].SetInt(currentPlayTime + playTimeSeconds);
+
+	// Update last played
+	std::string lastPlayed = Utils::FileSystem::getFileName(romPath);
+	if (!doc.HasMember("last_played")) doc.AddMember("last_played", rapidjson::Value(lastPlayed.c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
+	else doc["last_played"].SetString(lastPlayed.c_str(), doc.GetAllocator());
+
+	// Save back
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+	doc.Accept(writer);
+	Utils::FileSystem::writeAllText(path, buffer.GetString());
+}
