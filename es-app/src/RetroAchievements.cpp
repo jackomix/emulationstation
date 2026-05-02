@@ -6,6 +6,7 @@
 #include "PlatformId.h"
 #include "SystemData.h"
 #include "FileData.h"
+#include "ProfileManager.h"
 #include "utils/Platform.h"
 #include "utils/StringUtil.h"
 #include "utils/ZipFile.h"
@@ -251,7 +252,7 @@ std::string GameInfoAndUserProgress::getImageUrl(const std::string& image) {
 std::string Achievement::getBadgeUrl() {
 	std::string serverUrl = Settings::getInstance()->getString("RetroAchievementsServerURL");
 	if (serverUrl.find("/laheer/") != std::string::npos) {
-		return serverUrl + "Badge/" + BadgeName + (DateEarned.empty() && DateEarnedHardcore.empty() ? "_lock.png" : ".png");
+		return serverUrl + "Images/" + BadgeName + (DateEarned.empty() && DateEarnedHardcore.empty() ? "_lock.png" : ".png");
 	}
 	return "http://i.retroachievements.org/Badge/" + BadgeName + (DateEarned.empty() && DateEarnedHardcore.empty() ? "_lock.png" : ".png");
 }
@@ -293,8 +294,7 @@ bool RetroAchievements::testAccount(const std::string& username, const std::stri
 }
 
 void RetroAchievements::updateRetroArchConfig() {
-	std::string selected = Settings::getInstance()->getString("RetroAchievementsUsername");
-	if (selected.empty()) selected = SystemConf::getInstance()->get("global.retroachievements.username");
+	std::string selected = ProfileManager::getInstance()->getActiveProfile();
 	if (selected.empty()) selected = "Player";
 
 	std::vector<std::string> cfgPaths = {
@@ -303,9 +303,13 @@ void RetroAchievements::updateRetroArchConfig() {
 		"/storage/.config/retroarch/retroarch.cfg"
 	};
 
+	std::string saveDir = ProfileManager::getInstance()->getSavePath();
+	std::string stateDir = ProfileManager::getInstance()->getStatePath();
+	std::string screenshotDir = ProfileManager::getInstance()->getScreenshotPath();
+
 	for (const auto& path : cfgPaths) {
 		if (Utils::FileSystem::exists(path)) {
-			LOG(LogInfo) << "Injecting RetroArch config: " << selected << " into " << path;
+			LOG(LogInfo) << "Injecting RetroArch Profile [" << selected << "] into " << path;
 
 			// ROBUST INJECTION: Use a temporary script to avoid shell escaping hell.
 			std::string script = "sed -i '/cheevos_username/d' \"" + path + "\"\n" +
@@ -317,7 +321,13 @@ void RetroAchievements::updateRetroArchConfig() {
 			                     "sed -i '/cheevos_custom_host/d' \"" + path + "\"\n" +
 			                     "echo 'cheevos_custom_host = \"http://127.0.0.1:8000/laheer/\"' >> \"" + path + "\"\n" +
 			                     "sed -i '/cheevos_enable/d' \"" + path + "\"\n" +
-			                     "echo 'cheevos_enable = \"true\"' >> \"" + path + "\"\n";
+			                     "echo 'cheevos_enable = \"true\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/savefile_directory/d' \"" + path + "\"\n" +
+			                     "echo 'savefile_directory = \"" + saveDir + "\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/savestate_directory/d' \"" + path + "\"\n" +
+			                     "echo 'savestate_directory = \"" + stateDir + "\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/screenshot_directory/d' \"" + path + "\"\n" +
+			                     "echo 'screenshot_directory = \"" + screenshotDir + "\"' >> \"" + path + "\"\n";
 
 			Utils::FileSystem::writeAllText("/tmp/inject_ra.sh", script);
 			Utils::Platform::getShOutput("sh /tmp/inject_ra.sh");

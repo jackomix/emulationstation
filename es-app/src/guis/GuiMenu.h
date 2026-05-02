@@ -48,6 +48,7 @@ private:
 	void openConfigInput();
 	void openScraperSettings();
 	void openScreensaverOptions();
+	void openProfileManager();
 	void openSoundSettings();
 	void openUISettings();
 	void openUpdatesSettings();

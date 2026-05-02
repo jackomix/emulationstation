@@ -202,6 +202,9 @@ int* getVideoModeDimensions(std::string videomode, std::vector<std::string> resl
 
 #endif
 
+#include "guis/GuiProfileManager.h"
+#include "ProfileManager.h"
+
 GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU").c_str()), mVersion(window)
 {
 	// MAIN MENU
@@ -209,6 +212,10 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 #ifdef _ENABLEAMBERELEC
 	bool isKidUI = UIModeController::getInstance()->isUIModeKid();
 #endif
+
+	// ACTIVE PROFILE
+	std::string activeUser = ProfileManager::getInstance()->getActiveProfile();
+	addEntry(_("ACTIVE PROFILE: ").c_str() + activeUser, true, [this] { openProfileManager(); }, "iconProfile");
 
 	// KODI >
 	// GAMES SETTINGS >

@@ -35,6 +35,7 @@
 #include <csignal>
 #include "InputConfig.h"
 #include "RetroAchievements.h"
+#include "ProfileManager.h"
 #include "TextToSpeech.h"
 #include "Paths.h"
 #include "resources/TextureData.h"
@@ -574,6 +575,7 @@ int main(int argc, char* argv[])
 
 	// metadata init
 	HttpReq::resetCookies();
+	ProfileManager::getInstance()->init();
 	Genres::init();
 	MetaDataList::initMetadata();
 

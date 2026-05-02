@@ -20,6 +20,7 @@ set(ES_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SystemRandomPlaylist.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LangParser.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardMapping.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/ProfileManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpServerThread.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpApi.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/httplib.h
@@ -58,8 +59,9 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiLoading.h # batocera
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiThemeInstaller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiBezelInstaller.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiNetPlay.h # batocera
-	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiNetPlaySettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiNetPlay.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiProfileManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiNetPlaySettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiRetroAchievements.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiRetroAchievementsSettings.h	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSystemInformation.h
@@ -128,6 +130,7 @@ set(ES_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SystemRandomPlaylist.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/LangParser.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/KeyboardMapping.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/ProfileManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpServerThread.cpp	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpApi.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/RetroAchievements.cpp
@@ -147,6 +150,7 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiGeneralScreensaverOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiDecorationOptions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMenu.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiProfileManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiTools.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSettings.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiScraperStart.cpp	
