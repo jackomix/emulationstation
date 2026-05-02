@@ -281,10 +281,13 @@ void FileData::setMetadata(MetaDataId key, const std::string& value)
 	{
 		if (key == MetaDataId::Favorite)
 		{
-			ProfileManager::getInstance()->setFavorite(getPath(), value == "true");
-			return;
+			// ONLY persist to profile if it's NOT a bulk load from gamelist.xml
+			// This prevents global XML files from "attacking" the profile's favorites.txt
+			if (!mMetadata.isChanged()) {
+				ProfileManager::getInstance()->setFavorite(getPath(), value == "true");
+				return;
+			}
 		}
-		// PlayCount/GameTime/LastPlayed are updated via updateStats loop after game ends
 	}
 	mMetadata.set(key, value);
 }
