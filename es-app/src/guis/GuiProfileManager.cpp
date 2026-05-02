@@ -25,7 +25,7 @@ void GuiProfileManager::populateList()
 		bool isActive = (name == active);
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
 		
-		addEntry(displayName, false, [this, name] {
+		mMenu.addEntry(displayName, false, [this, name] {
 			ProfileManager::getInstance()->setActiveProfile(name);
 			
 			// Notify LAHEE
@@ -34,7 +34,7 @@ void GuiProfileManager::populateList()
 			request.wait();
 
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this] { delete this; }));
-		}, isActive ? "iconFavorite" : "");
+		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
 }
 
@@ -86,11 +86,7 @@ bool GuiProfileManager::input(InputConfig* config, Input input)
 
 	if (config->isMappedTo("y", input) && input.value)
 	{
-		auto selected = mMenu.getSelectedName();
-		// Strip [ACTIVE] if present
-		size_t pos = selected.find(" [ACTIVE]");
-		if (pos != std::string::npos) selected = selected.substr(0, pos);
-		
+		auto selected = mMenu.getSelected();
 		if (!selected.empty()) openOptions(selected);
 		return true;
 	}
