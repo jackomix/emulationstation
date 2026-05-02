@@ -33,7 +33,12 @@ void GuiProfileManager::populateList()
 			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
 			request.wait();
 
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this] { delete this; }));
+			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this] { 
+				// Force UI refresh
+				Window* window = mWindow;
+				delete this;
+				window->pushGui(new GuiMenu(window)); 
+			}));
 		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
 }

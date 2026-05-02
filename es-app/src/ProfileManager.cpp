@@ -27,13 +27,13 @@ std::string ProfileManager::findRomsRoot()
 	for (const auto& path : searchPaths)
 	{
 		if (Utils::FileSystem::isDirectory(path))
-			return path;
+			return Utils::FileSystem::getCanonicalPath(path);
 	}
 	
 	// Fallback: try to find relative to home if it exists
 	std::string home = Utils::FileSystem::getGenericPath("~");
 	if (Utils::FileSystem::isDirectory(home + "/roms"))
-		return home + "/roms";
+		return Utils::FileSystem::getCanonicalPath(home + "/roms");
 
 	return "/roms"; // Default fallback
 }
@@ -119,6 +119,11 @@ void ProfileManager::setActiveProfile(const std::string& name)
 		mActiveProfile = name;
 		Settings::getInstance()->setString("ActiveProfile", name);
 		Settings::getInstance()->saveFile();
+
+		// Ensure subfolders exist (fixes RetroArch redirect fail)
+		Utils::FileSystem::createDirectory(getSavePath(name));
+		Utils::FileSystem::createDirectory(getStatePath(name));
+		Utils::FileSystem::createDirectory(getScreenshotPath(name));
 	}
 }
 

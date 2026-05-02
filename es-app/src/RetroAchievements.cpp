@@ -297,19 +297,25 @@ void RetroAchievements::updateRetroArchConfig() {
 	std::string selected = ProfileManager::getInstance()->getActiveProfile();
 	if (selected.empty()) selected = "Player";
 
-	std::vector<std::string> cfgPaths = {
-		"/home/ark/.config/retroarch/retroarch.cfg",
-		"/home/ark/.config/retroarch32/retroarch.cfg",
-		"/storage/.config/retroarch/retroarch.cfg"
+	std::vector<std::string> cfgDirs = {
+		"/home/ark/.config/retroarch/",
+		"/home/ark/.config/retroarch32/",
+		"/storage/.config/retroarch/",
+		"/userdata/system/configs/retroarch/"
 	};
 
 	std::string saveDir = ProfileManager::getInstance()->getSavePath();
 	std::string stateDir = ProfileManager::getInstance()->getStatePath();
 	std::string screenshotDir = ProfileManager::getInstance()->getScreenshotPath();
 
-	for (const auto& path : cfgPaths) {
-		if (Utils::FileSystem::exists(path)) {
-			LOG(LogInfo) << "Injecting RetroArch Profile [" << selected << "] into " << path;
+	for (const auto& dir : cfgDirs) {
+		if (!Utils::FileSystem::isDirectory(dir)) continue;
+
+		auto files = Utils::FileSystem::getDirContent(dir);
+		for (const auto& path : files) {
+			if (!Utils::String::endsWith(path, ".cfg")) continue;
+
+			LOG(LogInfo) << "Injecting Profile [" << selected << "] into " << path;
 
 			// ROBUST INJECTION: Use a temporary script to avoid shell escaping hell.
 			std::string script = "sed -i '/cheevos_username/d' \"" + path + "\"\n" +
