@@ -7,7 +7,7 @@ using WatsonWebserver.Core;
 namespace LAHEE;
 
 class UserManager {
-    public static string UserDataDirectory { get; private set; }
+    public static string UserDataDirectory { get; set; }
     public static UserData ActiveUser { get; set; }
 
     private static Dictionary<string, UserData> userData;
