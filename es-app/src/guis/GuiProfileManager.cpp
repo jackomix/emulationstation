@@ -27,10 +27,10 @@ void GuiProfileManager::populateList()
 	{
 		bool isActive = (name == active);
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
-		
+
 		mMenu.addEntry(displayName, false, [this, name] {
 			ProfileManager::getInstance()->setActiveProfile(name);
-			
+
 			// Notify LAHEE
 			HttpReqOptions options;
 			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
@@ -40,18 +40,17 @@ void GuiProfileManager::populateList()
 			CollectionSystemManager::get()->refreshFavorites();
 			ViewController::get()->reloadAll();
 
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this, name] { 
-				// FORCE REFRESH: Close menus and re-open Main Menu
-				Window* window = mWindow;
-				
-				// Standard ES way to close everything above the carousel
-				while(window->getGuiStackSize() > 0 && window->peekGui() != ViewController::get())
-					delete window->peekGui();
-				
-				window->pushGui(new GuiMenu(window));
-			}));
+			// FORCE REFRESH: Close menus and re-open Main Menu INSTANTLY
+			Window* window = mWindow;
+			while(window->getGuiStackSize() > 0 && window->peekGui() != ViewController::get())
+				delete window->peekGui();
+
+			window->pushGui(new GuiMenu(window, false)); // false = no pop-up animation
 		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
+
+	// SEAMLESS: Set cursor to the active profile by default
+	mMenu.getList()->setCursor(active);
 }
 
 void GuiProfileManager::createNewProfile()
