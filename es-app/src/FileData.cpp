@@ -281,12 +281,8 @@ void FileData::setMetadata(MetaDataId key, const std::string& value)
 	{
 		if (key == MetaDataId::Favorite)
 		{
-			// ONLY persist to profile if it's NOT a bulk load from gamelist.xml
-			// This prevents global XML files from "attacking" the profile's favorites.txt
-			if (!mMetadata.isChanged()) {
-				ProfileManager::getInstance()->setFavorite(getPath(), value == "true");
-				return;
-			}
+			ProfileManager::getInstance()->setFavorite(getPath(), value == "true");
+			return;
 		}
 	}
 	mMetadata.set(key, value);
