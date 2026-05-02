@@ -96,22 +96,32 @@ void ProfileManager::loadAllMetadata()
 
 void ProfileManager::saveAllMetadata()
 {
-	// 1. Favorites
+	// 1. Favorites (Atomic Save)
 	std::string favContent = "";
 	for (const auto& fav : mFavoritesCache) favContent += fav + "\n";
-	Utils::FileSystem::writeAllText(getFavoritesPath(), favContent);
+	
+	std::string favPath = getFavoritesPath();
+	std::string favTemp = favPath + ".tmp";
+	Utils::FileSystem::writeAllText(favTemp, favContent);
+	Utils::FileSystem::renameFile(favTemp, favPath);
 
-	// 2. Stats
+	// 2. Stats (Atomic Save)
 	rapidjson::Document doc;
 	doc.SetObject();
-	doc.AddMember("playtime", mStatsCache.playtime, doc.GetAllocator());
-	doc.AddMember("last_played", rapidjson::Value(mStatsCache.last_played.c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
-	doc.AddMember("most_played_genre", rapidjson::Value(mStatsCache.most_played_genre.c_str(), doc.GetAllocator()).Move(), doc.GetAllocator());
+	
+	auto& allocator = doc.GetAllocator();
+	doc.AddMember("playtime", mStatsCache.playtime, allocator);
+	doc.AddMember("last_played", rapidjson::Value(mStatsCache.last_played.c_str(), allocator).Move(), allocator);
+	doc.AddMember("most_played_genre", rapidjson::Value(mStatsCache.most_played_genre.c_str(), allocator).Move(), allocator);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 	doc.Accept(writer);
-	Utils::FileSystem::writeAllText(mProfilesRoot + "/" + mActiveProfile + "/stats.json", buffer.GetString());
+	
+	std::string statsPath = mProfilesRoot + "/" + mActiveProfile + "/stats.json";
+	std::string statsTemp = statsPath + ".tmp";
+	Utils::FileSystem::writeAllText(statsTemp, buffer.GetString());
+	Utils::FileSystem::renameFile(statsTemp, statsPath);
 }
 
 bool ProfileManager::isFavorite(const std::string& path)

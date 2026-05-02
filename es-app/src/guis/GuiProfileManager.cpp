@@ -37,6 +37,7 @@ void GuiProfileManager::populateList()
 
 			// Refresh Collections
 			CollectionSystemManager::get()->refreshFavorites();
+			ViewController::get()->reloadAll();
 
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this, name] { 
 				// FORCE REFRESH: Close everything and re-open Main Menu
@@ -45,8 +46,7 @@ void GuiProfileManager::populateList()
 					delete window->peekGui();
 
 				window->pushGui(new GuiMenu(window));
-			}));
-		}, isActive ? "iconFavorite" : "", false, false, name);
+			}));		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
 }
 
