@@ -41,12 +41,11 @@ void GuiProfileManager::populateList()
 			ViewController::get()->reloadAll();
 
 			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHED TO PROFILE: ") + name, _("OK"), [this, name] { 
-				// CLOSE EVERYTHING AND RE-OPEN START MENU
+				// FORCE REFRESH: Close menus and re-open Main Menu
 				Window* window = mWindow;
 				
-				// Standard ES way to close a GUI is to delete it if it's top-level
-				// We want to return to a clean state.
-				while(window->getGuiStackSize() > 0)
+				// Standard ES way to close everything above the carousel
+				while(window->getGuiStackSize() > 0 && window->peekGui() != ViewController::get())
 					delete window->peekGui();
 				
 				window->pushGui(new GuiMenu(window));

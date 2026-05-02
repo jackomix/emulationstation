@@ -228,7 +228,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	profileEntry->setEntry(profileName, Vector2i(1, 0), false, true);
 	profileEntry->setSize(mMenu.getSize().x(), 48);
 
-	addEntry(_("ACTIVE PROFILE: ").c_str(), true, [this] { openProfileManager(); }, "iconProfile");
+	addEntry(_("ACTIVE PROFILE: ").c_str() + activeUser, true, [this] { openProfileManager(); }, "iconProfile");
 
 	// KODI >
 	// GAMES SETTINGS >
