@@ -31,7 +31,7 @@ std::string ProfileManager::findRomsRoot()
 	}
 	
 	// Fallback: try to find relative to home if it exists
-	std::string home = Utils::Platform::getHomePath();
+	std::string home = Utils::FileSystem::getGenericPath("~");
 	if (Utils::FileSystem::isDirectory(home + "/roms"))
 		return home + "/roms";
 
