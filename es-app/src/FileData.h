@@ -186,6 +186,9 @@ protected:
 	FileType mType;
 	SystemData* mSystem;
 	std::string* mDisplayName;
+#ifdef _ENABLEAMBERELEC
+	std::string* mSortName;
+#endif
 };
 
 class CollectionFileData : public FileData
