@@ -240,6 +240,8 @@ public:
 	void addChild(FileData* file, bool assignParent = true); // Error if mType != FOLDER
 	void removeChild(FileData* file); //Error if mType != FOLDER
 	void clear();
+	void removeVirtualFolders();
+	void removeFromVirtualFolders(FileData* game);
 
 private:
 	std::vector<FileData*> mChildren;

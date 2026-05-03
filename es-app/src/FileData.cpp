@@ -215,7 +215,63 @@ const bool FileData::hasCheevos()
 	return false;
 }
 
-bool FileData::hasAnyMedia() { return Utils::FileSystem::exists(getImagePath()) || Utils::FileSystem::exists(getThumbnailPath(false)) || Utils::FileSystem::exists(getVideoPath()); }
+bool FileData::hasAnyMedia()
+{
+	if (Utils::FileSystem::exists(getImagePath()) || Utils::FileSystem::exists(getThumbnailPath(false)) || Utils::FileSystem::exists(getVideoPath()))
+		return true;
+
+	for (auto mdd : mMetadata.getMDD())
+	{
+		if (mdd.type != MetaDataType::MD_PATH)
+			continue;
+
+		std::string path = mMetadata.get(mdd.key);
+		if (path.empty())
+			continue;
+
+		if (mdd.id == MetaDataId::Manual || mdd.id == MetaDataId::Magazine)
+		{
+			if (Utils::FileSystem::exists(path))
+				return true;
+		}
+		else if (mdd.id != MetaDataId::Image && mdd.id != MetaDataId::Thumbnail)
+		{
+			if (Utils::FileSystem::isImage(path))
+				continue;
+
+			if (Utils::FileSystem::exists(path))
+				return true;
+		}
+	}
+
+	return false;
+}
+
+std::vector<std::string> FileData::getFileMedias()
+{
+	std::vector<std::string> ret;
+
+	for (auto mdd : mMetadata.getMDD())
+	{
+		if (mdd.type != MetaDataType::MD_PATH)
+			continue;
+
+		if (mdd.id == MetaDataId::Video || mdd.id == MetaDataId::Manual || mdd.id == MetaDataId::Magazine)
+			continue;
+
+		std::string path = mMetadata.get(mdd.key);
+		if (path.empty())
+			continue;
+
+		if (!Utils::FileSystem::isImage(path))
+			continue;
+		
+		if (Utils::FileSystem::exists(path))
+			ret.push_back(path);
+	}
+
+	return ret;
+}
 
 void FileData::resetSettings() { }
 
@@ -362,4 +418,29 @@ void FolderData::clear() {
 			delete child;
 		}
 	mChildren.clear();
+}
+
+void FolderData::removeVirtualFolders() {
+	if (!mOwnsChildrens) return;
+	std::unordered_set<FileData*> filesToRemove;
+	for (auto file : mChildren)
+		if (file->getType() == FOLDER && !((FolderData*)file)->mOwnsChildrens)
+			filesToRemove.insert(file);
+	bulkRemoveChildren(mChildren, filesToRemove);
+	for (auto file : filesToRemove) delete file;
+}
+
+void FolderData::removeFromVirtualFolders(FileData* game)
+{
+	for (auto it = mChildren.begin(); it != mChildren.end(); ++it) 
+	{		
+		if ((*it)->getType() == FOLDER) {
+			((FolderData*)(*it))->removeFromVirtualFolders(game);
+			continue;
+		}
+		if ((*it) == game) {
+			mChildren.erase(it);
+			return;
+		}
+	}
 }
