@@ -225,11 +225,63 @@ const std::string& FileData::getName()
 	return mMetadata.getName();
 }
 
+#ifdef _ENABLEAMBERELEC
+const std::string& FileData::getSortName()
+{
+    if (mSortName == nullptr) mSortName = new std::string(getMetadata(MetaDataId::SortName));
+    return *mSortName;
+}
+
+const std::string FileData::getSortOrName()
+{
+	std::string s(getSortName());
+	if (!s.empty()) return s;
+	return getName();
+}
+#endif
+
 const std::string FileData::getVideoPath() { return getMetadata(MetaDataId::Video); }
 const std::string FileData::getMarqueePath() { return getMetadata(MetaDataId::Marquee); }
 const std::string FileData::getImagePath() { return getMetadata(MetaDataId::Image); }
 
 std::string FileData::getKey() { return getFileName(); }
+
+const bool FileData::isArcadeAsset()
+{
+	if (mSystem && (mSystem->hasPlatformId(PlatformIds::ARCADE) || mSystem->hasPlatformId(PlatformIds::NEOGEO)))
+	{	
+		const std::string stem = Utils::FileSystem::getStem(getPath());
+		return MameNames::getInstance()->isBiosOrDevice(stem);		
+	}
+	return false;
+}
+
+const bool FileData::isVerticalArcadeGame()
+{
+	if (mSystem && mSystem->hasPlatformId(PlatformIds::ARCADE))
+		return MameNames::getInstance()->isVertical(Utils::FileSystem::getStem(getPath()));
+	return false;
+}
+
+const bool FileData::isLightGunGame()
+{
+	return MameNames::getInstance()->isLightgun(Utils::FileSystem::getStem(getPath()), mSystem->getName(), mSystem && mSystem->hasPlatformId(PlatformIds::ARCADE));
+}
+
+const bool FileData::isWheelGame()
+{
+	return MameNames::getInstance()->isWheel(Utils::FileSystem::getStem(getPath()), mSystem->getName(), mSystem && mSystem->hasPlatformId(PlatformIds::ARCADE));
+}
+
+const bool FileData::isTrackballGame()
+{
+	return MameNames::getInstance()->isTrackball(Utils::FileSystem::getStem(getPath()), mSystem->getName(), mSystem && mSystem->hasPlatformId(PlatformIds::ARCADE));
+}
+
+const bool FileData::isSpinnerGame()
+{
+	return MameNames::getInstance()->isSpinner(Utils::FileSystem::getStem(getPath()), mSystem->getName(), mSystem && mSystem->hasPlatformId(PlatformIds::ARCADE));
+}
 
 FileData* FileData::getSourceFileData() { return this; }
 

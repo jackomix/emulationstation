@@ -71,6 +71,10 @@ public:
 	static FileData* GetRunningGame() { return mRunningGame; }
 
 	virtual const std::string& getName();
+#ifdef _ENABLEAMBERELEC
+	virtual const std::string& getSortName();
+	virtual const std::string getSortOrName();
+#endif
 
 	inline FileType getType() const { return mType; }
 	inline FolderData* getParent() const { return mParent; }
@@ -107,6 +111,12 @@ public:
 	inline bool isPlaceHolder() { return mType == PLACEHOLDER; };	
 
 	virtual std::string getKey();
+	const bool isArcadeAsset();
+	const bool isVerticalArcadeGame();
+	const bool isLightGunGame();
+	const bool isWheelGame();
+	const bool isTrackballGame();
+	const bool isSpinnerGame();
 	inline std::string getFullPath() { return getPath(); };
 	inline std::string getFileName() { return Utils::FileSystem::getFileName(getPath()); };
 	virtual FileData* getSourceFileData();
