@@ -1220,26 +1220,29 @@ static class Routes {
 
     internal static async Task LaheeSwitchUser(HttpContextBase ctx) {
         string username = ctx.Request.GetParameter("u");
+        
+        // REDIRECT STORAGE: Point LAHEE to the profile's internal folder FIRST
+        string profileRoot = Program.Config.Get("LAHEE", "HubDirectory");
+        if (!string.IsNullOrEmpty(profileRoot)) {
+            string romsRoot = Path.GetDirectoryName(profileRoot);
+            string userPath = Path.Combine(romsRoot, "Profiles", username, "Achievements");
+            if (!Directory.Exists(userPath)) Directory.CreateDirectory(userPath);
+            
+            // CRITICAL: Update path AND reload memory so we don't leak old users into new folders
+            UserManager.UserDataDirectory = userPath;
+            UserManager.Load(userPath); 
+            Log.User.LogInformation("Achievement storage redirected to: {p}", userPath);
+        }
+
         UserData user = UserManager.GetUserData(username);
         if (user == null) {
-            Log.User.LogWarning("Switch request for unknown user {u}, creating...", username);
+            Log.User.LogWarning("Switch request for unknown user {u} in current profile, creating...", username);
             user = UserManager.RegisterNewUser(username);
             UserManager.Save();
         }
 
         UserManager.ActiveUser = user;
         UserManager.SaveActiveUser();
-
-        // REDIRECT STORAGE: Point LAHEE to the profile's internal User folder
-        string profileRoot = Program.Config.Get("LAHEE", "HubDirectory");
-        if (!string.IsNullOrEmpty(profileRoot)) {
-            // Traverse up from Hub to Roms, then down to Profiles
-            string romsRoot = Path.GetDirectoryName(profileRoot);
-            string userPath = Path.Combine(romsRoot, "Profiles", username, "Achievements");
-            if (!Directory.Exists(userPath)) Directory.CreateDirectory(userPath);
-            UserManager.UserDataDirectory = userPath;
-            Log.User.LogInformation("Achievement storage redirected to: {p}", userPath);
-        }
 
         Log.User.LogInformation("Active user switched to: {u}", user.UserName);
 
