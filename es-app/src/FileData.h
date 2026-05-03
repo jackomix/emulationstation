@@ -36,7 +36,9 @@ enum FileChangeType
 enum NetPlayMode
 {
 	DISABLED,
-	CLIENT,	SERVER,	SPECTATOR
+	CLIENT,
+	SERVER,	
+	SPECTATOR
 };
 
 struct GetFileContext
@@ -48,13 +50,22 @@ struct GetFileContext
 
 struct LaunchGameOptions
 {
-	LaunchGameOptions() { netPlayMode = NetPlayMode::DISABLED; port = 0; saveStateInfo = nullptr; isSaveStateInfoTemporary = false; }
+	LaunchGameOptions() 
+	{ 
+		netPlayMode = NetPlayMode::DISABLED; 
+		port = 0;
+		saveStateInfo = nullptr; 
+		isSaveStateInfoTemporary = false; 		  
+	}
+
 	int netPlayMode;
 	std::string ip;
 	int port;
 	std::string session;
+
 	std::string core;
 	std::string netplayClientPassword;
+
 	SaveState*	saveStateInfo;
 	bool isSaveStateInfoTemporary;
 };
@@ -71,12 +82,16 @@ public:
 	static FileData* GetRunningGame() { return mRunningGame; }
 
 	virtual const std::string& getName();
-	virtual const std::string& getSortName();
+#ifdef _ENABLEAMBERELEC
+  virtual const std::string& getSortName();
 	virtual const std::string getSortOrName();
+#endif
 
 	inline FileType getType() const { return mType; }
+	
 	inline FolderData* getParent() const { return mParent; }
 	inline void setParent(FolderData* parent) { mParent = parent; }
+
 	inline SystemData* getSystem() const { return mSystem; }
 
 	virtual const std::string getPath() const;
@@ -113,15 +128,18 @@ public:
 	const bool isArcadeAsset();
 	const bool isVerticalArcadeGame();
 	const bool isLightGunGame();
-	const bool isWheelGame();
-	const bool isTrackballGame();
-	const bool isSpinnerGame();
+  	const bool isWheelGame();
+    	const bool isTrackballGame();
+      	const bool isSpinnerGame();
 	inline std::string getFullPath() { return getPath(); };
 	inline std::string getFileName() { return Utils::FileSystem::getFileName(getPath()); };
 	virtual FileData* getSourceFileData();
 	virtual std::string getSystemName() const;
 
+	// Returns our best guess at the "real" name for this file (will attempt to perform MAME name translation)
 	virtual std::string& getDisplayName();
+
+	// As above, but also remove parenthesis
 	std::string getCleanName();
 
 	std::string getlaunchCommand(bool includeControllers = true) { LaunchGameOptions options; return getlaunchCommand(options, includeControllers); };
@@ -179,13 +197,17 @@ private:
 
 protected:	
 	std::string  findLocalArt(const std::string& type = "", std::vector<std::string> exts = { ".png", ".jpg" });
+
 	static FileData* mRunningGame;
+
 	FolderData* mParent;
 	std::string mPath;
 	FileType mType;
 	SystemData* mSystem;
 	std::string* mDisplayName;
+#ifdef _ENABLEAMBERELEC
 	std::string* mSortName;
+#endif
 };
 
 class CollectionFileData : public FileData
@@ -197,6 +219,7 @@ public:
 	FileData* getSourceFileData();
 	std::string getKey();
 	virtual const std::string getPath() const;
+
 	virtual std::string getSystemName() const;
 	virtual SystemEnvironmentData* getSystemEnvData() const;
 
@@ -208,6 +231,7 @@ public:
 	virtual void setMetadata(MetaDataId key, const std::string& value) override;
 
 private:
+	// needs to be updated when metadata changes
 	FileData* mSourceFileData;
 };
 

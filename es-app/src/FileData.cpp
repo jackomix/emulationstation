@@ -64,8 +64,12 @@ static std::map<std::string, std::function<BindableProperty(FileData*)>> propert
 FileData* FileData::mRunningGame = nullptr;
 
 FileData::FileData(FileType type, const std::string& path, SystemData* system)
-	: mPath(path), mType(type), mSystem(system), mParent(nullptr), mDisplayName(nullptr), mSortName(nullptr), mMetadata(type == GAME ? GAME_METADATA : FOLDER_METADATA) 
+	: mPath(path), mType(type), mSystem(system), mParent(nullptr), mDisplayName(nullptr), mMetadata(type == GAME ? GAME_METADATA : FOLDER_METADATA) 
 {
+#ifdef _ENABLEAMBERELEC
+    mSortName = nullptr;
+#endif
+
 	if (mMetadata.get(MetaDataId::Name).empty() && !mPath.empty())
 		mMetadata.set(MetaDataId::Name, getDisplayName());
 	
@@ -277,6 +281,7 @@ const std::string& FileData::getName()
 	return mMetadata.getName();
 }
 
+#ifdef _ENABLEAMBERELEC
 const std::string& FileData::getSortName()
 {
     if (mSortName == nullptr) mSortName = new std::string(getMetadata(MetaDataId::SortName));
@@ -289,6 +294,7 @@ const std::string FileData::getSortOrName()
 	if (!s.empty()) return s;
 	return getName();
 }
+#endif
 
 const std::string FileData::getVideoPath() { return getMetadata(MetaDataId::Video); }
 const std::string FileData::getMarqueePath() { return getMetadata(MetaDataId::Marquee); }
