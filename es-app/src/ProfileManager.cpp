@@ -185,6 +185,7 @@ bool ProfileManager::createProfile(const std::string& name)
 	Utils::FileSystem::createDirectory(path + "/Saves");
 	Utils::FileSystem::createDirectory(path + "/States");
 	Utils::FileSystem::createDirectory(path + "/Screenshots");
+	Utils::FileSystem::createDirectory(path + "/Achievements");
 	
 	Utils::FileSystem::writeAllText(path + "/favorites.txt", "");
 	Utils::FileSystem::writeAllText(path + "/stats.json", "{\"playtime\": 0, \"last_played\": \"\", \"most_played_genre\": \"\"}");
@@ -227,9 +228,22 @@ bool ProfileManager::renameProfile(const std::string& oldName, const std::string
 	std::string newPath = mProfilesRoot + "/" + newName;
 	if (Utils::FileSystem::exists(oldPath) && !Utils::FileSystem::exists(newPath))
 	{
+		// 1. Rename achievement files inside folder first
+		std::string oldAch = oldPath + "/Achievements/" + oldName + ".json";
+		std::string newAch = oldPath + "/Achievements/" + newName + ".json";
+		if (Utils::FileSystem::exists(oldAch)) {
+			Utils::FileSystem::renameFile(oldAch, newAch);
+		}
+
+		// 2. Rename folder
 		std::string cmd = "mv \"" + oldPath + "\" \"" + newPath + "\"";
 		Utils::Platform::getShOutput("sh -c '" + cmd + "'");
-		if (mActiveProfile == oldName) mActiveProfile = newName;
+		
+		if (mActiveProfile == oldName) {
+			mActiveProfile = newName;
+			Settings::getInstance()->setString("ActiveProfile", newName);
+			Settings::getInstance()->saveFile();
+		}
 		return true;
 	}
 	return false;
