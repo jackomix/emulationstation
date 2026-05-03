@@ -71,10 +71,8 @@ public:
 	static FileData* GetRunningGame() { return mRunningGame; }
 
 	virtual const std::string& getName();
-#ifdef _ENABLEAMBERELEC
 	virtual const std::string& getSortName();
 	virtual const std::string getSortOrName();
-#endif
 
 	inline FileType getType() const { return mType; }
 	inline FolderData* getParent() const { return mParent; }
@@ -105,6 +103,7 @@ public:
 	virtual const bool hasCheevos();
 
 	bool hasAnyMedia();
+	std::vector<std::string> getFileMedias();
 
 	const std::string getConfigurationName();
 
@@ -186,9 +185,7 @@ protected:
 	FileType mType;
 	SystemData* mSystem;
 	std::string* mDisplayName;
-#ifdef _ENABLEAMBERELEC
 	std::string* mSortName;
-#endif
 };
 
 class CollectionFileData : public FileData
@@ -236,14 +233,24 @@ public:
 	std::shared_ptr<std::vector<FileData*>> findChildrenListToDisplayAtCursor(FileData* toFind, std::stack<FileData*>& stack);
 
 	std::vector<FileData*> getFilesRecursive(unsigned int typeMask, bool displayedOnly = false, SystemData* system = nullptr, bool includeVirtualStorage = true) const;
+	std::vector<FileData*> getFlatGameList(bool displayedOnly, SystemData* system) const;
 
 	void addChild(FileData* file, bool assignParent = true); // Error if mType != FOLDER
 	void removeChild(FileData* file); //Error if mType != FOLDER
+	void bulkRemoveChildren(std::vector<FileData*>& mChildren, const std::unordered_set<FileData*>& filesToRemove); //Error if mType != FOLDER
+
+	void createChildrenByFilenameMap(std::unordered_map<std::string, FileData*>& map);
+
+	FileData* findUniqueGameForFolder();
+
 	void clear();
 	void removeVirtualFolders();
 	void removeFromVirtualFolders(FileData* game);
 
 private:
+	void getFilesRecursiveWithContext(std::vector<FileData*>& out, unsigned int typeMask, GetFileContext* filter, bool displayedOnly, SystemData* system, bool includeVirtualStorage) const;
+
+
 	std::vector<FileData*> mChildren;
 	bool	mOwnsChildrens;
 	bool	mIsDisplayableAsVirtualFolder;

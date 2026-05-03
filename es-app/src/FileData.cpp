@@ -48,28 +48,24 @@ static std::map<std::string, std::function<BindableProperty(FileData*)>> propert
 	{ "thumbnail",			[](FileData* file) { return BindableProperty(file->getThumbnailPath(false), BindablePropertyType::Path); } },
 	{ "video",				[](FileData* file) { return BindableProperty(file->getVideoPath(), BindablePropertyType::Path); } },
 	{ "marquee",			[](FileData* file) { return BindableProperty(file->getMarqueePath(), BindablePropertyType::Path); } },
-	{ "favorite",			[](FileData* file) { return file->getFavorite(); } },
-	{ "hidden",				[](FileData* file) { return file->getHidden(); } },
-	{ "kidGame",			[](FileData* file) { return file->getKidGame(); } },
-	{ "gunGame",			[](FileData* file) { return file->isLightGunGame(); } },
-	{ "wheelGame",			[](FileData* file) { return file->isWheelGame(); } },
-	{ "trackballGame",			[](FileData* file) { return file->isTrackballGame(); } },
-	{ "spinnerGame",			[](FileData* file) { return file->isSpinnerGame(); } },
-	{ "cheevos",			[](FileData* file) { return file->hasCheevos(); } },
-	{ "genre",			    [](FileData* file) { return file->getGenre(); } },
-	{ "hasKeyboardMapping", [](FileData* file) { return file->hasKeyboardMapping(); } },	
-	{ "systemName",			[](FileData* file) { return file->getSourceFileData()->getSystem()->getFullName(); } },
+	{ "favorite",			[](FileData* file) { return BindableProperty(file->getFavorite()); } },
+	{ "hidden",				[](FileData* file) { return BindableProperty(file->getHidden()); } },
+	{ "kidGame",			[](FileData* file) { return BindableProperty(file->getKidGame()); } },
+	{ "gunGame",			[](FileData* file) { return BindableProperty(file->isLightGunGame()); } },
+	{ "wheelGame",			[](FileData* file) { return BindableProperty(file->isWheelGame()); } },
+	{ "trackballGame",			[](FileData* file) { return BindableProperty(file->isTrackballGame()); } },
+	{ "spinnerGame",			[](FileData* file) { return BindableProperty(file->isSpinnerGame()); } },
+	{ "cheevos",			[](FileData* file) { return BindableProperty(file->hasCheevos()); } },
+	{ "genre",			    [](FileData* file) { return BindableProperty(file->getGenre(), BindablePropertyType::String); } },
+	{ "hasKeyboardMapping", [](FileData* file) { return BindableProperty(file->hasKeyboardMapping()); } },	
+	{ "systemName",			[](FileData* file) { return BindableProperty(file->getSourceFileData()->getSystem()->getFullName(), BindablePropertyType::String); } },
 };
 
 FileData* FileData::mRunningGame = nullptr;
 
 FileData::FileData(FileType type, const std::string& path, SystemData* system)
-	: mPath(path), mType(type), mSystem(system), mParent(nullptr), mDisplayName(nullptr), mMetadata(type == GAME ? GAME_METADATA : FOLDER_METADATA) 
+	: mPath(path), mType(type), mSystem(system), mParent(nullptr), mDisplayName(nullptr), mSortName(nullptr), mMetadata(type == GAME ? GAME_METADATA : FOLDER_METADATA) 
 {
-#ifdef _ENABLEAMBERELEC
-    mSortName = nullptr;
-#endif
-
 	if (mMetadata.get(MetaDataId::Name).empty() && !mPath.empty())
 		mMetadata.set(MetaDataId::Name, getDisplayName());
 	
@@ -281,7 +277,6 @@ const std::string& FileData::getName()
 	return mMetadata.getName();
 }
 
-#ifdef _ENABLEAMBERELEC
 const std::string& FileData::getSortName()
 {
     if (mSortName == nullptr) mSortName = new std::string(getMetadata(MetaDataId::SortName));
@@ -294,7 +289,6 @@ const std::string FileData::getSortOrName()
 	if (!s.empty()) return s;
 	return getName();
 }
-#endif
 
 const std::string FileData::getVideoPath() { return getMetadata(MetaDataId::Video); }
 const std::string FileData::getMarqueePath() { return getMetadata(MetaDataId::Marquee); }
@@ -418,6 +412,58 @@ void FolderData::clear() {
 			delete child;
 		}
 	mChildren.clear();
+}
+
+void FolderData::bulkRemoveChildren(std::vector<FileData*>& mChildren, const std::unordered_set<FileData*>& filesToRemove)
+{
+	mChildren.erase(std::remove_if(mChildren.begin(), mChildren.end(), [&](FileData* file) { return filesToRemove.find(file) != filesToRemove.end(); }), mChildren.end());
+}
+
+void FolderData::createChildrenByFilenameMap(std::unordered_map<std::string, FileData*>& map)
+{
+	for (auto it = mChildren.cbegin(); it != mChildren.cend(); it++)
+		map[(*it)->getFileName()] = *it;
+}
+
+FileData* FolderData::findUniqueGameForFolder()
+{
+	FileData* unique = nullptr;
+
+	for (auto it = mChildren.cbegin(); it != mChildren.cend(); it++)
+	{
+		if ((*it)->getType() == GAME)
+		{
+			if (unique != nullptr) return nullptr;
+			unique = *it;
+		}
+		else if ((*it)->getType() == FOLDER)
+		{
+			FileData* folderUnique = ((FolderData*)(*it))->findUniqueGameForFolder();
+			if (folderUnique == nullptr) return nullptr;
+			if (unique != nullptr) return nullptr;
+			unique = folderUnique;
+		}
+	}
+
+	return unique;
+}
+
+std::vector<FileData*> FolderData::getFlatGameList(bool displayedOnly, SystemData* system) const
+{
+	std::vector<FileData*> ret;
+	for (auto it = mChildren.cbegin(); it != mChildren.cend(); it++)
+	{
+		if ((*it)->getType() == GAME)
+		{
+			if (!displayedOnly || !(*it)->getHidden()) ret.push_back(*it);
+		}
+		else if ((*it)->getType() == FOLDER)
+		{
+			auto folderList = ((FolderData*)(*it))->getFlatGameList(displayedOnly, system);
+			ret.insert(ret.end(), folderList.begin(), folderList.end());
+		}
+	}
+	return ret;
 }
 
 void FolderData::removeVirtualFolders() {
