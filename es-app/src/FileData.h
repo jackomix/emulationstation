@@ -154,8 +154,8 @@ public:
 
 	void setMetadata(MetaDataList value) { getMetadata() = value; } 
 	
-	std::string getMetadata(MetaDataId key) const;
-	void setMetadata(MetaDataId key, const std::string& value);
+	virtual std::string getMetadata(MetaDataId key) const;
+	virtual void setMetadata(MetaDataId key, const std::string& value);
 
 	void detectLanguageAndRegion(bool overWrite);
 
