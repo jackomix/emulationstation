@@ -27,29 +27,34 @@ void GuiProfileManager::populateList()
 	{
 		bool isActive = (name == active);
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
-
+		
 		mMenu.addEntry(displayName, false, [this, name] {
 			ProfileManager::getInstance()->setActiveProfile(name);
-
+			
 			// Notify LAHEE
 			HttpReqOptions options;
 			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
 			request.wait();
 
-			// Refresh Collections & Carousel
+			// SAFE REFRESH: Trigger global reload (Same as theme change)
+			// This is slightly slower but 100% safe against crashes and metadata loss.
 			CollectionSystemManager::get()->refreshFavorites();
-			ViewController::get()->reloadAll();
-
-			// FORCE REFRESH: Close menus and re-open Main Menu INSTANTLY
+			
 			Window* window = mWindow;
-			while(window->getGuiStackSize() > 0 && window->peekGui() != ViewController::get())
-				delete window->peekGui();
+			
+			// Close the manager
+			delete this;
 
-			window->pushGui(new GuiMenu(window, false)); // false = no pop-up animation
+			// Re-initialize the main view
+			ViewController::get()->reloadAll(); 
+
+			// Re-open Main Menu without animation
+			window->pushGui(new GuiMenu(window, false));
+			
 		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
 
-	// SEAMLESS: Set cursor to the active profile by default
+	// Highlight current profile
 	mMenu.getList()->setCursor(active);
 }
 

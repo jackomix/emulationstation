@@ -36,9 +36,7 @@ enum FileChangeType
 enum NetPlayMode
 {
 	DISABLED,
-	CLIENT,
-	SERVER,	
-	SPECTATOR
+	CLIENT,	SERVER,	SPECTATOR
 };
 
 struct GetFileContext
@@ -50,22 +48,13 @@ struct GetFileContext
 
 struct LaunchGameOptions
 {
-	LaunchGameOptions() 
-	{ 
-		netPlayMode = NetPlayMode::DISABLED; 
-		port = 0;
-		saveStateInfo = nullptr; 
-		isSaveStateInfoTemporary = false; 		  
-	}
-
+	LaunchGameOptions() { netPlayMode = NetPlayMode::DISABLED; port = 0; saveStateInfo = nullptr; isSaveStateInfoTemporary = false; }
 	int netPlayMode;
 	std::string ip;
 	int port;
 	std::string session;
-
 	std::string core;
 	std::string netplayClientPassword;
-
 	SaveState*	saveStateInfo;
 	bool isSaveStateInfoTemporary;
 };
@@ -82,16 +71,10 @@ public:
 	static FileData* GetRunningGame() { return mRunningGame; }
 
 	virtual const std::string& getName();
-#ifdef _ENABLEAMBERELEC
-  virtual const std::string& getSortName();
-	virtual const std::string getSortOrName();
-#endif
 
 	inline FileType getType() const { return mType; }
-	
 	inline FolderData* getParent() const { return mParent; }
 	inline void setParent(FolderData* parent) { mParent = parent; }
-
 	inline SystemData* getSystem() const { return mSystem; }
 
 	virtual const std::string getPath() const;
@@ -118,28 +101,18 @@ public:
 	virtual const bool hasCheevos();
 
 	bool hasAnyMedia();
-	std::vector<std::string> getFileMedias();
 
 	const std::string getConfigurationName();
 
 	inline bool isPlaceHolder() { return mType == PLACEHOLDER; };	
 
 	virtual std::string getKey();
-	const bool isArcadeAsset();
-	const bool isVerticalArcadeGame();
-	const bool isLightGunGame();
-  	const bool isWheelGame();
-    	const bool isTrackballGame();
-      	const bool isSpinnerGame();
 	inline std::string getFullPath() { return getPath(); };
 	inline std::string getFileName() { return Utils::FileSystem::getFileName(getPath()); };
 	virtual FileData* getSourceFileData();
 	virtual std::string getSystemName() const;
 
-	// Returns our best guess at the "real" name for this file (will attempt to perform MAME name translation)
 	virtual std::string& getDisplayName();
-
-	// As above, but also remove parenthesis
 	std::string getCleanName();
 
 	std::string getlaunchCommand(bool includeControllers = true) { LaunchGameOptions options; return getlaunchCommand(options, includeControllers); };
@@ -197,17 +170,12 @@ private:
 
 protected:	
 	std::string  findLocalArt(const std::string& type = "", std::vector<std::string> exts = { ".png", ".jpg" });
-
 	static FileData* mRunningGame;
-
 	FolderData* mParent;
 	std::string mPath;
 	FileType mType;
 	SystemData* mSystem;
 	std::string* mDisplayName;
-#ifdef _ENABLEAMBERELEC
-	std::string* mSortName;
-#endif
 };
 
 class CollectionFileData : public FileData
@@ -219,7 +187,6 @@ public:
 	FileData* getSourceFileData();
 	std::string getKey();
 	virtual const std::string getPath() const;
-
 	virtual std::string getSystemName() const;
 	virtual SystemEnvironmentData* getSystemEnvData() const;
 
@@ -227,8 +194,10 @@ public:
 	virtual MetaDataList& getMetadata() { return mSourceFileData->getMetadata(); }
 	virtual std::string& getDisplayName() { return mSourceFileData->getDisplayName(); }
 
+	virtual std::string getMetadata(MetaDataId key) const override;
+	virtual void setMetadata(MetaDataId key, const std::string& value) override;
+
 private:
-	// needs to be updated when metadata changes
 	FileData* mSourceFileData;
 };
 
@@ -254,24 +223,12 @@ public:
 	std::shared_ptr<std::vector<FileData*>> findChildrenListToDisplayAtCursor(FileData* toFind, std::stack<FileData*>& stack);
 
 	std::vector<FileData*> getFilesRecursive(unsigned int typeMask, bool displayedOnly = false, SystemData* system = nullptr, bool includeVirtualStorage = true) const;
-	std::vector<FileData*> getFlatGameList(bool displayedOnly, SystemData* system) const;
 
 	void addChild(FileData* file, bool assignParent = true); // Error if mType != FOLDER
 	void removeChild(FileData* file); //Error if mType != FOLDER
-	void bulkRemoveChildren(std::vector<FileData*>& mChildren, const std::unordered_set<FileData*>& filesToRemove); //Error if mType != FOLDER
-
-	void createChildrenByFilenameMap(std::unordered_map<std::string, FileData*>& map);
-
-	FileData* findUniqueGameForFolder();
-
 	void clear();
-	void removeVirtualFolders();
-	void removeFromVirtualFolders(FileData* game);
 
 private:
-	void getFilesRecursiveWithContext(std::vector<FileData*>& out, unsigned int typeMask, GetFileContext* filter, bool displayedOnly, SystemData* system, bool includeVirtualStorage) const;
-
-
 	std::vector<FileData*> mChildren;
 	bool	mOwnsChildrens;
 	bool	mIsDisplayableAsVirtualFolder;
