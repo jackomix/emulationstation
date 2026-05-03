@@ -333,7 +333,11 @@ void RetroAchievements::updateRetroArchConfig() {
 			                     "sed -i '/savestate_directory/d' \"" + path + "\"\n" +
 			                     "echo 'savestate_directory = \"" + stateDir + "\"' >> \"" + path + "\"\n" +
 			                     "sed -i '/screenshot_directory/d' \"" + path + "\"\n" +
-			                     "echo 'screenshot_directory = \"" + screenshotDir + "\"' >> \"" + path + "\"\n";
+			                     "echo 'screenshot_directory = \"" + screenshotDir + "\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/savestates_in_content_dir/d' \"" + path + "\"\n" +
+			                     "echo 'savestates_in_content_dir = \"false\"' >> \"" + path + "\"\n" +
+			                     "sed -i '/savefiles_in_content_dir/d' \"" + path + "\"\n" +
+			                     "echo 'savefiles_in_content_dir = \"false\"' >> \"" + path + "\"\n";
 
 			Utils::FileSystem::writeAllText("/tmp/inject_ra.sh", script);
 			Utils::Platform::getShOutput("sh /tmp/inject_ra.sh");
