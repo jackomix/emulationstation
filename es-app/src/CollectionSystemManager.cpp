@@ -1529,8 +1529,14 @@ void CollectionSystemManager::refreshFavorites()
 	CollectionSystemData* favSysData = &mAutoCollectionSystemsData["favorites"];
 	if (!favSysData->isPopulated) return;
 
-	// Global re-scan: Force every game in ES to re-evaluate its Favorite status
-	// for the new profile and update the collection accordingly.
+	SystemData* curSys = favSysData->system;
+	FolderData* rootFolder = curSys->getRootFolder();
+
+	// 1. SILENT PURGE: Clear the current favorites without triggering UI events
+	rootFolder->clear();
+	curSys->resetIndex();
+
+	// 2. BATCH SCAN: Re-add games based on new profile
 	for (auto sys : SystemData::sSystemVector)
 	{
 		if (sys->isGameSystem() && !sys->isCollection())
@@ -1538,10 +1544,20 @@ void CollectionSystemManager::refreshFavorites()
 			std::vector<FileData*> games = sys->getRootFolder()->getFilesRecursive(GAME);
 			for (auto game : games)
 			{
-				updateCollectionSystem(game, *favSysData);
+				if (game->getFavorite())
+				{
+					auto newGame = new CollectionFileData(game, curSys);
+					rootFolder->addChild(newGame);
+					curSys->addToIndex(newGame);
+				}
 			}
 		}
 	}
+
+	// 3. SINGLE UPDATE: Refresh UI and count once at the end
+	curSys->updateDisplayedGameCount();
+	auto view = ViewController::get()->getGameListView(curSys, false);
+	if (view != nullptr) view->onFileChanged(rootFolder, FILE_METADATA_CHANGED);
 }
 
 void CollectionSystemManager::reloadCollection(const std::string collectionName, bool repopulateGamelist)
