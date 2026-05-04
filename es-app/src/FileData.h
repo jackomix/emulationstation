@@ -4,6 +4,7 @@
 
 #include "utils/FileSystemUtil.h"
 #include "MetaData.h"
+#include "ProfileManager.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <memory>
