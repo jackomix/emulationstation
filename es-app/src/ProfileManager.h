@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include <functional>
 
 struct ProfileStats {
 	int playtime;
