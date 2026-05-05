@@ -577,12 +577,6 @@ int main(int argc, char* argv[])
 	HttpReq::resetCookies();
 	ProfileManager::getInstance()->init();
 	
-	// BOOT SYNC: Tell LAHEE who the active user is immediately
-	std::string bootUser = ProfileManager::getInstance()->getActiveProfile();
-	HttpReqOptions syncOptions;
-	HttpReq startupRequest("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(bootUser), &syncOptions);
-	// We don't wait here to prevent boot hang; the server will process it while ES finishes loading.
-
 	Genres::init();
 	MetaDataList::initMetadata();
 
@@ -666,6 +660,8 @@ int main(int argc, char* argv[])
 	HttpReqOptions syncOptions;
 	HttpReq startupRequest("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(bootUser), &syncOptions);
 	// No wait needed; heartbeat in startLAHEEServer ensures it is up.
+
+#ifdef _ENABLE_KODI_
 	if (systemConf->getBool("kodi.enabled", true) && systemConf->getBool("kodi.atstartup"))
 	{
 		if (splashScreen)
@@ -743,7 +739,7 @@ int main(int argc, char* argv[])
 #endif
 
 	int lastTime = SDL_GetTicks();
-	int ps_time = SDL_GetTicks();
+	int ps_ps_time = SDL_GetTicks(); // Renamed to avoid macro conflict if any
 
 	bool running = true;
 
@@ -755,7 +751,7 @@ int main(int argc, char* argv[])
 
 		SDL_Event event;
 
-		bool ps_standby = PowerSaver::getState() && (int) SDL_GetTicks() - ps_time > PowerSaver::getMode();
+		bool ps_standby = PowerSaver::getState() && (int) SDL_GetTicks() - ps_ps_time > PowerSaver::getMode();
 		if(ps_standby ? SDL_WaitEventTimeout(&event, PowerSaver::getTimeout()) : SDL_PollEvent(&event))
 		{
 			// PowerSaver can push events to exit SDL_WaitEventTimeout immediatly
@@ -780,7 +776,7 @@ int main(int argc, char* argv[])
 				lastTime = SDL_GetTicks();
 
 			// reset counter
-			ps_time = SDL_GetTicks();
+			ps_ps_time = SDL_GetTicks();
 		}
 		else if (ps_standby == false)
 		{
