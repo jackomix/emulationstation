@@ -34,23 +34,29 @@ class UserManager {
     }
 
     private static void RestoreActiveUser() {
-        string path = Path.Combine(UserDataDirectory, "..", "active_user.txt");
+        string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
+        if (string.IsNullOrEmpty(hubDir)) return;
+
+        string path = Path.Combine(hubDir, "active_user.txt");
         if (File.Exists(path)) {
             string name = File.ReadAllText(path).Trim();
-            if (userData.ContainsKey(name)) {
-                ActiveUser = userData[name];
+            if (userData.ContainsKey(name.ToLower())) {
+                ActiveUser = userData[name.ToLower()];
                 Log.User.LogInformation("Restored active user: {u}", name);
             }
         }
     }
 
     public static void SaveActiveUser() {
-        string path = Path.Combine(UserDataDirectory, "..", "active_user.txt");
+        string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
+        if (string.IsNullOrEmpty(hubDir) || ActiveUser == null) return;
+
+        string path = Path.Combine(hubDir, "active_user.txt");
         File.WriteAllText(path, ActiveUser.UserName);
     }
 
     public static void Load(string dir) {
-        userData = new Dictionary<string, UserData>();
+        userData = new Dictionary<string, UserData>(); // CRITICAL: Wipe brain before loading
 
         Log.User.LogInformation("Loading user profiles from {Dir}...", dir);
 
@@ -59,26 +65,16 @@ class UserManager {
             Log.User.LogTrace("Created directory");
         }
 
-        foreach (string file in Directory.GetFiles(dir)) {
-            if (file.EndsWith(".bak")) {
-                continue;
-            }
+        foreach (string file in Directory.GetFiles(dir, "*.json")) {
+            if (file.EndsWith(".bak")) continue;
 
-            string username = Path.GetFileNameWithoutExtension(file);
             try {
-                Log.User.LogDebug("Reading {f}", file);
-
                 UserData data = JsonConvert.DeserializeObject<UserData>(File.ReadAllText(file));
                 Migrate(data);
-                userData[data.UserName] = data;
-
-                Log.User.LogDebug("Loaded data for \"{User}\"", data);
+                userData[data.UserName.ToLower()] = data;
+                Log.User.LogDebug("Loaded data for \"{User}\"", data.UserName);
             } catch (Exception ex) {
                 Log.User.LogError("Failed to load data from " + file + ": " + ex);
-                userData[username] = new UserData() {
-                    UserName = username,
-                    AllowUse = false
-                };
             }
         }
     }

@@ -655,12 +655,6 @@ int main(int argc, char* argv[])
 
 	startLAHEEServer();
 
-	// BOOT SYNC: Tell LAHEE who the active user is after server is ready
-	std::string bootUser = ProfileManager::getInstance()->getActiveProfile();
-	HttpReqOptions syncOptions;
-	HttpReq startupRequest("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(bootUser), &syncOptions);
-	// No wait needed; heartbeat in startLAHEEServer ensures it is up.
-
 #ifdef _ENABLE_KODI_
 	if (systemConf->getBool("kodi.enabled", true) && systemConf->getBool("kodi.atstartup"))
 	{
