@@ -29,28 +29,19 @@ void GuiProfileManager::populateList()
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
 		
 		mMenu.addEntry(displayName, false, [this, name] {
-			ProfileManager::getInstance()->setActiveProfile(name);
-			
-			// Notify LAHEE
-			HttpReqOptions options;
-			HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
-			request.wait();
+			// ASYNC SWITCH: Notify server in background to stop the freeze
+			ProfileManager::getInstance()->switchProfileAsync(name, [this, name]() {
+				// Refresh Collections & Carousel on main thread after server is ready
+				CollectionSystemManager::get()->refreshFavorites();
+				ViewController::get()->reloadAll();
 
-			// SAFE REFRESH: Trigger global reload (Same as theme change)
-			// This is slightly slower but 100% safe against crashes and metadata loss.
-			CollectionSystemManager::get()->refreshFavorites();
-			
-			Window* window = mWindow;
-			
-			// Close the manager
-			delete this;
-
-			// Re-initialize the main view
-			ViewController::get()->reloadAll(); 
-
-			// Re-open Main Menu without animation
-			window->pushGui(new GuiMenu(window, false));
-			
+				// CLEAN STACK: Kill menus and re-open Main Menu
+				Window* window = mWindow;
+				while(window->getGuiStackSize() > 0 && window->peekGui() != ViewController::get())
+					delete window->peekGui();
+				
+				window->pushGui(new GuiMenu(window, false));
+			});
 		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
 

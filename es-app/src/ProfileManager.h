@@ -47,6 +47,8 @@ public:
 	void loadAllMetadata();
 	void saveAllMetadata();
 
+	void switchProfileAsync(const std::string& name, std::function<void()> onComplete);
+
 private:
 	ProfileManager();
 	static ProfileManager* sInstance;

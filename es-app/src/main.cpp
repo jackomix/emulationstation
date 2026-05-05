@@ -576,6 +576,13 @@ int main(int argc, char* argv[])
 	// metadata init
 	HttpReq::resetCookies();
 	ProfileManager::getInstance()->init();
+	
+	// BOOT SYNC: Tell LAHEE who the active user is immediately
+	std::string bootUser = ProfileManager::getInstance()->getActiveProfile();
+	HttpReqOptions syncOptions;
+	HttpReq startupRequest("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(bootUser), &syncOptions);
+	// We don't wait here to prevent boot hang; the server will process it while ES finishes loading.
+
 	Genres::init();
 	MetaDataList::initMetadata();
 

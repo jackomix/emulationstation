@@ -9,6 +9,9 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
+#include <thread>
+#include "HttpReq.h"
+
 ProfileManager* ProfileManager::sInstance = nullptr;
 
 ProfileManager* ProfileManager::getInstance()
@@ -22,6 +25,28 @@ ProfileManager::ProfileManager()
 {
 	mProfilesRoot = "";
 	mActiveProfile = "";
+}
+
+void ProfileManager::switchProfileAsync(const std::string& name, std::function<void()> onComplete)
+{
+	// 1. Update local state immediately
+	setActiveProfile(name);
+
+	// 2. Notify LAHEE in background thread to prevent UI hang
+	std::thread([name, onComplete]() {
+		HttpReqOptions options;
+		HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
+		
+		// Wait for LAHEE to finish loading its database (max 30s)
+		int timeout = 0;
+		while(request.status() == HttpReq::REQ_IN_PROGRESS && timeout < 60) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			timeout++;
+		}
+		
+		// Callback for UI refresh
+		if (onComplete) onComplete();
+	}).detach();
 }
 
 std::string ProfileManager::findRomsRoot()
