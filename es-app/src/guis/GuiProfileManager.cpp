@@ -29,8 +29,12 @@ void GuiProfileManager::populateList()
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
 		
 		mMenu.addEntry(displayName, false, [this, name] {
-			// ASYNC SWITCH: Notify server in background to stop the freeze
-			ProfileManager::getInstance()->switchProfileAsync(name, [this, name]() {
+			// NON-BLOCKING SWITCH: Show a modal so user knows it is working, but don't freeze the music
+			auto msgBox = new GuiMsgBox(mWindow, _("SWITCHING USER..."), "", nullptr);
+			mWindow->pushGui(msgBox);
+
+			// Notify server in background to stop the long freeze
+			ProfileManager::getInstance()->switchProfileAsync(name, [this, name, msgBox]() {
 				// Refresh Collections & Carousel on main thread after server is ready
 				CollectionSystemManager::get()->refreshFavorites();
 				ViewController::get()->reloadAll();
