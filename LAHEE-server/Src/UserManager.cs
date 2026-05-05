@@ -15,22 +15,41 @@ class UserManager {
     private static readonly Lock SAVE_LOCK = new Lock();
 
     internal static void Initialize() {
-        UserDataDirectory = Program.Config.Get("LAHEE", "UserDirectory");
-
         activeTokens = new Dictionary<string, UserData>();
+
+        // BOOT LOGIC: Find out who we are before we load anything
+        string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
+        string bootUser = "Player";
+        string activeUserPath = Path.Combine(hubDir, "active_user.txt");
+        
+        if (File.Exists(activeUserPath)) {
+            string savedName = File.ReadAllText(activeUserPath).Trim();
+            if (!string.IsNullOrEmpty(savedName)) bootUser = savedName;
+        }
+
+        // REDIRECT TO PROFILE: Traverse up to Roms, then down to Profiles
+        string romsRoot = Path.GetDirectoryName(hubDir);
+        string profileAchievementsPath = Path.Combine(romsRoot, "Profiles", bootUser, "Achievements");
+        
+        if (Directory.Exists(profileAchievementsPath)) {
+            UserDataDirectory = profileAchievementsPath;
+            Log.User.LogInformation("Booting with profile: {u} from {p}", bootUser, profileAchievementsPath);
+        } else {
+            UserDataDirectory = Program.Config.Get("LAHEE", "UserDirectory");
+        }
 
         Load(UserDataDirectory);
 
         if (userData.Count == 0) {
-            Log.User.LogInformation("No users found. Creating default \"Player\" profile...");
-            RegisterNewUser("Player");
+            Log.User.LogInformation("No users found in {d}. Creating profile...", UserDataDirectory);
+            RegisterNewUser(bootUser);
             Save();
         }
 
-        ActiveUser = userData.Values.First();
-        RestoreActiveUser();
+        ActiveUser = GetUserData(bootUser);
+        if (ActiveUser == null && userData.Count > 0) ActiveUser = userData.Values.First();
 
-        Log.User.LogInformation("Finished loading data: {users} User(s) with {achiev} Achievements total", userData.Count, userData.Sum((r) => r.Value.GameData?.Sum((ru => ru.Value.Achievements.Count))));
+        Log.User.LogInformation("Finished loading data: {users} User(s)", userData.Count);
     }
 
     private static void RestoreActiveUser() {
