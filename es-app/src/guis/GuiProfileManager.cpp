@@ -35,7 +35,7 @@ void GuiProfileManager::populateList()
 			// Notify server in background thread to prevent UI hang
 			ProfileManager::getInstance()->switchProfileAsync(mWindow, name, [this]() {
 				// This callback is now called on the MAIN THREAD (via postToUiThread)
-
+				
 				// NATIVE RELOAD: This is the gold standard for refreshing ES.
 				// It reloads XMLs, re-links collections, and cleans the UI stack perfectly.
 				ViewController::reloadAllGames(mWindow, true);
