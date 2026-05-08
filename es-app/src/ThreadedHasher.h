@@ -26,7 +26,7 @@ public:
 	static void resume() { mPaused = false; }
 
 private:
-	ThreadedHasher(Window* window, HasherType type, std::queue<FileData*> searchQueue, bool forceAllGames = false);
+	ThreadedHasher(Window* window, HasherType type, std::queue<FileData*> searchQueue, bool forceAllGames = false, bool silent = false);
 	~ThreadedHasher();
 
 	void updateUI(const std::string label);
@@ -52,6 +52,7 @@ private:
 	int mTotal;
 	bool mExit;
 	bool mForce;
+	bool mSilent;
 
 	static bool mPaused;
 	static ThreadedHasher* mInstance;

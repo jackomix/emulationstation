@@ -23,12 +23,13 @@ bool ThreadedHasher::mPaused = false;
 
 static std::mutex mLoaderLock;
 
-ThreadedHasher::ThreadedHasher(Window* window, HasherType type, std::queue<FileData*> searchQueue, bool forceAllGames)
+ThreadedHasher::ThreadedHasher(Window* window, HasherType type, std::queue<FileData*> searchQueue, bool forceAllGames, bool silent)
 	: mWindow(window)
 {
 	mForce = forceAllGames;
 	mExit = false;
 	mType = type;
+	mSilent = silent;
 
 	mSearchQueue = searchQueue;
 	mTotal = mSearchQueue.size();
@@ -67,7 +68,7 @@ ThreadedHasher::ThreadedHasher(Window* window, HasherType type, std::queue<FileD
 
 ThreadedHasher::~ThreadedHasher()
 {
-	if ((mType & HASH_CHEEVOS_MD5) == HASH_CHEEVOS_MD5)
+	if (!mSilent && (mType & HASH_CHEEVOS_MD5) == HASH_CHEEVOS_MD5)
 		mWindow->displayNotificationMessage(ICONINDEX + _("INDEXING COMPLETED") + std::string(". ") + _("UPDATE GAMELISTS TO APPLY CHANGES."));
 
 	mWndNotification->close();
@@ -233,7 +234,7 @@ void ThreadedHasher::start(Window* window, HasherType type, bool forceAllGames, 
 
 	try
 	{
-		ThreadedHasher::mInstance = new ThreadedHasher(window, type, searchQueue, forceAllGames);
+		ThreadedHasher::mInstance = new ThreadedHasher(window, type, searchQueue, forceAllGames, silent);
 	}
 	catch (const std::exception& e)
 	{
@@ -256,4 +257,3 @@ void ThreadedHasher::stop()
 	}
 	catch (...) {}
 }
-
