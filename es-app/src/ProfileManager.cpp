@@ -33,19 +33,26 @@ void ProfileManager::switchProfileAsync(const std::string& name, std::function<v
 	setActiveProfile(name);
 
 	// 2. Notify LAHEE in background thread to prevent UI hang
-	std::thread([name, onComplete]() {
+	// Capture mWindow and sInstance so the callback can find the UI thread
+	Window* window = ViewController::get()->getWindow();
+
+	std::thread([window, name, onComplete]() {
 		HttpReqOptions options;
 		HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
 		
-		// Wait for LAHEE to finish loading its database (max 30s)
-		int timeout = 0;
-		while(request.status() == HttpReq::REQ_IN_PROGRESS && timeout < 60) {
+		// WAIT FOR SUCCESS: Non-blocking for the UI, but we wait in this thread
+		// max 10 seconds wait in the background
+		for (int i = 0; i < 20; i++) {
+			if (request.status() != HttpReq::REQ_IN_PROGRESS) break;
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			timeout++;
 		}
 		
-		// Callback for UI refresh
-		if (onComplete) onComplete();
+		// RETURN TO MAIN THREAD: Safely trigger the UI refresh
+		if (window && onComplete) {
+			window->postToUiThread([onComplete]() {
+				onComplete();
+			});
+		}
 	}).detach();
 }
 
