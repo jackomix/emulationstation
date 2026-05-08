@@ -16,43 +16,44 @@ public:
 		HASH_CHEEVOS_MD5 = 2,
 		HASH_ALL = HASH_NETPLAY_CRC | HASH_CHEEVOS_MD5,
 	};
+static void start(Window* window, HasherType type, bool forceAllGames=false, bool silent=false, std::set<std::string>* systems = nullptr);
+static void stop();
+static bool isRunning() { return mInstance != nullptr; }
+static bool checkCloseIfRunning(Window* window);
 
-	static void start(Window* window, HasherType type, bool forceAllGames=false, bool silent=false, std::set<std::string>* systems = nullptr);
-	static void stop();
-	static bool isRunning() { return mInstance != nullptr; }
-	static bool checkCloseIfRunning(Window* window);
-
-	static void pause() { mPaused = true; }
-	static void resume() { mPaused = false; }
+static void pause() { mPaused = true; }
+static void resume() { mPaused = false; }
 
 private:
-	ThreadedHasher(Window* window, HasherType type, std::queue<FileData*> searchQueue, bool forceAllGames = false, bool silent = false);
-	~ThreadedHasher();
+ThreadedHasher(Window* window, HasherType type, std::queue<FileData*> searchQueue, bool forceAllGames = false, bool silent = false);
+~ThreadedHasher();
 
-	void updateUI(const std::string label);
-	static std::string formatGameName(FileData* game);
+void updateUI(const std::string label);
+static std::string formatGameName(FileData* game);
 
-	std::queue<FileData*> mSearchQueue;
+std::queue<FileData*> mSearchQueue;
 
-	Window* mWindow;
-	AsyncNotificationComponent* mWndNotification;
-	std::string		mCurrentAction;
+Window* mWindow;
+AsyncNotificationComponent* mWndNotification;
+std::string		mCurrentAction;
 
-	std::vector<std::string> mErrors;
-	std::map<std::string, std::string>    mCheevosHashes;
+std::vector<std::string> mErrors;
+std::map<std::string, std::string>    mCheevosHashes;
 
-	HasherType mType;
+HasherType mType;
 
-	void run();
+void run();
 
-	//std::thread* mHandle;
-	std::vector<std::thread*>	mThreads;
-	int							mThreadCount;
+//std::thread* mHandle;
+std::vector<std::thread*>	mThreads;
+int							mThreadCount;
 
-	int mTotal;
-	bool mExit;
-	bool mForce;
-	bool mSilent;
+int mTotal;
+bool mExit;
+bool mForce;
+bool mSilent;
+
+static bool mPaused;
 
 	static bool mPaused;
 	static ThreadedHasher* mInstance;
