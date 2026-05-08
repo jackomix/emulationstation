@@ -11,7 +11,6 @@
 
 #include <thread>
 #include "HttpReq.h"
-#include "views/ViewController.h"
 #include "Window.h"
 
 ProfileManager* ProfileManager::sInstance = nullptr;
@@ -121,14 +120,12 @@ void ProfileManager::saveAllMetadata()
 	Utils::FileSystem::renameFile(statsPath + ".tmp", statsPath);
 }
 
-void ProfileManager::switchProfileAsync(const std::string& name, std::function<void()> onComplete)
+void ProfileManager::switchProfileAsync(Window* window, const std::string& name, std::function<void()> onComplete)
 {
 	// 1. Update local state immediately
 	setActiveProfile(name);
 
 	// 2. Notify LAHEE in background thread to prevent UI hang
-	Window* window = ViewController::get()->getWindow();
-
 	std::thread([window, name, onComplete]() {
 		HttpReqOptions options;
 		HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);

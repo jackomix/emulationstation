@@ -48,7 +48,7 @@ public:
 	void loadAllMetadata();
 	void saveAllMetadata();
 
-	void switchProfileAsync(const std::string& name, std::function<void()> onComplete);
+	void switchProfileAsync(Window* window, const std::string& name, std::function<void()> onComplete);
 
 private:
 	ProfileManager();

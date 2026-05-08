@@ -34,7 +34,7 @@ void GuiProfileManager::populateList()
 			mWindow->pushGui(msgBox);
 
 			// Notify server in background thread to prevent UI hang
-			ProfileManager::getInstance()->switchProfileAsync(name, [this, name, msgBox]() {
+			ProfileManager::getInstance()->switchProfileAsync(mWindow, name, [this, name, msgBox]() {
 				// This callback is now called on the MAIN THREAD (via postToUiThread)
 				
 				// 1. Close the modal
