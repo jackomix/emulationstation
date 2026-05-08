@@ -225,10 +225,13 @@ public:
 	virtual SystemEnvironmentData* getSystemEnvData() const;
 
 	virtual const MetaDataList& getMetadata() const { return mSourceFileData->getMetadata(); }
-	virtual MetaDataList& getMetadata() { return mSourceFileData->getMetadata(); }
+	virtual const MetaDataList& getMetadata() { return mSourceFileData->getMetadata(); }
 	virtual std::string& getDisplayName() { return mSourceFileData->getDisplayName(); }
 
-private:
+	virtual std::string getMetadata(MetaDataId key) const override;
+	virtual void setMetadata(MetaDataId key, const std::string& value) override;
+
+	private:
 	// needs to be updated when metadata changes
 	FileData* mSourceFileData;
 };
