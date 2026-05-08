@@ -228,9 +228,6 @@ public:
 	virtual MetaDataList& getMetadata() { return mSourceFileData->getMetadata(); }
 	virtual std::string& getDisplayName() { return mSourceFileData->getDisplayName(); }
 
-	virtual std::string getMetadata(MetaDataId key) const override;
-	virtual void setMetadata(MetaDataId key, const std::string& value) override;
-
 private:
 	// needs to be updated when metadata changes
 	FileData* mSourceFileData;

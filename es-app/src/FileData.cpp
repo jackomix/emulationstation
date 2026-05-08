@@ -1075,18 +1075,15 @@ std::string CollectionFileData::getSystemName() const
 
 CollectionFileData::~CollectionFileData()
 {
-	// need to remove collection file data at the collection object destructor
-	if(mParent)
-		mParent->removeChild(this);
+	CollectionFileData::~CollectionFileData()
+	{
+		if(mParent)
+			mParent->removeChild(this);
 
-	mParent = NULL;
-}
+		mParent = NULL;
+	}
 
-std::string CollectionFileData::getMetadata(MetaDataId key) const { return mSourceFileData->getMetadata(key); }
-void CollectionFileData::setMetadata(MetaDataId key, const std::string& value) { mSourceFileData->setMetadata(key, value); }
-
-std::string CollectionFileData::getKey() { return getFullPath(); }
-
+	std::string CollectionFileData::getKey() { return getFullPath(); }
 FileData* CollectionFileData::getSourceFileData()
 {
 	return mSourceFileData;
