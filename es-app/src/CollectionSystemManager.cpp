@@ -1524,26 +1524,6 @@ bool CollectionSystemManager::isDynamicCollection(const std::string collectionNa
 	return data->second.decl.isCustom && data->second.filteredIndex != nullptr;
 }
 
-void CollectionSystemManager::refreshFavorites()
-{
-	CollectionSystemData* favSysData = &mAutoCollectionSystemsData["favorites"];
-	if (!favSysData->isPopulated) return;
-
-	// Global re-scan: Force every game in ES to re-evaluate its Favorite status
-	// for the new profile and update the collection accordingly.
-	for (auto sys : SystemData::sSystemVector)
-	{
-		if (sys->isGameSystem() && !sys->isCollection())
-		{
-			std::vector<FileData*> games = sys->getRootFolder()->getFilesRecursive(GAME);
-			for (auto game : games)
-			{
-				updateCollectionSystem(game, *favSysData);
-			}
-		}
-	}
-}
-
 void CollectionSystemManager::reloadCollection(const std::string collectionName, bool repopulateGamelist)
 {
 	auto autoc = mAutoCollectionSystemsData.find(collectionName);
