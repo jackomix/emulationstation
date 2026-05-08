@@ -11,6 +11,8 @@
 
 #include <thread>
 #include "HttpReq.h"
+#include "views/ViewController.h"
+#include "Window.h"
 
 ProfileManager* ProfileManager::sInstance = nullptr;
 
@@ -25,35 +27,6 @@ ProfileManager::ProfileManager()
 {
 	mProfilesRoot = "";
 	mActiveProfile = "";
-}
-
-void ProfileManager::switchProfileAsync(const std::string& name, std::function<void()> onComplete)
-{
-	// 1. Update local state immediately
-	setActiveProfile(name);
-
-	// 2. Notify LAHEE in background thread to prevent UI hang
-	// Capture mWindow and sInstance so the callback can find the UI thread
-	Window* window = ViewController::get()->getWindow();
-
-	std::thread([window, name, onComplete]() {
-		HttpReqOptions options;
-		HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
-		
-		// WAIT FOR SUCCESS: Non-blocking for the UI, but we wait in this thread
-		// max 10 seconds wait in the background
-		for (int i = 0; i < 20; i++) {
-			if (request.status() != HttpReq::REQ_IN_PROGRESS) break;
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		}
-		
-		// RETURN TO MAIN THREAD: Safely trigger the UI refresh
-		if (window && onComplete) {
-			window->postToUiThread([onComplete]() {
-				onComplete();
-			});
-		}
-	}).detach();
 }
 
 std::string ProfileManager::findRomsRoot()
@@ -148,6 +121,33 @@ void ProfileManager::saveAllMetadata()
 	Utils::FileSystem::renameFile(statsPath + ".tmp", statsPath);
 }
 
+void ProfileManager::switchProfileAsync(const std::string& name, std::function<void()> onComplete)
+{
+	// 1. Update local state immediately
+	setActiveProfile(name);
+
+	// 2. Notify LAHEE in background thread to prevent UI hang
+	Window* window = ViewController::get()->getWindow();
+
+	std::thread([window, name, onComplete]() {
+		HttpReqOptions options;
+		HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
+		
+		// Wait for LAHEE to finish loading its database (max 10s)
+		for (int i = 0; i < 20; i++) {
+			if (request.status() != HttpReq::REQ_IN_PROGRESS) break;
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+		
+		// RETURN TO MAIN THREAD: Safely trigger the UI refresh
+		if (window && onComplete) {
+			window->postToUiThread([onComplete]() {
+				onComplete();
+			});
+		}
+	}).detach();
+}
+
 bool ProfileManager::isFavorite(const std::string& path)
 {
 	return mFavoritesCache.find(path) != mFavoritesCache.end();
@@ -182,6 +182,11 @@ void ProfileManager::setActiveProfile(const std::string& name)
 		mActiveProfile = name;
 		Settings::getInstance()->setString("ActiveProfile", name);
 		Settings::getInstance()->saveFile();
+
+		Utils::FileSystem::createDirectory(getSavePath(name));
+		Utils::FileSystem::createDirectory(getStatePath(name));
+		Utils::FileSystem::createDirectory(getScreenshotPath(name));
+
 		loadAllMetadata();
 	}
 }

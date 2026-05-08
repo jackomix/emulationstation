@@ -29,30 +29,27 @@ void GuiProfileManager::populateList()
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
 		
 		mMenu.addEntry(displayName, false, [this, name] {
-			// Notify server and update state
-			// We do the HTTP call on the main thread for simplicity since we're going to 
-			// show a splash screen / reload anyway.
-			
-			ProfileManager::getInstance()->setActiveProfile(name);
-			
-			// Show a simple message then reload everything
-			mWindow->pushGui(new GuiMsgBox(mWindow, _("SWITCHING TO PROFILE: ") + name, _("OK"), [this, name] {
-				// We use postToUiThread to escape the current callback stack
-				mWindow->postToUiThread([this]() {
-					// 1. Notify LAHEE (sync call is okay here because we are in a reload state)
-					std::string active = ProfileManager::getInstance()->getActiveProfile();
-					HttpReqOptions options;
-					HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(active), &options);
-					request.wait();
+			// NON-BLOCKING SWITCH: Show a modal so user knows it is working
+			auto msgBox = new GuiMsgBox(mWindow, _("SWITCHING USER..."), "", nullptr);
+			mWindow->pushGui(msgBox);
 
-					// 2. Full Native Reload (Exactly like changing a theme)
-					ViewController::get()->reloadAll();
+			// Notify server in background thread to prevent UI hang
+			ProfileManager::getInstance()->switchProfileAsync(name, [this, name, msgBox]() {
+				// This callback is now called on the MAIN THREAD (via postToUiThread)
+				
+				// 1. Close the modal
+				msgBox->close();
 
-					// 3. Return to Main Menu
-					Window* window = mWindow;
-					window->pushGui(new GuiMenu(window, false));
-				});
-			}));
+				// 2. Full Native Reload (Exactly like changing a theme)
+				ViewController::get()->reloadAll();
+
+				// 3. CLEAN STACK: Kill menus and re-open Main Menu
+				Window* window = mWindow;
+				while(window->getGuiStackSize() > 0 && window->peekGui() != ViewController::get())
+					delete window->peekGui();
+				
+				window->pushGui(new GuiMenu(window, false));
+			});
 		}, isActive ? "iconFavorite" : "", false, false, name);
 	}
 

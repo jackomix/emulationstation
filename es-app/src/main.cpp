@@ -655,6 +655,20 @@ int main(int argc, char* argv[])
 
 	startLAHEEServer();
 
+	// BOOT SYNC: Tell LAHEE who the active user is after server is ready
+	{
+		std::string bootUser = ProfileManager::getInstance()->getActiveProfile();
+		HttpReqOptions syncOptions;
+		HttpReq startupRequest("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(bootUser), &syncOptions);
+		
+		// Wait for sync to finish (max 5 seconds)
+		int syncTimeout = 0;
+		while(startupRequest.status() == HttpReq::REQ_IN_PROGRESS && syncTimeout < 10) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			syncTimeout++;
+		}
+	}
+
 #ifdef _ENABLE_KODI_
 	if (systemConf->getBool("kodi.enabled", true) && systemConf->getBool("kodi.atstartup"))
 	{
