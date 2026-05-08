@@ -1075,15 +1075,18 @@ std::string CollectionFileData::getSystemName() const
 
 CollectionFileData::~CollectionFileData()
 {
-	CollectionFileData::~CollectionFileData()
-	{
-		if(mParent)
-			mParent->removeChild(this);
+	// need to remove collection file data at the collection object destructor
+	if(mParent)
+		mParent->removeChild(this);
 
-		mParent = NULL;
-	}
+	mParent = NULL;
+}
 
-	std::string CollectionFileData::getKey() { return getFullPath(); }
+std::string CollectionFileData::getKey() 
+{
+	return getFullPath();
+}
+
 FileData* CollectionFileData::getSourceFileData()
 {
 	return mSourceFileData;
