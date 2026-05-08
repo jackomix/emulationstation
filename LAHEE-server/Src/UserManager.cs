@@ -87,8 +87,9 @@ class UserManager {
     }
 
     public static UserData GetUserData(string username) {
-        if (userData.ContainsKey(username)) {
-            return userData[username];
+        string key = username.ToLower();
+        if (userData.ContainsKey(key)) {
+            return userData[key];
         } else {
             return null;
         }
@@ -101,7 +102,7 @@ class UserManager {
             ID = new Random().Next(),
             GameData = new Dictionary<uint, UserGameData>()
         };
-        userData.Add(username, user);
+        userData[username.ToLower()] = user;
         Log.User.LogInformation("Registered new user: {User}", user);
         return user;
     }

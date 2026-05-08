@@ -916,6 +916,8 @@ bool SystemData::loadConfig(Window* window)
 
 		if (window != NULL)
 			window->renderSplashScreen(_("Collections"), systemCount == 0 ? 0 : currentSystem / (float)(systemCount + 1));
+
+		CollectionSystemManager::get()->loadCollectionSystems();
 	}
 	else
 	{
