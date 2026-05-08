@@ -15,6 +15,8 @@ struct ProfileStats {
 	std::string most_played_genre;
 };
 
+class Window;
+
 class ProfileManager
 {
 public:
