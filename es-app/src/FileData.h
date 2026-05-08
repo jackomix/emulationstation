@@ -4,7 +4,6 @@
 
 #include "utils/FileSystemUtil.h"
 #include "MetaData.h"
-#include "ProfileManager.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <memory>
@@ -155,8 +154,8 @@ public:
 
 	void setMetadata(MetaDataList value) { getMetadata() = value; } 
 	
-	virtual std::string getMetadata(MetaDataId key) const;
-	virtual void setMetadata(MetaDataId key, const std::string& value);
+	std::string getMetadata(MetaDataId key) const;
+	void setMetadata(MetaDataId key, const std::string& value);
 
 	void detectLanguageAndRegion(bool overWrite);
 
