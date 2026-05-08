@@ -33,25 +33,14 @@ void GuiProfileManager::populateList()
 			mWindow->pushGui(msgBox);
 
 			// Notify server in background thread to prevent UI hang
-			ProfileManager::getInstance()->switchProfileAsync(mWindow, name, [this, name, msgBox]() {
+			ProfileManager::getInstance()->switchProfileAsync(mWindow, name, [this]() {
 				// This callback is now called on the MAIN THREAD (via postToUiThread)
 
-				// 1. Close the modal
-				msgBox->close();
-
-				// 2. Full Native Reload (Exactly like changing a theme)
-				// This rebuilds all GameListViews and the Carousel
-				ViewController::get()->reloadAll();
-
-				// 3. SAFE RETURN: Close the manager and open the new Main Menu
-				// We don't manually clear the stack to avoid deleting ourselves mid-function.
-				// Instead, we push the new menu and then delete the current one.
-				Window* window = mWindow;
-				window->pushGui(new GuiMenu(window, false));
-				delete this;
+				// NATIVE RELOAD: This is the gold standard for refreshing ES.
+				// It reloads XMLs, re-links collections, and cleans the UI stack perfectly.
+				ViewController::reloadAllGames(mWindow, true);
 			});
-		}, isActive ? "iconFavorite" : "", false, false, name);
-	}
+			}, isActive ? "iconFavorite" : "", false, false, name);	}
 
 	// Highlight current profile
 	mMenu.getList()->setCursor(active);
