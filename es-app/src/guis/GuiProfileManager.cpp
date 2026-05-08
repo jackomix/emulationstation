@@ -51,6 +51,8 @@ void GuiProfileManager::populateList()
 				delete this;
 			});
 		}, isActive ? "iconFavorite" : "", false, false, name);
+	}
+
 	// Highlight current profile
 	mMenu.getList()->setCursor(active);
 }
