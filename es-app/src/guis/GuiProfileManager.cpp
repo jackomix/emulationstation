@@ -27,7 +27,6 @@ void GuiProfileManager::populateList()
 	{
 		bool isActive = (name == active);
 		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
-		
 		mMenu.addEntry(displayName, false, [this, name] {
 			// NON-BLOCKING SWITCH: Show a modal so user knows it is working
 			auto msgBox = new GuiMsgBox(mWindow, _("SWITCHING USER..."), "", nullptr);
@@ -36,23 +35,22 @@ void GuiProfileManager::populateList()
 			// Notify server in background thread to prevent UI hang
 			ProfileManager::getInstance()->switchProfileAsync(mWindow, name, [this, name, msgBox]() {
 				// This callback is now called on the MAIN THREAD (via postToUiThread)
-				
+
 				// 1. Close the modal
 				msgBox->close();
 
 				// 2. Full Native Reload (Exactly like changing a theme)
+				// This rebuilds all GameListViews and the Carousel
 				ViewController::get()->reloadAll();
 
-				// 3. CLEAN STACK: Kill menus and re-open Main Menu
+				// 3. SAFE RETURN: Close the manager and open the new Main Menu
+				// We don't manually clear the stack to avoid deleting ourselves mid-function.
+				// Instead, we push the new menu and then delete the current one.
 				Window* window = mWindow;
-				while(window->getGuiStackSize() > 0 && window->peekGui() != ViewController::get())
-					delete window->peekGui();
-				
 				window->pushGui(new GuiMenu(window, false));
+				delete this;
 			});
 		}, isActive ? "iconFavorite" : "", false, false, name);
-	}
-
 	// Highlight current profile
 	mMenu.getList()->setCursor(active);
 }

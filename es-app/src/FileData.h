@@ -154,7 +154,7 @@ public:
 	virtual MetaDataList& getMetadata() { return mMetadata; }
 
 	void setMetadata(MetaDataList value) { getMetadata() = value; } 
-	
+
 	virtual std::string getMetadata(MetaDataId key) const;
 	virtual void setMetadata(MetaDataId key, const std::string& value);
 

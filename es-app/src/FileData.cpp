@@ -1082,10 +1082,10 @@ CollectionFileData::~CollectionFileData()
 	mParent = NULL;
 }
 
-std::string CollectionFileData::getKey() 
-{
-	return getFullPath();
-}
+std::string CollectionFileData::getMetadata(MetaDataId key) const { return mSourceFileData->getMetadata(key); }
+void CollectionFileData::setMetadata(MetaDataId key, const std::string& value) { mSourceFileData->setMetadata(key, value); }
+
+std::string CollectionFileData::getKey() { return getFullPath(); }
 
 FileData* CollectionFileData::getSourceFileData()
 {
