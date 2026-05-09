@@ -7,8 +7,7 @@ using WatsonWebserver.Core;
 namespace LAHEE;
 
 class UserManager {
-    public static string UserDataDirectory { get; set; }
-    public static UserData ActiveUser { get; set; }
+    public static string ActiveProfileId { get; set; } = "1";
 
     private static Dictionary<string, UserData> userData;
     private static Dictionary<string, UserData> activeTokens;
@@ -17,40 +16,37 @@ class UserManager {
     internal static void Initialize() {
         activeTokens = new Dictionary<string, UserData>();
 
-        // PERSISTENCE: Read the path from the master pointer
+        // 1. Resolve Master Pointer
         string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
         string statePath = Path.Combine(hubDir, "active_profile.json");
-        string loadDir = Program.Config.Get("LAHEE", "UserDirectory"); // Default
+        string activeId = "1";
 
         if (File.Exists(statePath)) {
-            try {
-                var state = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(statePath));
-                if (state != null && state.ContainsKey("path")) {
-                    string p = state["path"];
-                    if (Directory.Exists(p)) loadDir = p;
-                }
-            } catch (Exception ex) {
-                Log.User.LogWarning("Failed to read active_profile.json: {e}", ex.Message);
+            var state = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(statePath));
+            if (state != null && state.ContainsKey("active_id")) {
+                activeId = state["active_id"];
             }
         }
 
-        UserDataDirectory = loadDir;
-        Load(loadDir);
+        ActiveProfileId = activeId;
+
+        // 2. Set Path to ID Folder
+        string romsRoot = Path.GetDirectoryName(hubDir);
+        UserDataDirectory = Path.Combine(romsRoot, "Profiles", activeId);
+
+        // 3. Load from static filename
+        Load(UserDataDirectory);
 
         if (userData.Count == 0) {
-            // DERIVE IDENTITY: Use the folder name as the username (e.g. /Profiles/John/Achievements -> John)
-            string derivedName = Path.GetFileName(Path.GetDirectoryName(loadDir));
-            if (string.IsNullOrEmpty(derivedName) || derivedName == "User" || derivedName == "Achievements") derivedName = "Player";
-            
-            Log.User.LogInformation("No users found in {d}. Creating derived profile: {u}", loadDir, derivedName);
-            RegisterNewUser(derivedName);
+            Log.User.LogInformation("New profile detected in {d}. Initializing Player...", UserDataDirectory);
+            RegisterNewUser("Player"); // Default name for new ID
             Save();
         }
 
-        // Whoever is in this private folder IS the active user
+        // The only user in this folder is the active one
         ActiveUser = userData.Values.FirstOrDefault();
 
-        Log.User.LogInformation("Loaded profile: {u} from {d}", ActiveUser?.UserName, loadDir);
+        Log.User.LogInformation("ID Master loaded: Profile {id} ({u})", activeId, ActiveUser?.UserName);
     }
 
     public static void SaveActiveUser() {
@@ -59,31 +55,28 @@ class UserManager {
 
         string statePath = Path.Combine(hubDir, "active_profile.json");
         var state = new Dictionary<string, string> {
-            { "path", UserDataDirectory }
+            { "active_id", ActiveProfileId }
         };
         File.WriteAllText(statePath, JsonConvert.SerializeObject(state, Formatting.Indented));
     }
 
     public static void Load(string dir) {
-        userData = new Dictionary<string, UserData>(); // CRITICAL: Wipe brain before loading
-
-        Log.User.LogInformation("Loading user profiles from {Dir}...", dir);
+        userData = new Dictionary<string, UserData>();
 
         if (!Directory.Exists(dir)) {
             Directory.CreateDirectory(dir);
-            Log.User.LogTrace("Created directory");
+            return;
         }
 
-        foreach (string file in Directory.GetFiles(dir, "*.json")) {
-            if (file.EndsWith(".bak")) continue;
-
+        string achFile = Path.Combine(dir, "achievements.json");
+        if (File.Exists(achFile)) {
             try {
-                UserData data = JsonConvert.DeserializeObject<UserData>(File.ReadAllText(file));
+                UserData data = JsonConvert.DeserializeObject<UserData>(File.ReadAllText(achFile));
                 Migrate(data);
                 userData[data.UserName.ToLower()] = data;
-                Log.User.LogDebug("Loaded data for \"{User}\"", data.UserName);
+                Log.User.LogDebug("Loaded achievements from {f}", achFile);
             } catch (Exception ex) {
-                Log.User.LogError("Failed to load data from " + file + ": " + ex);
+                Log.User.LogError(ex, "Failed to load achievements from {f}", achFile);
             }
         }
     }
@@ -103,7 +96,8 @@ class UserManager {
         if (userData.ContainsKey(key)) {
             return userData[key];
         } else {
-            return null;
+            // In ID Master, we might need to find the user in the ONLY loaded file
+            return userData.Values.FirstOrDefault(u => u.UserName.Equals(username, StringComparison.OrdinalIgnoreCase));
         }
     }
 
@@ -115,7 +109,6 @@ class UserManager {
             GameData = new Dictionary<uint, UserGameData>()
         };
         userData[username.ToLower()] = user;
-        Log.User.LogInformation("Registered new user: {User}", user.UserName);
         return user;
     }
 
@@ -127,25 +120,18 @@ class UserManager {
         if (ActiveUser == null) return;
 
         lock (SAVE_LOCK) {
-            // ONLY save the active user to this profile folder to prevent cross-contamination
-            UserData data = ActiveUser;
-            if (data.AllowUse) {
-                string outputFile = Path.Combine(dir, data.UserName + ".json");
-                string backupFile = Path.Combine(dir, data.UserName + ".bak");
-                if (File.Exists(outputFile)) {
-                    File.Copy(outputFile, backupFile, true);
-                }
-
-                string output = JsonConvert.SerializeObject(data);
-                if (String.IsNullOrWhiteSpace(output)) {
-                    throw new IOException("Attempted to write empty/null user save data for " + data.UserName);
-                }
-
-                File.WriteAllText(outputFile, output);
-                Log.User.LogDebug("Saved user data for {user}", data.UserName);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            
+            string outputFile = Path.Combine(dir, "achievements.json");
+            string backupFile = Path.Combine(dir, "achievements.bak");
+            
+            if (File.Exists(outputFile)) {
+                File.Copy(outputFile, backupFile, true);
             }
 
-            Log.User.LogInformation("User data was saved for {u}", data.UserName);
+            string output = JsonConvert.SerializeObject(ActiveUser, Formatting.Indented);
+            File.WriteAllText(outputFile, output);
+            Log.User.LogDebug("Saved ID Master achievements to {f}", outputFile);
         }
     }
 

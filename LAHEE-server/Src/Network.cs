@@ -1220,32 +1220,34 @@ static class Routes {
 
     internal static async Task LaheeSwitchUser(HttpContextBase ctx) {
         string username = ctx.Request.GetParameter("u");
+        string profileId = ctx.Request.GetParameter("id");
         
+        if (string.IsNullOrEmpty(profileId)) profileId = "1";
+
         // REDIRECT STORAGE: Point LAHEE to the profile's internal folder FIRST
-        string profileRoot = Program.Config.Get("LAHEE", "HubDirectory");
-        if (!string.IsNullOrEmpty(profileRoot)) {
-            string romsRoot = Path.GetDirectoryName(profileRoot);
-            string userPath = Path.Combine(romsRoot, "Profiles", username, "Achievements");
-            if (!Directory.Exists(userPath)) Directory.CreateDirectory(userPath);
+        string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
+        if (!string.IsNullOrEmpty(hubDir)) {
+            string romsRoot = Path.GetDirectoryName(hubDir);
+            string userPath = Path.Combine(romsRoot, "Profiles", profileId, "Achievements");
             
-            // CRITICAL: Update path AND reload memory so we don't leak old users into new folders
-            UserManager.UserDataDirectory = userPath;
+            // CRITICAL: Update ID AND reload memory
+            UserManager.ActiveProfileId = profileId;
             UserManager.Load(userPath); 
-            Log.User.LogInformation("Achievement storage redirected to: {p}", userPath);
+            Log.User.LogInformation("Achievement storage redirected to ID: {id} ({p})", profileId, userPath);
         }
 
         UserData user = UserManager.GetUserData(username);
         if (user == null) {
-            Log.User.LogWarning("Switch request for unknown user {u} in current profile, creating...", username);
+            Log.User.LogWarning("Switch request for unknown user {u} in ID {id}, creating...", username, profileId);
             user = UserManager.RegisterNewUser(username);
             UserManager.Save();
         }
 
         UserManager.ActiveUser = user;
-        UserManager.SaveActiveUser();
+        UserManager.SaveActiveUser(); // Updates active_profile.json
 
-        Log.User.LogInformation("Active user switched to: {u}", user.UserName);
+        Log.User.LogInformation("Active user switched to: {u} (ID {id})", user.UserName, profileId);
 
-        await ctx.Response.SendJson(new { Success = true, ActiveUser = user.UserName });
+        await ctx.Response.SendJson(new { Success = true, ActiveUser = user.UserName, ActiveId = profileId });
     }
 }
