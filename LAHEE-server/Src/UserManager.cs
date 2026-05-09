@@ -24,17 +24,23 @@ class UserManager {
         
         if (File.Exists(activeUserPath)) {
             string savedName = File.ReadAllText(activeUserPath).Trim();
-            if (!string.IsNullOrEmpty(savedName)) bootUser = savedName;
+            // SAFETY CHECK: Only allow letters, numbers, and underscores
+            if (!string.IsNullOrEmpty(savedName) && savedName.All(c => char.IsLetterOrDigit(c) || c == '_')) {
+                bootUser = savedName;
+            }
         }
 
         // REDIRECT TO PROFILE: Traverse up to Roms, then down to Profiles
         string romsRoot = Path.GetDirectoryName(hubDir);
+        if (string.IsNullOrEmpty(romsRoot)) romsRoot = ".."; // Fallback
+
         string profileAchievementsPath = Path.Combine(romsRoot, "Profiles", bootUser, "Achievements");
         
         if (Directory.Exists(profileAchievementsPath)) {
             UserDataDirectory = profileAchievementsPath;
-            Log.User.LogInformation("Booting with profile: {u} from {p}", bootUser, profileAchievementsPath);
+            Log.User.LogInformation("Booting with profile: {u}", bootUser);
         } else {
+            Log.User.LogWarning("Profile folder not found for {u}, falling back to Hub defaults", bootUser);
             UserDataDirectory = Program.Config.Get("LAHEE", "UserDirectory");
         }
 
