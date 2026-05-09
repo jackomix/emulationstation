@@ -11,6 +11,7 @@
 
 #include <thread>
 #include "HttpReq.h"
+#include "views/ViewController.h"
 #include "Window.h"
 
 ProfileManager* ProfileManager::sInstance = nullptr;
@@ -25,17 +26,15 @@ ProfileManager* ProfileManager::getInstance()
 ProfileManager::ProfileManager()
 {
 	mProfilesRoot = "";
-	mActiveProfile = "";
+	mActiveProfile = "1"; // Default to ID 1
 }
 
 std::string ProfileManager::findRomsRoot()
 {
 	std::vector<std::string> searchPaths = { "/roms", "/storage/roms", "/userdata/roms", "/media/sdcard/roms" };
 	for (const auto& path : searchPaths)
-	{
 		if (Utils::FileSystem::isDirectory(path))
 			return Utils::FileSystem::getCanonicalPath(path);
-	}
 	
 	std::string home = Utils::FileSystem::getGenericPath("~");
 	if (Utils::FileSystem::isDirectory(home + "/roms"))
@@ -52,15 +51,14 @@ void ProfileManager::init()
 	if (!Utils::FileSystem::exists(mProfilesRoot))
 	{
 		Utils::FileSystem::createDirectory(mProfilesRoot);
-		setupDefaultProfile();
-		migrateLegacySaves();
+		createProfile("Player"); // ID 1
 	}
 
-	mActiveProfile = Settings::getInstance()->getString("ActiveProfile");
+	mActiveProfile = Settings::getInstance()->getString("ActiveProfileId");
 	if (mActiveProfile.empty() || !Utils::FileSystem::exists(mProfilesRoot + "/" + mActiveProfile))
 	{
 		auto available = getAvailableProfiles();
-		mActiveProfile = (!available.empty() ? available[0] : "Player");
+		mActiveProfile = (!available.empty() ? available[0].id : "1");
 	}
 
 	loadAllMetadata();
@@ -76,9 +74,7 @@ void ProfileManager::loadAllMetadata()
 		std::stringstream ss(content);
 		std::string line;
 		while (std::getline(ss, line))
-		{
 			if (!line.empty()) mFavoritesCache.insert(line);
-		}
 	}
 
 	mStatsCache = {0, "", ""};
@@ -98,7 +94,6 @@ void ProfileManager::loadAllMetadata()
 
 void ProfileManager::saveAllMetadata()
 {
-	// Atomic Save for stability
 	std::string favContent = "";
 	for (const auto& fav : mFavoritesCache) favContent += fav + "\n";
 	std::string favPath = getFavoritesPath();
@@ -120,35 +115,36 @@ void ProfileManager::saveAllMetadata()
 	Utils::FileSystem::renameFile(statsPath + ".tmp", statsPath);
 }
 
-void ProfileManager::switchProfileAsync(Window* window, const std::string& name, std::function<void()> onComplete)
+void ProfileManager::switchProfileAsync(Window* window, const std::string& id, std::function<void()> onComplete)
 {
-	// 1. Update local state immediately
-	setActiveProfile(name);
+	setActiveProfile(id);
 
-	// 2. Notify LAHEE in background thread to prevent UI hang
-	std::thread([window, name, onComplete]() {
+	std::thread([window, id, onComplete]() {
+		// Get display name for the ID
+		std::string name = "Player";
+		std::string path = ProfileManager::getInstance()->getProfilesPath() + "/" + id + "/profile.json";
+		if (Utils::FileSystem::exists(path)) {
+			rapidjson::Document doc;
+			doc.Parse(Utils::FileSystem::readAllText(path).c_str());
+			if (!doc.HasParseError() && doc.IsObject() && doc.HasMember("display_name"))
+				name = doc["display_name"].GetString();
+		}
+
 		HttpReqOptions options;
-		HttpReq request("http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&u=" + HttpReq::urlEncode(name), &options);
+		// Send BOTH ID and Name to LAHEE
+		std::string url = "http://127.0.0.1:8000/laheer/dorequest.php?r=laheeswitchuser&id=" + id + "&u=" + HttpReq::urlEncode(name);
+		HttpReq request(url, &options);
 		
-		// Wait for LAHEE to finish loading its database (max 10s)
 		for (int i = 0; i < 20; i++) {
 			if (request.status() != HttpReq::REQ_IN_PROGRESS) break;
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 		
-		// RETURN TO MAIN THREAD: Safely trigger the UI refresh
-		if (window && onComplete) {
-			window->postToUiThread([onComplete]() {
-				onComplete();
-			});
-		}
+		if (window && onComplete) window->postToUiThread([onComplete]() { onComplete(); });
 	}).detach();
 }
 
-bool ProfileManager::isFavorite(const std::string& path)
-{
-	return mFavoritesCache.find(path) != mFavoritesCache.end();
-}
+bool ProfileManager::isFavorite(const std::string& path) { return mFavoritesCache.find(path) != mFavoritesCache.end(); }
 
 void ProfileManager::setFavorite(const std::string& path, bool favorite)
 {
@@ -172,35 +168,46 @@ void ProfileManager::updateStats(const std::string& romPath, int playTimeSeconds
 	saveAllMetadata();
 }
 
-void ProfileManager::setActiveProfile(const std::string& name)
+void ProfileManager::setActiveProfile(const std::string& id)
 {
-	if (Utils::FileSystem::exists(mProfilesRoot + "/" + name))
+	if (Utils::FileSystem::exists(mProfilesRoot + "/" + id))
 	{
-		mActiveProfile = name;
-		Settings::getInstance()->setString("ActiveProfile", name);
+		mActiveProfile = id;
+		Settings::getInstance()->setString("ActiveProfileId", id);
 		Settings::getInstance()->saveFile();
-
-		Utils::FileSystem::createDirectory(getSavePath(name));
-		Utils::FileSystem::createDirectory(getStatePath(name));
-		Utils::FileSystem::createDirectory(getScreenshotPath(name));
-
 		loadAllMetadata();
 	}
 }
 
-void ProfileManager::setupDefaultProfile()
-{
-	createProfile("Player");
-	mActiveProfile = "Player";
-	Settings::getInstance()->setString("ActiveProfile", "Player");
-	Settings::getInstance()->saveFile();
+std::string ProfileManager::getActiveProfile() 
+{ 
+	std::string path = mProfilesRoot + "/" + mActiveProfile + "/profile.json";
+	if (Utils::FileSystem::exists(path)) {
+		rapidjson::Document doc;
+		doc.Parse(Utils::FileSystem::readAllText(path).c_str());
+		if (!doc.HasParseError() && doc.IsObject() && doc.HasMember("display_name"))
+			return doc["display_name"].GetString();
+	}
+	return "Player";
 }
+
+std::string ProfileManager::getActiveProfileId() { return mActiveProfile; }
 
 bool ProfileManager::createProfile(const std::string& name)
 {
 	if (name.empty()) return false;
-	std::string path = mProfilesRoot + "/" + name;
-	if (Utils::FileSystem::exists(path)) return false;
+	
+	// 1. Find next numeric ID
+	int maxId = 0;
+	auto content = Utils::FileSystem::getDirContent(mProfilesRoot);
+	for (const auto& path : content) {
+		if (Utils::FileSystem::isDirectory(path)) {
+			int id = atoi(Utils::FileSystem::getFileName(path).c_str());
+			if (id > maxId) maxId = id;
+		}
+	}
+	std::string newId = std::to_string(maxId + 1);
+	std::string path = mProfilesRoot + "/" + newId;
 
 	Utils::FileSystem::createDirectory(path);
 	Utils::FileSystem::createDirectory(path + "/Saves");
@@ -208,25 +215,44 @@ bool ProfileManager::createProfile(const std::string& name)
 	Utils::FileSystem::createDirectory(path + "/Screenshots");
 	Utils::FileSystem::createDirectory(path + "/Achievements");
 	
+	// 2. Write Identity
+	Utils::FileSystem::writeAllText(path + "/profile.json", "{\"display_name\": \"" + name + "\"}");
 	Utils::FileSystem::writeAllText(path + "/favorites.txt", "");
 	Utils::FileSystem::writeAllText(path + "/stats.json", "{\"playtime\": 0, \"last_played\": \"\", \"most_played_genre\": \"\"}");
+	
 	return true;
 }
 
-std::vector<std::string> ProfileManager::getAvailableProfiles()
+std::vector<ProfileInfo> ProfileManager::getAvailableProfiles()
 {
-	std::vector<std::string> profiles;
+	std::vector<ProfileInfo> profiles;
 	auto content = Utils::FileSystem::getDirContent(mProfilesRoot);
 	for (const auto& path : content)
-		if (Utils::FileSystem::isDirectory(path))
-			profiles.push_back(Utils::FileSystem::getFileName(path));
+	{
+		if (Utils::FileSystem::isDirectory(path)) {
+			ProfileInfo info;
+			info.id = Utils::FileSystem::getFileName(path);
+			
+			std::string pJson = path + "/profile.json";
+			if (Utils::FileSystem::exists(pJson)) {
+				rapidjson::Document doc;
+				doc.Parse(Utils::FileSystem::readAllText(pJson).c_str());
+				if (!doc.HasParseError() && doc.IsObject() && doc.HasMember("display_name"))
+					info.name = doc["display_name"].GetString();
+				else info.name = "Profile " + info.id;
+			} else {
+				info.name = "Profile " + info.id;
+			}
+			profiles.push_back(info);
+		}
+	}
 	return profiles;
 }
 
-bool ProfileManager::deleteProfile(const std::string& name)
+bool ProfileManager::deleteProfile(const std::string& id)
 {
-	if (name == "Player" && getAvailableProfiles().size() == 1) return false;
-	std::string path = mProfilesRoot + "/" + name;
+	if (id == "1" && getAvailableProfiles().size() == 1) return false;
+	std::string path = mProfilesRoot + "/" + id;
 	if (Utils::FileSystem::exists(path))
 	{
 		std::string cmd = "rm -rf \"" + path + "\"";
@@ -236,37 +262,18 @@ bool ProfileManager::deleteProfile(const std::string& name)
 	return false;
 }
 
-bool ProfileManager::renameProfile(const std::string& oldName, const std::string& newName)
+bool ProfileManager::renameProfile(const std::string& id, const std::string& newName)
 {
-	std::string oldPath = mProfilesRoot + "/" + oldName;
-	std::string newPath = mProfilesRoot + "/" + newName;
-	if (Utils::FileSystem::exists(oldPath) && !Utils::FileSystem::exists(newPath))
-	{
-		std::string oldAch = oldPath + "/Achievements/" + oldName + ".json";
-		std::string newAch = oldPath + "/Achievements/" + newName + ".json";
-		if (Utils::FileSystem::exists(oldAch)) Utils::FileSystem::renameFile(oldAch, newAch);
-		
-		std::string cmd = "mv \"" + oldPath + "\" \"" + newPath + "\"";
-		Utils::Platform::getShOutput("sh -c '" + cmd + "'");
-		if (mActiveProfile == oldName) mActiveProfile = newName;
+	std::string path = mProfilesRoot + "/" + id + "/profile.json";
+	if (Utils::FileSystem::exists(path)) {
+		Utils::FileSystem::writeAllText(path, "{\"display_name\": \"" + newName + "\"}");
 		return true;
 	}
 	return false;
 }
 
-void ProfileManager::migrateLegacySaves()
-{
-	std::string root = findRomsRoot();
-	std::vector<std::pair<std::string, std::string>> migrations = {
-		{ root + "/saves", getSavePath("Player") },
-		{ root + "/savestates", getStatePath("Player") }
-	};
-	for (auto const& [source, target] : migrations)
-		if (Utils::FileSystem::isDirectory(source))
-			Utils::Platform::getShOutput("sh -c 'mv \"" + source + "/*\" \"" + target + "/\" 2>/dev/null'");
-}
+void ProfileManager::migrateLegacySaves() { }
 
-std::string ProfileManager::getActiveProfile() { return mActiveProfile; }
 std::string ProfileManager::getProfilesPath() { return mProfilesRoot; }
 std::string ProfileManager::getSavePath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/Saves"; }
 std::string ProfileManager::getStatePath(const std::string& profile) { return mProfilesRoot + "/" + (profile.empty() ? mActiveProfile : profile) + "/States"; }

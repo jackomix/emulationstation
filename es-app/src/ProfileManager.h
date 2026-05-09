@@ -15,6 +15,11 @@ struct ProfileStats {
 	std::string most_played_genre;
 };
 
+struct ProfileInfo {
+	std::string id;
+	std::string name;
+};
+
 class Window;
 
 class ProfileManager
@@ -26,13 +31,14 @@ public:
 	
 	std::string getProfilesPath();
 	std::string getActiveProfile();
-	void setActiveProfile(const std::string& name);
+	std::string getActiveProfileId();
+	void setActiveProfile(const std::string& id);
 
 	bool createProfile(const std::string& name);
-	bool deleteProfile(const std::string& name);
-	bool renameProfile(const std::string& oldName, const std::string& newName);
+	bool deleteProfile(const std::string& id);
+	bool renameProfile(const std::string& id, const std::string& newName);
 
-	std::vector<std::string> getAvailableProfiles();
+	std::vector<ProfileInfo> getAvailableProfiles();
 
 	// Sandboxed Paths
 	std::string getSavePath(const std::string& profile = "");

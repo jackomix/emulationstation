@@ -21,29 +21,28 @@ void GuiProfileManager::populateList()
 {
 	mMenu.clear();
 	auto profiles = ProfileManager::getInstance()->getAvailableProfiles();
-	std::string active = ProfileManager::getInstance()->getActiveProfile();
+	std::string activeId = ProfileManager::getInstance()->getActiveProfileId();
 
-	for (const auto& name : profiles)
+	for (const auto& profile : profiles)
 	{
-		bool isActive = (name == active);
-		std::string displayName = name + (isActive ? " [ACTIVE]" : "");
-		mMenu.addEntry(displayName, false, [this, name] {
+		bool isActive = (profile.id == activeId);
+		std::string displayName = profile.name + (isActive ? " [ACTIVE]" : "");
+		
+		mMenu.addEntry(displayName, false, [this, profile] {
 			// NON-BLOCKING SWITCH: Show a modal so user knows it is working
 			auto msgBox = new GuiMsgBox(mWindow, _("SWITCHING USER..."), "", nullptr);
 			mWindow->pushGui(msgBox);
 
 			// Notify server in background thread to prevent UI hang
-			ProfileManager::getInstance()->switchProfileAsync(mWindow, name, [this]() {
-				// This callback is now called on the MAIN THREAD (via postToUiThread)
-				
-				// NATIVE RELOAD: This is the gold standard for refreshing ES.
-				// It reloads XMLs, re-links collections, and cleans the UI stack perfectly.
+			ProfileManager::getInstance()->switchProfileAsync(mWindow, profile.id, [this, profile, msgBox]() {
+				// 1. Full Native Reload (Exactly like changing a theme)
 				ViewController::reloadAllGames(mWindow, true);
 			});
-			}, isActive ? "iconFavorite" : "", false, false, name);	}
+		}, isActive ? "iconFavorite" : "", false, false, profile.id);
+	}
 
 	// Highlight current profile
-	mMenu.getList()->setCursor(active);
+	mMenu.getList()->setCursor(activeId);
 }
 
 void GuiProfileManager::createNewProfile()
@@ -57,30 +56,30 @@ void GuiProfileManager::createNewProfile()
 	}, false));
 }
 
-void GuiProfileManager::openOptions(const std::string& profile)
+void GuiProfileManager::openOptions(const std::string& id)
 {
-	auto s = new GuiSettings(mWindow, profile + " " + _("OPTIONS"));
-	s->addEntry(_("RENAME"), true, [this, s, profile] { renameProfile(profile); delete s; });
-	s->addEntry(_("DELETE"), true, [this, s, profile] { deleteProfile(profile); delete s; });
+	auto s = new GuiSettings(mWindow, _("PROFILE OPTIONS"));
+	s->addEntry(_("RENAME"), true, [this, s, id] { renameProfile(id); delete s; });
+	s->addEntry(_("DELETE"), true, [this, s, id] { deleteProfile(id); delete s; });
 	mWindow->pushGui(s);
 }
 
-void GuiProfileManager::deleteProfile(const std::string& profile)
+void GuiProfileManager::deleteProfile(const std::string& id)
 {
-	if (profile == "Player" && ProfileManager::getInstance()->getAvailableProfiles().size() == 1) {
+	if (id == "1" && ProfileManager::getInstance()->getAvailableProfiles().size() == 1) {
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("CANNOT DELETE THE LAST PROFILE"), _("OK")));
 		return;
 	}
 
-	mWindow->pushGui(new GuiMsgBox(mWindow, _("THIS WILL DELETE ALL SAVES FOR THIS USER. ARE YOU SURE?"), _("YES"), [this, profile] {
-		if (ProfileManager::getInstance()->deleteProfile(profile)) populateList();
+	mWindow->pushGui(new GuiMsgBox(mWindow, _("THIS WILL DELETE ALL SAVES FOR THIS USER. ARE YOU SURE?"), _("YES"), [this, id] {
+		if (ProfileManager::getInstance()->deleteProfile(id)) populateList();
 	}, _("NO"), nullptr));
 }
 
-void GuiProfileManager::renameProfile(const std::string& profile)
+void GuiProfileManager::renameProfile(const std::string& id)
 {
-	mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("RENAME PROFILE"), profile, [this, profile](std::string newName) {
-		if (ProfileManager::getInstance()->renameProfile(profile, newName)) populateList();
+	mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("RENAME PROFILE"), "", [this, id](std::string newName) {
+		if (ProfileManager::getInstance()->renameProfile(id, newName)) populateList();
 	}, false));
 }
 
@@ -94,8 +93,8 @@ bool GuiProfileManager::input(InputConfig* config, Input input)
 
 	if (config->isMappedTo("y", input) && input.value)
 	{
-		auto selected = mMenu.getSelected();
-		if (!selected.empty()) openOptions(selected);
+		auto selectedId = mMenu.getSelected();
+		if (!selectedId.empty()) openOptions(selectedId);
 		return true;
 	}
 
