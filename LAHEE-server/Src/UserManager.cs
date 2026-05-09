@@ -18,15 +18,23 @@ class UserManager {
     internal static void Initialize() {
         activeTokens = new Dictionary<string, UserData>();
 
-        // 1. Resolve Master Pointer
+        // 1. Resolve Master Pointer (Source of Truth)
         string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
         string statePath = Path.Combine(hubDir, "active_profile.json");
-        string activeId = "1";
+        string activeId = "1"; // Safe Default
 
         if (File.Exists(statePath)) {
-            var state = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(statePath));
-            if (state != null && state.ContainsKey("active_id")) {
-                activeId = state["active_id"];
+            try {
+                var state = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(statePath));
+                if (state != null && state.ContainsKey("active_id")) {
+                    string val = state["active_id"];
+                    // SAFETY: Only allow alphanumeric IDs to prevent path traversal
+                    if (!string.IsNullOrEmpty(val) && val.All(char.IsLetterOrDigit)) {
+                        activeId = val;
+                    }
+                }
+            } catch (Exception ex) {
+                Log.User.LogWarning("Master pointer corrupt, defaulting to ID 1: {e}", ex.Message);
             }
         }
 
@@ -34,21 +42,33 @@ class UserManager {
 
         // 2. Set Path to ID Folder
         string romsRoot = Path.GetDirectoryName(hubDir);
-        UserDataDirectory = Path.Combine(romsRoot, "Profiles", activeId);
+        if (string.IsNullOrEmpty(romsRoot)) romsRoot = ".."; // Fallback for relative setups
+        
+        string targetDir = Path.Combine(romsRoot, "Profiles", activeId);
 
-        // 3. Load from static filename
+        // 3. Folder Safety: If the pointer says "ID 5" but folder 5 is gone, fallback to 1
+        if (!Directory.Exists(targetDir) && activeId != "1") {
+            Log.User.LogWarning("Profile folder {id} not found, falling back to ID 1", activeId);
+            activeId = "1";
+            ActiveProfileId = "1";
+            targetDir = Path.Combine(romsRoot, "Profiles", "1");
+        }
+
+        UserDataDirectory = targetDir;
+
+        // 4. Load from static filename
         Load(UserDataDirectory);
 
         if (userData.Count == 0) {
-            Log.User.LogInformation("New profile detected in {d}. Initializing Player...", UserDataDirectory);
-            RegisterNewUser("Player"); // Default name for new ID
+            Log.User.LogInformation("Profile {id} is empty. Initializing Player...", activeId);
+            RegisterNewUser("Player"); 
             Save();
         }
 
-        // The only user in this folder is the active one
+        // Whoever is in this private folder IS the active user
         ActiveUser = userData.Values.FirstOrDefault();
 
-        Log.User.LogInformation("ID Master loaded: Profile {id} ({u})", activeId, ActiveUser?.UserName);
+        Log.User.LogInformation("ID Master initialized: Profile {id} ({u})", activeId, ActiveUser?.UserName);
     }
 
     public static void SaveActiveUser() {
