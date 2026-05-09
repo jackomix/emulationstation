@@ -17,58 +17,51 @@ class UserManager {
     internal static void Initialize() {
         activeTokens = new Dictionary<string, UserData>();
 
-        // PERSISTENCE: Read the master key from Hub root
+        // PERSISTENCE: Read the path from the master pointer
         string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
-        string bootUser = "Player";
-        string activeUserPath = Path.Combine(hubDir, "active_user.txt");
-        
-        if (File.Exists(activeUserPath)) {
-            string savedName = File.ReadAllText(activeUserPath).Trim();
-            // SAFETY CHECK: Only allow letters, numbers, and underscores
-            if (!string.IsNullOrEmpty(savedName) && savedName.All(c => char.IsLetterOrDigit(c) || c == '_')) {
-                bootUser = savedName;
+        string statePath = Path.Combine(hubDir, "active_profile.json");
+        string loadDir = Program.Config.Get("LAHEE", "UserDirectory"); // Default
+
+        if (File.Exists(statePath)) {
+            try {
+                var state = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(statePath));
+                if (state != null && state.ContainsKey("path")) {
+                    string p = state["path"];
+                    if (Directory.Exists(p)) loadDir = p;
+                }
+            } catch (Exception ex) {
+                Log.User.LogWarning("Failed to read active_profile.json: {e}", ex.Message);
             }
         }
 
-        // REDIRECT TO PROFILE: Traverse up to Roms, then down to Profiles
-        string romsRoot = Path.GetDirectoryName(hubDir);
-        if (string.IsNullOrEmpty(romsRoot)) romsRoot = ".."; // Fallback
-
-        string profileAchievementsPath = Path.Combine(romsRoot, "Profiles", bootUser, "Achievements");
-        
-        if (Directory.Exists(profileAchievementsPath)) {
-            UserDataDirectory = profileAchievementsPath;
-            Log.User.LogInformation("Booting with profile: {u}", bootUser);
-        } else {
-            Log.User.LogWarning("Profile folder not found for {u}, falling back to Hub defaults", bootUser);
-            UserDataDirectory = Program.Config.Get("LAHEE", "UserDirectory");
-        }
-
-        Load(UserDataDirectory);
+        UserDataDirectory = loadDir;
+        Load(loadDir);
 
         if (userData.Count == 0) {
-            Log.User.LogInformation("No users found in {d}. Creating profile...", UserDataDirectory);
-            RegisterNewUser(bootUser);
+            // DERIVE IDENTITY: Use the folder name as the username (e.g. /Profiles/John/Achievements -> John)
+            string derivedName = Path.GetFileName(Path.GetDirectoryName(loadDir));
+            if (string.IsNullOrEmpty(derivedName) || derivedName == "User" || derivedName == "Achievements") derivedName = "Player";
+            
+            Log.User.LogInformation("No users found in {d}. Creating derived profile: {u}", loadDir, derivedName);
+            RegisterNewUser(derivedName);
             Save();
         }
 
-        ActiveUser = GetUserData(bootUser);
-        if (ActiveUser == null && userData.Count > 0) {
-            // Fallback to name match if GetUserData failed for some reason
-            string key = bootUser.ToLower();
-            if (userData.ContainsKey(key)) ActiveUser = userData[key];
-            else ActiveUser = userData.Values.First();
-        }
+        // Whoever is in this private folder IS the active user
+        ActiveUser = userData.Values.FirstOrDefault();
 
-        Log.User.LogInformation("Finished loading data: {users} User(s). Active: {a}", userData.Count, ActiveUser?.UserName);
+        Log.User.LogInformation("Loaded profile: {u} from {d}", ActiveUser?.UserName, loadDir);
     }
 
     public static void SaveActiveUser() {
         string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
-        if (string.IsNullOrEmpty(hubDir) || ActiveUser == null) return;
+        if (string.IsNullOrEmpty(hubDir)) return;
 
-        string path = Path.Combine(hubDir, "active_user.txt");
-        File.WriteAllText(path, ActiveUser.UserName);
+        string statePath = Path.Combine(hubDir, "active_profile.json");
+        var state = new Dictionary<string, string> {
+            { "path", UserDataDirectory }
+        };
+        File.WriteAllText(statePath, JsonConvert.SerializeObject(state, Formatting.Indented));
     }
 
     public static void Load(string dir) {
