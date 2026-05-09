@@ -47,9 +47,14 @@ class UserManager {
         }
 
         ActiveUser = GetUserData(bootUser);
-        if (ActiveUser == null && userData.Count > 0) ActiveUser = userData.Values.First();
+        if (ActiveUser == null && userData.Count > 0) {
+            // Fallback to name match if GetUserData failed for some reason
+            string key = bootUser.ToLower();
+            if (userData.ContainsKey(key)) ActiveUser = userData[key];
+            else ActiveUser = userData.Values.First();
+        }
 
-        Log.User.LogInformation("Finished loading data: {users} User(s)", userData.Count);
+        Log.User.LogInformation("Finished loading data: {users} User(s). Active: {a}", userData.Count, ActiveUser?.UserName);
     }
 
     public static void SaveActiveUser() {
@@ -85,6 +90,7 @@ class UserManager {
     }
 
     private static void Migrate(UserData data) {
+        if (data.GameData == null) data.GameData = new Dictionary<uint, UserGameData>();
         foreach (UserGameData ugd in data.GameData.Values) {
             if (ugd.FlaggedAchievements == null) {
                 ugd.FlaggedAchievements = new List<int>();
@@ -93,6 +99,7 @@ class UserManager {
     }
 
     public static UserData GetUserData(string username) {
+        if (string.IsNullOrEmpty(username)) return null;
         string key = username.ToLower();
         if (userData.ContainsKey(key)) {
             return userData[key];
@@ -109,7 +116,7 @@ class UserManager {
             GameData = new Dictionary<uint, UserGameData>()
         };
         userData[username.ToLower()] = user;
-        Log.User.LogInformation("Registered new user: {User}", user);
+        Log.User.LogInformation("Registered new user: {User}", user.UserName);
         return user;
     }
 
@@ -118,28 +125,28 @@ class UserManager {
     }
 
     public static void Save(string dir) {
+        if (ActiveUser == null) return;
+
         lock (SAVE_LOCK) {
-            foreach (UserData data in userData.Values) {
-                if (data.AllowUse) {
-                    string outputFile = Path.Combine(dir, data.UserName + ".json");
-                    string backupFile = Path.Combine(dir, data.UserName + ".bak");
-                    if (File.Exists(outputFile)) {
-                        File.Copy(outputFile, backupFile, true);
-                    }
-
-                    string output = JsonConvert.SerializeObject(data);
-                    if (String.IsNullOrWhiteSpace(output)) {
-                        throw new IOException("Attempted to write empty/null user save data for " + data);
-                    }
-
-                    File.WriteAllText(outputFile, output);
-                    Log.User.LogDebug("Saved user data for {user}", data.UserName);
-                } else {
-                    Log.User.LogWarning("Not saving {User}, because data loading has failed!", data);
+            // ONLY save the active user to this profile folder to prevent cross-contamination
+            UserData data = ActiveUser;
+            if (data.AllowUse) {
+                string outputFile = Path.Combine(dir, data.UserName + ".json");
+                string backupFile = Path.Combine(dir, data.UserName + ".bak");
+                if (File.Exists(outputFile)) {
+                    File.Copy(outputFile, backupFile, true);
                 }
+
+                string output = JsonConvert.SerializeObject(data);
+                if (String.IsNullOrWhiteSpace(output)) {
+                    throw new IOException("Attempted to write empty/null user save data for " + data.UserName);
+                }
+
+                File.WriteAllText(outputFile, output);
+                Log.User.LogDebug("Saved user data for {user}", data.UserName);
             }
 
-            Log.User.LogInformation("User data was saved");
+            Log.User.LogInformation("User data was saved for {u}", data.UserName);
         }
     }
 
