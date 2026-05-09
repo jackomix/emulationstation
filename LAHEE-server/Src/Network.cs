@@ -1242,6 +1242,7 @@ static class Routes {
         }
 
         UserManager.ActiveUser = user;
+        UserManager.SaveActiveUser();
 
         Log.User.LogInformation("Active user switched to: {u}", user.UserName);
 

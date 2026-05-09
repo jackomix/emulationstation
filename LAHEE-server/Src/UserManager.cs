@@ -17,33 +17,39 @@ class UserManager {
     internal static void Initialize() {
         activeTokens = new Dictionary<string, UserData>();
 
-        UserDataDirectory = Program.Config.Get("LAHEE", "UserDirectory");
+        // PERSISTENCE: Read the master key from Hub root
+        string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
+        string bootUser = "Player";
+        string activeUserPath = Path.Combine(hubDir, "active_user.txt");
+        
+        if (File.Exists(activeUserPath)) {
+            string savedName = File.ReadAllText(activeUserPath).Trim();
+            if (!string.IsNullOrEmpty(savedName)) bootUser = savedName;
+        }
+
+        // REDIRECT TO PROFILE: Traverse up to Roms, then down to Profiles
+        string romsRoot = Path.GetDirectoryName(hubDir);
+        string profileAchievementsPath = Path.Combine(romsRoot, "Profiles", bootUser, "Achievements");
+        
+        if (Directory.Exists(profileAchievementsPath)) {
+            UserDataDirectory = profileAchievementsPath;
+            Log.User.LogInformation("Booting with profile: {u} from {p}", bootUser, profileAchievementsPath);
+        } else {
+            UserDataDirectory = Program.Config.Get("LAHEE", "UserDirectory");
+        }
 
         Load(UserDataDirectory);
 
         if (userData.Count == 0) {
             Log.User.LogInformation("No users found in {d}. Creating profile...", UserDataDirectory);
-            RegisterNewUser("Player");
+            RegisterNewUser(bootUser);
             Save();
         }
 
-        ActiveUser = userData.Values.First();
+        ActiveUser = GetUserData(bootUser);
+        if (ActiveUser == null && userData.Count > 0) ActiveUser = userData.Values.First();
 
         Log.User.LogInformation("Finished loading data: {users} User(s)", userData.Count);
-    }
-
-    private static void RestoreActiveUser() {
-        string hubDir = Program.Config.Get("LAHEE", "HubDirectory");
-        if (string.IsNullOrEmpty(hubDir)) return;
-
-        string path = Path.Combine(hubDir, "active_user.txt");
-        if (File.Exists(path)) {
-            string name = File.ReadAllText(path).Trim();
-            if (userData.ContainsKey(name.ToLower())) {
-                ActiveUser = userData[name.ToLower()];
-                Log.User.LogInformation("Restored active user: {u}", name);
-            }
-        }
     }
 
     public static void SaveActiveUser() {
