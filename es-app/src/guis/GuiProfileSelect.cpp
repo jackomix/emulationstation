@@ -8,6 +8,7 @@
 #include "Paths.h"
 #include "resources/Font.h"
 #include "renderers/Renderer.h"
+#include "utils/StringUtil.h"
 
 GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& doneCallback)
 	: GuiComponent(window), mBackground(window, ":/frame.png")
@@ -198,12 +199,20 @@ void GuiProfileSelect::render(const Transform4x4f& parentTrans)
 				initStr = Utils::String::toUpper(mProfiles[i].name.substr(0, 1));
 			
 			Vector2f letterSize = letterFont->sizeText(initStr);
-			letterFont->drawText(initStr, Vector2f(x + (tileW - letterSize.x()) / 2.0f, y + (tileH - letterSize.y()) / 2.0f), 0xFFFFFFFF);
+			TextCache* cacheLetter = letterFont->buildTextCache(initStr, x + (tileW - letterSize.x()) / 2.0f, y + (tileH - letterSize.y()) / 2.0f, 0xFFFFFFFF);
+			if (cacheLetter) {
+				letterFont->renderTextCache(cacheLetter);
+				delete cacheLetter;
+			}
 
 			// Draw name below tile
 			std::string nameStr = mProfiles[i].name;
 			Vector2f nameSize = nameFont->sizeText(nameStr);
-			nameFont->drawText(nameStr, Vector2f(x + (tileW - nameSize.x()) / 2.0f, y + tileH + screenH * 0.02f), isSelected ? 0xFFFFFFFF : 0x888888FF);
+			TextCache* cacheName = nameFont->buildTextCache(nameStr, x + (tileW - nameSize.x()) / 2.0f, y + tileH + screenH * 0.02f, isSelected ? 0xFFFFFFFF : 0x888888FF);
+			if (cacheName) {
+				nameFont->renderTextCache(cacheName);
+				delete cacheName;
+			}
 		}
 		else
 		{
@@ -224,7 +233,11 @@ void GuiProfileSelect::render(const Transform4x4f& parentTrans)
 			// Draw name below tile
 			std::string labelStr = _("NEW PROFILE");
 			Vector2f labelSize = nameFont->sizeText(labelStr);
-			nameFont->drawText(labelStr, Vector2f(x + (tileW - labelSize.x()) / 2.0f, y + tileH + screenH * 0.02f), isSelected ? 0xFFFFFFFF : 0x888888FF);
+			TextCache* cacheLabel = nameFont->buildTextCache(labelStr, x + (tileW - labelSize.x()) / 2.0f, y + tileH + screenH * 0.02f, isSelected ? 0xFFFFFFFF : 0x888888FF);
+			if (cacheLabel) {
+				nameFont->renderTextCache(cacheLabel);
+				delete cacheLabel;
+			}
 		}
 	}
 }

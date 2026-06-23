@@ -8,6 +8,7 @@
 #include "LocaleES.h"
 #include "Settings.h"
 #include "views/ViewController.h"
+#include "Paths.h"
 
 GuiProfileSettings::GuiProfileSettings(Window* window)
 	: GuiSettings(window, _("PROFILES"))
