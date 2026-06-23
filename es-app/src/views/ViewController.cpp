@@ -1378,7 +1378,8 @@ void ViewController::reloadAllGames(Window* window, bool deleteCurrentGui, bool 
 	Utils::FileSystem::FileSystemCacheActivator fsc;
 
 	auto viewMode = ViewController::get()->getViewMode();
-	auto systemName = ViewController::get()->getSelectedSystem()->getName();
+	SystemData* selectedSys = ViewController::get()->getSelectedSystem();
+	auto systemName = (selectedSys != nullptr) ? selectedSys->getName() : "";
 
 	window->closeSplashScreen();
 	window->renderSplashScreen(_("Loading..."));
@@ -1410,7 +1411,10 @@ void ViewController::reloadAllGames(Window* window, bool deleteCurrentGui, bool 
 	CollectionSystemManager::init(window);		
 	SystemData::loadConfig(window);
 	
-	ViewController::get()->goToSystemView(systemName, true, viewMode);	
+	if (systemName.empty())
+		ViewController::get()->goToStart(true);
+	else
+		ViewController::get()->goToSystemView(systemName, true, viewMode);
 	ViewController::get()->reloadAll(nullptr, false); // Avoid reloading themes a second time
 
 	window->closeSplashScreen();
