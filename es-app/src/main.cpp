@@ -565,41 +565,18 @@ int main(int argc, char* argv[])
 
 
 	const char* errorMsg = NULL;
-	if (ProfileManager::getInstance()->isProfilesEnabled())
+	if(!loadSystemConfigFile(splashScreen && splashScreenProgress ? &window : nullptr, &errorMsg))
 	{
-		if (splashScreen)
+		// something went terribly wrong
+		if(errorMsg == NULL)
 		{
-			window.closeSplashScreen();
-			splashScreen = false;
+			LOG(LogError) << "Unknown error occured while parsing system config file.";
+			Renderer::deinit();
+			return 1;
 		}
-		window.pushGui(new GuiProfileSelect(&window, [&window]() {
-			const char* err = nullptr;
-			if (!loadSystemConfigFile(nullptr, &err))
-			{
-				if (err != nullptr)
-					window.pushGui(new GuiMsgBox(&window, err, _("QUIT"), [] { Utils::Platform::quitES(); }));
-				else
-					Utils::Platform::quitES();
-			}
-			ViewController::get()->reloadAll(nullptr, false);
-			ViewController::get()->goToStart(true);
-		}));
-	}
-	else
-	{
-		if(!loadSystemConfigFile(splashScreen && splashScreenProgress ? &window : nullptr, &errorMsg))
-		{
-			// something went terribly wrong
-			if(errorMsg == NULL)
-			{
-				LOG(LogError) << "Unknown error occured while parsing system config file.";
-				Renderer::deinit();
-				return 1;
-			}
 
-			// we can't handle es_systems.cfg file problems inside ES itself, so display the error message then quit
-			window.pushGui(new GuiMsgBox(&window, errorMsg, _("QUIT"), [] { Utils::Platform::quitES(); }));
-		}
+		// we can't handle es_systems.cfg file problems inside ES itself, so display the error message then quit
+		window.pushGui(new GuiMsgBox(&window, errorMsg, _("QUIT"), [] { Utils::Platform::quitES(); }));
 	}
 
 	SystemConf* systemConf = SystemConf::getInstance();
@@ -649,6 +626,13 @@ int main(int argc, char* argv[])
 	}
 
 	window.closeSplashScreen();
+
+	if (errorMsg == NULL && ProfileManager::getInstance()->isProfilesEnabled())
+	{
+		window.pushGui(new GuiProfileSelect(&window, [&window]() {
+			ViewController::reloadAllGames(&window, false, false);
+		}));
+	}
 
 	// Create a flag in  temporary directory to signal READY state
 	ApiSystem::getInstance()->setReadyFlag();

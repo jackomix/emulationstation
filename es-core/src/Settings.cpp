@@ -557,6 +557,11 @@ void Settings::loadFile()
 
 	if (ProfileManager::getInstance()->isProfilesEnabled())
 	{
+		setString("StartupSystem", "lastsystem");
+		setString("SortSystems", "manufacturer");
+		setString("LastSystem", "");
+		setString("LastSelectedSystem", "");
+
 		loadSettingsFromFile(this, ProfileManager::getInstance()->getProfileDataPath() + "/es_settings.cfg");
 	}
 

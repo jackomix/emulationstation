@@ -5,6 +5,7 @@
 #include <pugixml/src/pugixml.hpp>
 #include "utils/StringUtil.h"
 #include <algorithm>
+#include "Settings.h"
 
 ProfileManager* ProfileManager::sInstance = nullptr;
 
@@ -180,6 +181,8 @@ bool ProfileManager::createProfile(const std::string& name, const std::string& a
 	if (mProfiles.size() == 1) {
 		mActiveProfileName = cleanName;
 		mProfilesEnabled = true;
+		Paths::recalculateProfilePaths();
+		Settings::getInstance()->loadFile();
 	}
 
 	saveProfiles();
@@ -209,6 +212,8 @@ bool ProfileManager::deleteProfile(const std::string& name)
 					mActiveProfileName = "";
 					mProfilesEnabled = false;
 				}
+				Paths::recalculateProfilePaths();
+				Settings::getInstance()->loadFile();
 			}
 
 			std::string path = getProfileDataPath(name);
@@ -255,6 +260,8 @@ bool ProfileManager::renameProfile(const std::string& oldName, const std::string
 
 	if (mActiveProfileName == oldName) {
 		mActiveProfileName = cleanName;
+		Paths::recalculateProfilePaths();
+		Settings::getInstance()->loadFile();
 	}
 
 	saveProfiles();
@@ -267,6 +274,8 @@ void ProfileManager::setActiveProfile(const std::string& name)
 		if (p.name == name) {
 			mActiveProfileName = name;
 			saveProfiles();
+			Paths::recalculateProfilePaths();
+			Settings::getInstance()->loadFile();
 			return;
 		}
 	}

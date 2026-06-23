@@ -105,10 +105,13 @@ bool GuiProfileSelect::input(InputConfig* config, Input input)
 			std::string name = mProfiles[mSelectedIndex].name;
 			
 			ProfileManager::getInstance()->setActiveProfile(name);
-			Paths::recalculateProfilePaths();
 
 			if (mDoneCallback)
-				mDoneCallback();
+			{
+				mWindow->postToUiThread([cb = mDoneCallback]() {
+					cb();
+				});
+			}
 
 			delete this;
 		}
