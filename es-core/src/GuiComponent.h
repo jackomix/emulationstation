@@ -201,8 +201,8 @@ public:
 	virtual void	onScaleOriginChanged();
 	virtual void	onScreenOffsetChanged();
 	virtual void	onOpacityChanged() { };
-	virtual void	onFocusGained() { };
-	virtual void	onFocusLost() { };
+	virtual void	onFocusGained();
+	virtual void	onFocusLost();
 	virtual void	onShow();
 	virtual void	onHide();
 	virtual void	onScreenSaverActivate();
