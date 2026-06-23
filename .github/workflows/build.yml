@@ -39,9 +39,15 @@ jobs:
           make -j$(nproc)
           cd ..
           strip emulationstation
+          mkdir -p ports
+          cp setup_boot_hook.sh ports/
+          mkdir -p EmulationStation
+          cp emulationstation EmulationStation/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: emulationstation-r36s
-          path: emulationstation
+          path: |
+            ports
+            EmulationStation
