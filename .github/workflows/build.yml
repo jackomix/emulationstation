@@ -44,6 +44,7 @@ jobs:
           cp print_filesystem.sh ports/
           mkdir -p EmulationStation
           cp emulationstation EmulationStation/
+          cp -r resources EmulationStation/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
