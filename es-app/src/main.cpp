@@ -1,6 +1,8 @@
 //EmulationStation, a graphical front-end for ROM browsing. Created by Alec "Aloshi" Lofquist.
 //http://www.aloshi.com
 
+#include "ProfileManager.h"
+#include "guis/GuiProfileSelect.h"
 #include "services/HttpServerThread.h"
 #include "guis/GuiDetectDevice.h"
 #include "guis/GuiMsgBox.h"
@@ -563,18 +565,41 @@ int main(int argc, char* argv[])
 
 
 	const char* errorMsg = NULL;
-	if(!loadSystemConfigFile(splashScreen && splashScreenProgress ? &window : nullptr, &errorMsg))
+	if (ProfileManager::getInstance()->isProfilesEnabled())
 	{
-		// something went terribly wrong
-		if(errorMsg == NULL)
+		if (splashScreen)
 		{
-			LOG(LogError) << "Unknown error occured while parsing system config file.";
-			Renderer::deinit();
-			return 1;
+			window.closeSplashScreen();
+			splashScreen = false;
 		}
+		window.pushGui(new GuiProfileSelect(&window, [&window]() {
+			const char* err = nullptr;
+			if (!loadSystemConfigFile(nullptr, &err))
+			{
+				if (err != nullptr)
+					window.pushGui(new GuiMsgBox(&window, err, _("QUIT"), [] { Utils::Platform::quitES(); }));
+				else
+					Utils::Platform::quitES();
+			}
+			ViewController::get()->reloadAll(nullptr, false);
+			ViewController::get()->goToStart(true);
+		}));
+	}
+	else
+	{
+		if(!loadSystemConfigFile(splashScreen && splashScreenProgress ? &window : nullptr, &errorMsg))
+		{
+			// something went terribly wrong
+			if(errorMsg == NULL)
+			{
+				LOG(LogError) << "Unknown error occured while parsing system config file.";
+				Renderer::deinit();
+				return 1;
+			}
 
-		// we can't handle es_systems.cfg file problems inside ES itself, so display the error message then quit
-		window.pushGui(new GuiMsgBox(&window, errorMsg, _("QUIT"), [] { Utils::Platform::quitES(); }));
+			// we can't handle es_systems.cfg file problems inside ES itself, so display the error message then quit
+			window.pushGui(new GuiMsgBox(&window, errorMsg, _("QUIT"), [] { Utils::Platform::quitES(); }));
+		}
 	}
 
 	SystemConf* systemConf = SystemConf::getInstance();

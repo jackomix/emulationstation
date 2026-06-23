@@ -1,5 +1,5 @@
 #include "MetaData.h"
-
+#include "ProfileManager.h"
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
 #include "Log.h"
@@ -291,6 +291,15 @@ void MetaDataList::appendToXML(pugi::xml_node& parent, bool ignoreDefaults, cons
 		// Don't save GenreIds
 		if (mddIter->id == MetaDataId::GenreIds)
 			continue;
+
+		// Don't save profile-specific stats to global gamelist if profiles are enabled
+		if (ProfileManager::getInstance()->isProfilesEnabled()) {
+			if (mddIter->id == MetaDataId::Favorite ||
+				mddIter->id == MetaDataId::PlayCount ||
+				mddIter->id == MetaDataId::LastPlayed ||
+				mddIter->id == MetaDataId::GameTime)
+				continue;
+		}
 
 		auto mapIter = mMap.find(mddIter->id);
 		if(mapIter != mMap.cend())

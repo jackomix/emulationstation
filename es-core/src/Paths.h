@@ -69,6 +69,9 @@ public:
 
 	static std::string findEmulationStationFile(const std::string& fileName);
 
+	static void recalculateProfilePaths();
+	static std::string getGamelistOverridePath();
+
 private:
 	static Paths* getInstance() 
 	{

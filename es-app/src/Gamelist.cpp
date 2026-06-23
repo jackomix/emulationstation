@@ -1,5 +1,5 @@
 #include "Gamelist.h"
-
+#include "ProfileManager.h"
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
 #include "FileData.h"
@@ -228,6 +228,19 @@ void parseGamelist(SystemData* system, std::unordered_map<std::string, FileData*
 
 	if (size != SIZE_MAX)
 		system->setGamelistHash(size);	
+
+	// Profile overlay load pass
+	std::string profileGamelistsDir = Paths::getGamelistOverridePath();
+	if (!profileGamelistsDir.empty()) {
+		std::string profileXmlPath = profileGamelistsDir + "/" + system->getName() + "/gamelist.xml";
+		if (Utils::FileSystem::exists(profileXmlPath)) {
+			loadGamelistFile(profileXmlPath, system, fileMap, SIZE_MAX, true);
+			// Reset dirty flags because we just loaded initial profile settings
+			for (auto const& pair : fileMap) {
+				pair.second->getMetadata().resetChangedFlag();
+			}
+		}
+	}
 }
 
 bool addFileDataNode(pugi::xml_node& parent, FileData* file, const char* tag, SystemData* system, bool fullPaths = false)
@@ -349,6 +362,75 @@ bool hasDirtyFile(SystemData* system)
 	return false;
 }
 
+void updateProfileGamelist(SystemData* system, const std::vector<FileData*>& dirtyFiles)
+{
+	std::string profileGamelistsDir = Paths::getGamelistOverridePath();
+	if (profileGamelistsDir.empty())
+		return;
+
+	std::string xmlWritePath = profileGamelistsDir + "/" + system->getName() + "/gamelist.xml";
+	Utils::FileSystem::createDirectory(Utils::FileSystem::getParent(xmlWritePath));
+
+	pugi::xml_document doc;
+	pugi::xml_node root;
+
+	if (Utils::FileSystem::exists(xmlWritePath))
+	{
+		pugi::xml_parse_result result = doc.load_file(WINSTRINGW(xmlWritePath).c_str());
+		if (result)
+		{
+			root = doc.child("gameList");
+		}
+	}
+
+	if (!root)
+	{
+		root = doc.append_child("gameList");
+	}
+
+	std::map<std::string, pugi::xml_node> xmlMap;
+	for (pugi::xml_node fileNode : root.children())
+	{
+		pugi::xml_node path = fileNode.child("path");
+		if (path)
+		{
+			std::string nodePath = Utils::FileSystem::getCanonicalPath(Utils::FileSystem::resolveRelativePath(path.text().get(), system->getStartPath(), true));
+			xmlMap[nodePath] = fileNode;
+		}
+	}
+
+	int numUpdated = 0;
+	for (auto file : dirtyFiles)
+	{
+		auto xmf = xmlMap.find(Utils::FileSystem::getCanonicalPath(file->getPath()));
+		if (xmf != xmlMap.cend())
+		{
+			root.remove_child(xmf->second);
+		}
+
+		// Append custom profile data node
+		pugi::xml_node newNode = root.append_child("game");
+		
+		std::string path = Utils::FileSystem::createRelativePath(file->getPath(), system->getStartPath(), false);
+		if (path.empty() && file->getType() == FOLDER)
+			path = ".";
+		newNode.append_child("path").text().set(path.c_str());
+
+		const MetaDataList& mdl = file->getMetadata();
+		newNode.append_child("favorite").text().set(mdl.get(MetaDataId::Favorite).c_str());
+		newNode.append_child("playcount").text().set(mdl.get(MetaDataId::PlayCount).c_str());
+		newNode.append_child("lastplayed").text().set(mdl.get(MetaDataId::LastPlayed).c_str());
+		newNode.append_child("gametime").text().set(mdl.get(MetaDataId::GameTime).c_str());
+		
+		numUpdated++;
+	}
+
+	if (numUpdated > 0)
+	{
+		doc.save_file(WINSTRINGW(xmlWritePath).c_str());
+	}
+}
+
 void updateGamelist(SystemData* system)
 {
 	// We do this by reading the XML again, adding changes and then writing it back,
@@ -456,6 +538,11 @@ void updateGamelist(SystemData* system)
 	}
 	else
 		clearTemporaryGamelistRecovery(system);
+
+	if (ProfileManager::getInstance()->isProfilesEnabled())
+	{
+		updateProfileGamelist(system, dirtyFiles);
+	}
 }
 
 void resetGamelistUsageData(SystemData* system)

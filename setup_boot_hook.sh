@@ -55,7 +55,28 @@ EOF
 echo "Setting permissions..."
 sudo chmod +x "$SYS_WRAPPER"
 
-# 5. Flush writes to the disk
+# 5. Patch /opt/runemu.sh for retroarch profile support
+if [ -f /opt/runemu.sh ]; then
+    if ! grep -q "es_profile.cfg" /opt/runemu.sh; then
+        echo "Patching /opt/runemu.sh for multi-user profile support..."
+        sudo cp /opt/runemu.sh /opt/runemu.sh.bak_profile
+        
+        # Inject the definition of APPENDCONFIG at the top (after shebang)
+        sudo sed -i '2i APPENDCONFIG=""\nif [ -f /tmp/es_profile.cfg ]; then\n    APPENDCONFIG="--appendconfig /tmp/es_profile.cfg"\nfi\n' /opt/runemu.sh
+        
+        # Insert $APPENDCONFIG into retroarch and retroarch32 calls
+        sudo sed -i 's/retroarch /retroarch \$APPENDCONFIG /g' /opt/runemu.sh
+        sudo sed -i 's/retroarch32 /retroarch32 \$APPENDCONFIG /g' /opt/runemu.sh
+        
+        echo "/opt/runemu.sh successfully patched!"
+    else
+        echo "/opt/runemu.sh already patched."
+    fi
+else
+    echo "/opt/runemu.sh not found (this is normal if not running on the ArkOS console)."
+fi
+
+# 6. Flush writes to the disk
 sync
 
 echo "Hook successfully installed! Rebooting system in 3 seconds..."

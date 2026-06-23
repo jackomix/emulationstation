@@ -1,4 +1,5 @@
 #include "Paths.h"
+#include "ProfileManager.h"
 
 #include <iostream>
 #include <fstream>
@@ -17,6 +18,7 @@ Paths* Paths::_instance = nullptr;
 
 Paths::Paths()
 {	
+	_instance = this;
 	mEmulationStationPath = getExePath();
 	mUserEmulationStationPath = Utils::FileSystem::getCanonicalPath(getHomePath() + "/.emulationstation");
 	mRootPath = Utils::FileSystem::getParent(getHomePath());
@@ -82,6 +84,7 @@ Paths::Paths()
 
 #endif
 	loadCustomConfiguration(true); // Load paths overrides from emulationstation.ini file
+	recalculateProfilePaths();
 }
 
 void Paths::loadCustomConfiguration(bool overridesOnly)
@@ -331,4 +334,25 @@ std::string Paths::findEmulationStationFile(const std::string& fileName)
 		return localVersionFile;
 
 	return std::string();
+}
+
+void Paths::recalculateProfilePaths()
+{
+	Paths* instance = getInstance();
+	if (ProfileManager::getInstance()->isProfilesEnabled()) {
+		std::string profileBase = ProfileManager::getInstance()->getProfileDataPath();
+		instance->mSaveStatesPath = profileBase + "/savestates";
+		instance->mScreenShotsPath = profileBase + "/screenshots";
+	} else {
+		// Fallback to reload custom config for default saves/screenshots directories
+		instance->loadCustomConfiguration(true);
+	}
+}
+
+std::string Paths::getGamelistOverridePath()
+{
+	if (ProfileManager::getInstance()->isProfilesEnabled()) {
+		return ProfileManager::getInstance()->getProfileDataPath() + "/gamelists";
+	}
+	return "";
 }

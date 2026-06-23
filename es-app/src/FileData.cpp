@@ -1,4 +1,6 @@
 #include "FileData.h"
+#include "ProfileManager.h"
+#include <fstream>
 
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
@@ -773,7 +775,23 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	ProcessStartInfo process(command);
 	process.window = hideWindow ? NULL : window;
 	
+	if (ProfileManager::getInstance()->isProfilesEnabled()) {
+		std::string base = ProfileManager::getInstance()->getProfileDataPath();
+		std::ofstream f("/tmp/es_profile.cfg");
+		if (f.is_open()) {
+			f << "savefile_directory = \"" << base << "/saves\"\n";
+			f << "savestate_directory = \"" << base << "/savestates\"\n";
+			f << "screenshot_directory = \"" << base << "/screenshots\"\n";
+			f.close();
+		}
+	}
+
 	int exitCode = process.run();
+	
+	if (ProfileManager::getInstance()->isProfilesEnabled()) {
+		Utils::FileSystem::removeFile("/tmp/es_profile.cfg");
+	}
+
 	if (exitCode != 0)
 		LOG(LogWarning) << "...launch terminated with nonzero exit code " << exitCode << "!";
 
