@@ -81,9 +81,9 @@ void GuiProfileSettings::refreshMenu()
 
 void GuiProfileSettings::switchProfile()
 {
+	Window* window = mWindow;
 	close();
-	
-	mWindow->pushGui(new GuiProfileSelect(mWindow, nullptr));
+	window->pushGui(new GuiProfileSelect(window, nullptr));
 }
 
 void GuiProfileSettings::createProfile()

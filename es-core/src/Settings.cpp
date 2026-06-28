@@ -451,9 +451,8 @@ void saveMap(pugi::xml_node &node, std::map<K, V>& map, const char* type, std::m
 			continue;
 
 		bool isProfileKey = (iter->first == "StartupSystem" || iter->first == "SortSystems" || iter->first == "LastSystem" || iter->first == "LastSelectedSystem");
-		if (profileOnly && !isProfileKey)
-			continue;
-		if (!profileOnly && isProfileKey && ProfileManager::getInstance()->isProfilesEnabled())
+		// Remove profile filtering: save all settings per profile.
+		if (!profileOnly && ProfileManager::getInstance()->isProfilesEnabled())
 			continue;
 
 		auto def = defaultMap.find(iter->first);
@@ -493,8 +492,12 @@ bool Settings::saveFile()
 			continue;
 
 		bool isProfileKey = (iter->first == "StartupSystem" || iter->first == "SortSystems" || iter->first == "LastSystem" || iter->first == "LastSelectedSystem");
-		if (isProfileKey && ProfileManager::getInstance()->isProfilesEnabled())
+		if (!ProfileManager::getInstance()->isProfilesEnabled()) {
+			// Save everything normally if profiles are disabled.
+		} else {
+			// If profiles are enabled, we don't save to the global file to avoid bleed.
 			continue;
+		}
 
 		auto def = mDefaultStringMap.find(iter->first);
 		if (def == mDefaultStringMap.cend() && iter->second.empty())
@@ -527,8 +530,7 @@ bool Settings::saveFile()
 				continue;
 
 			bool isProfileKey = (iter->first == "StartupSystem" || iter->first == "SortSystems" || iter->first == "LastSystem" || iter->first == "LastSelectedSystem");
-			if (!isProfileKey)
-				continue;
+			// Remove the check so we save all string settings per profile
 
 			auto def = mDefaultStringMap.find(iter->first);
 			if (def == mDefaultStringMap.cend() && iter->second.empty())

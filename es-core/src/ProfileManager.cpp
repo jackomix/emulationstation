@@ -32,7 +32,7 @@ std::string ProfileManager::getProfilesRoot()
 
 bool ProfileManager::isProfilesEnabled()
 {
-	return mProfilesEnabled && !mActiveProfileName.empty() && !mProfiles.empty();
+	return mProfilesEnabled;
 }
 
 void ProfileManager::setProfilesEnabled(bool enabled)
