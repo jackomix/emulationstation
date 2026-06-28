@@ -629,9 +629,7 @@ int main(int argc, char* argv[])
 
 	if (errorMsg == NULL && ProfileManager::getInstance()->isProfilesEnabled())
 	{
-		window.pushGui(new GuiProfileSelect(&window, [&window]() {
-			ViewController::reloadAllGames(&window, false, false);
-		}));
+		window.pushGui(new GuiProfileSelect(&window, nullptr));
 	}
 
 	// Create a flag in  temporary directory to signal READY state

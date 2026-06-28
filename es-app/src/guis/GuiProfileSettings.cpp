@@ -54,9 +54,8 @@ void GuiProfileSettings::refreshMenu()
 			}
 			else
 			{
-				// Reload UI to show/hide profile screens
-				mWindow->postToUiThread([window = mWindow]() {
-					ViewController::reloadAllGames(window, false, false);
+				mWindow->postToUiThread([this]() {
+					refreshMenu();
 				});
 			}
 		}
@@ -84,11 +83,7 @@ void GuiProfileSettings::switchProfile()
 {
 	close();
 	
-	mWindow->pushGui(new GuiProfileSelect(mWindow, [window = mWindow]() {
-		window->postToUiThread([window]() {
-			ViewController::reloadAllGames(window, false, false);
-		});
-	}));
+	mWindow->pushGui(new GuiProfileSelect(mWindow, nullptr));
 }
 
 void GuiProfileSettings::createProfile()
@@ -102,13 +97,6 @@ void GuiProfileSettings::createProfile()
 		{
 			// Refresh settings menu
 			refreshMenu();
-			// Reload systems if enabled
-			if (ProfileManager::getInstance()->isProfilesEnabled())
-			{
-				mWindow->postToUiThread([window = mWindow]() {
-					ViewController::reloadAllGames(window, false, false);
-				});
-			}
 		}
 		else
 		{
@@ -140,9 +128,6 @@ void GuiProfileSettings::renameProfilePrompt()
 				{
 					s->close();
 					refreshMenu();
-					mWindow->postToUiThread([window = mWindow]() {
-						ViewController::reloadAllGames(window, false, false);
-					});
 				}
 				else
 				{
@@ -173,9 +158,6 @@ void GuiProfileSettings::deleteProfilePrompt()
 					ProfileManager::getInstance()->deleteProfile(p.name);
 					s->close();
 					refreshMenu();
-					mWindow->postToUiThread([window = mWindow]() {
-						ViewController::reloadAllGames(window, false, false);
-					});
 				},
 				_("NO"), nullptr));
 		});
