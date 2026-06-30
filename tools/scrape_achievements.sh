@@ -37,17 +37,13 @@ fi
 read -p "Enter your RetroAchievements Username: " RA_USER
 read -p "Enter your Web API Key (from retroachievements.org/settings): " RA_API_KEY
 
-# Auto-detect EASYROMS on macOS
-if [ -d "/Volumes/EASYROMS" ]; then
-    SD_PATH="/Volumes/EASYROMS"
-    echo "Auto-detected EASYROMS SD card at $SD_PATH"
-else
-    read -p "Enter the path to your SD card's ROM partition (e.g. /media/user/EASYROMS): " SD_PATH
-fi
+# Assume the script is inside EASYROMS/tools/
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SD_PATH="$SCRIPT_DIR/.."
 
-if [ ! -d "$SD_PATH" ]; then
-    echo "Error: ROM directory not found at $SD_PATH"
-    exit 1
+if [ ! -d "$SD_PATH/gba" ] && [ ! -d "$SD_PATH/snes" ] && [ ! -d "$SD_PATH/achievements" ]; then
+    echo "Warning: It looks like this script isn't located on your SD card."
+    echo "Please copy the 'tools' folder to the root of your EASYROMS partition and run it from there."
 fi
 
 DEST_DIR="$SD_PATH/achievements"

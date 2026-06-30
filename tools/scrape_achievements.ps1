@@ -28,18 +28,12 @@ if (-not (Test-Path -Path $HasherPath)) {
 $RA_USER = Read-Host "Enter your RetroAchievements Username"
 $RA_API_KEY = Read-Host "Enter your Web API Key (from retroachievements.org/settings)"
 
-# Auto-detect EASYROMS drive on Windows
-$EasyRomsDrive = Get-Volume | Where-Object { $_.FileSystemLabel -eq "EASYROMS" } | Select-Object -First 1
-if ($EasyRomsDrive) {
-    $SD_PATH = $EasyRomsDrive.DriveLetter + ":\"
-    Write-Host "Auto-detected EASYROMS SD card at $SD_PATH"
-} else {
-    $SD_PATH = Read-Host "Enter the path to your SD card's ROM partition (e.g. E:\)"
-}
+# Assume the script is inside EASYROMS/tools/
+$SD_PATH = Split-Path -Path $PSScriptRoot -Parent
 
-if (-not (Test-Path -Path $SD_PATH)) {
-    Write-Error "SD card path not found at $SD_PATH"
-    exit
+if (-not (Test-Path -Path (Join-Path $SD_PATH "gba")) -and -not (Test-Path -Path (Join-Path $SD_PATH "snes")) -and -not (Test-Path -Path (Join-Path $SD_PATH "achievements"))) {
+    Write-Host "Warning: It looks like this script isn't located on your SD card."
+    Write-Host "Please copy the 'tools' folder to the root of your EASYROMS partition and run it from there."
 }
 
 $DEST_DIR = Join-Path -Path $SD_PATH -ChildPath "achievements"
