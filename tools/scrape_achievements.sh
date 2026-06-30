@@ -36,10 +36,17 @@ fi
 
 read -p "Enter your RetroAchievements Username: " RA_USER
 read -p "Enter your Web API Key (from retroachievements.org/settings): " RA_API_KEY
-read -p "Enter the path to your SD card's ROM partition (e.g. /media/user/EASYROMS): " SD_PATH
 
-if [ ! -d "$SD_PATH/roms" ]; then
-    echo "Error: ROM directory not found at $SD_PATH/roms"
+# Auto-detect EASYROMS on macOS
+if [ -d "/Volumes/EASYROMS" ]; then
+    SD_PATH="/Volumes/EASYROMS"
+    echo "Auto-detected EASYROMS SD card at $SD_PATH"
+else
+    read -p "Enter the path to your SD card's ROM partition (e.g. /media/user/EASYROMS): " SD_PATH
+fi
+
+if [ ! -d "$SD_PATH" ]; then
+    echo "Error: ROM directory not found at $SD_PATH"
     exit 1
 fi
 
@@ -51,7 +58,7 @@ mkdir -p "$DEST_DIR/progress"
 echo "Setup complete. Scanning ROMs..."
 
 # 2. Iterate over systems and ROMs
-find "$SD_PATH/roms" -type f \( -iname \*.gba -o -iname \*.zip -o -iname \*.sfc -o -iname \*.nes -o -iname \*.md -o -iname \*.z64 -o -iname \*.cue -o -iname \*.chd \) | while read ROM_FILE; do
+find "$SD_PATH" -type f \( -iname \*.gba -o -iname \*.zip -o -iname \*.sfc -o -iname \*.nes -o -iname \*.md -o -iname \*.z64 -o -iname \*.cue -o -iname \*.chd \) | while read ROM_FILE; do
     echo "Hashing: $(basename "$ROM_FILE")"
     
     # Run RAHasher to get the hash

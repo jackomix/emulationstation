@@ -27,12 +27,18 @@ if (-not (Test-Path -Path $HasherPath)) {
 
 $RA_USER = Read-Host "Enter your RetroAchievements Username"
 $RA_API_KEY = Read-Host "Enter your Web API Key (from retroachievements.org/settings)"
-$SD_PATH = Read-Host "Enter the path to your SD card's ROM partition (e.g. E:\)"
 
-$RomsPath = Join-Path -Path $SD_PATH -ChildPath "roms"
+# Auto-detect EASYROMS drive on Windows
+$EasyRomsDrive = Get-Volume | Where-Object { $_.FileSystemLabel -eq "EASYROMS" } | Select-Object -First 1
+if ($EasyRomsDrive) {
+    $SD_PATH = $EasyRomsDrive.DriveLetter + ":\"
+    Write-Host "Auto-detected EASYROMS SD card at $SD_PATH"
+} else {
+    $SD_PATH = Read-Host "Enter the path to your SD card's ROM partition (e.g. E:\)"
+}
 
-if (-not (Test-Path -Path $RomsPath)) {
-    Write-Error "ROM directory not found at $RomsPath"
+if (-not (Test-Path -Path $SD_PATH)) {
+    Write-Error "SD card path not found at $SD_PATH"
     exit
 }
 
@@ -45,7 +51,7 @@ Write-Host "Setup complete. Scanning ROMs..."
 
 # 2. Iterate over systems and ROMs
 $Extensions = @("*.gba", "*.zip", "*.sfc", "*.nes", "*.md", "*.z64", "*.cue", "*.chd")
-$RomFiles = Get-ChildItem -Path $RomsPath -Include $Extensions -Recurse -File
+$RomFiles = Get-ChildItem -Path $SD_PATH -Include $Extensions -Recurse -File
 
 foreach ($File in $RomFiles) {
     Write-Host "Hashing: $($File.Name)"
