@@ -53,3 +53,4 @@ jobs:
           path: |
             ports
             EmulationStation
+            tools
