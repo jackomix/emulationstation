@@ -1,4 +1,5 @@
 #include "RetroAchievements.h"
+#include "AchievementCache.h"
 #include "HttpReq.h"
 #include "ApiSystem.h"
 #include "SystemConf.h"
@@ -218,6 +219,80 @@ GameInfoAndUserProgress RetroAchievements::getGameInfoAndUserProgress(int gameId
 	GameInfoAndUserProgress ret;
 	ret.ID = 0;
 
+	bool isOffline = false;
+	bool hasCachedData = AchievementCache::loadGameData(gameId, ret);
+	
+	// If offline or we can't reach the server, use our cache
+	if (hasCachedData) {
+		// Just parse the file we know exists
+		std::string path = "/roms/achievements/games/" + std::to_string(gameId) + ".json";
+		std::string json = Utils::FileSystem::readAllText(path);
+		rapidjson::Document doc;
+		doc.Parse(json.c_str());
+
+		ret.ID = jsonInt(doc, "ID");
+		ret.Title = jsonString(doc, "Title");
+		ret.ConsoleID = jsonInt(doc, "ConsoleID");
+		ret.ForumTopicID = jsonInt(doc, "ForumTopicID");
+		ret.Flags = jsonInt(doc, "Flags");
+		ret.ImageIcon = jsonString(doc, "ImageIcon");
+		ret.ImageTitle = jsonString(doc, "ImageTitle");
+		ret.ImageIngame = jsonString(doc, "ImageIngame");
+		ret.ImageBoxArt = jsonString(doc, "ImageBoxArt");
+		ret.Publisher = jsonString(doc, "Publisher");
+		ret.Developer = jsonString(doc, "Developer");
+		ret.Genre = jsonString(doc, "Genre");
+		ret.Released = jsonString(doc, "Released");
+		ret.ConsoleName = jsonString(doc, "ConsoleName");
+		ret.NumDistinctPlayersCasual = jsonString(doc, "NumDistinctPlayersCasual");
+		ret.NumDistinctPlayersHardcore = jsonString(doc, "NumDistinctPlayersHardcore");
+		ret.NumAchievements = jsonInt(doc, "NumAchievements");
+		ret.NumAwardedToUser = jsonInt(doc, "NumAwardedToUser");
+		ret.NumAwardedToUserHardcore = jsonInt(doc, "NumAwardedToUserHardcore");
+		ret.UserCompletion = jsonString(doc, "UserCompletion");
+		ret.UserCompletionHardcore = jsonString(doc, "UserCompletionHardcore");
+
+		if (doc.HasMember("Achievements"))
+		{
+			const rapidjson::Value& ra = doc["Achievements"];
+			for (auto achivId = ra.MemberBegin(); achivId != ra.MemberEnd(); ++achivId)
+			{
+				auto& recent = achivId->value;
+
+				Achievement item;
+				item.ID = jsonString(recent, "ID");
+				item.NumAwarded = jsonString(recent, "NumAwarded");
+				item.NumAwardedHardcore = jsonString(recent, "NumAwardedHardcore");
+				item.Title = jsonString(recent, "Title");
+				item.Description = jsonString(recent, "Description");
+				item.Points = jsonString(recent, "Points");
+				item.TrueRatio = jsonString(recent, "TrueRatio");
+				item.Author = jsonString(recent, "Author");
+				item.DateModified = jsonString(recent, "DateModified");
+				item.DateCreated = jsonString(recent, "DateCreated");
+				item.BadgeName = jsonString(recent, "BadgeName");
+				item.DisplayOrder = jsonInt(recent, "DisplayOrder");
+				item.DateEarned = jsonString(recent, "DateEarned");
+				item.DateEarnedHardcore = jsonString(recent, "DateEarnedHardcore");
+				
+				ret.Achievements.push_back(item);
+			}
+			
+			std::sort(ret.Achievements.begin(), ret.Achievements.end(), [](const Achievement& a, const Achievement& b)
+			{
+				return a.DisplayOrder < b.DisplayOrder;
+			});
+		}
+		
+		// Overlay local user progress over the global definitions
+		AchievementCache::loadUserProgress(gameId, ret);
+		
+		// Skip hitting the API since we have the data, unless we explicitly want to refresh.
+		// For Phase 1 we will just return the cached data to avoid slow boot times and 
+		// allow offline play to work immediately.
+		return ret;
+	}
+
 #ifndef CHEEVOS_DEV_LOGIN
 	return ret;
 #endif
@@ -230,6 +305,9 @@ GameInfoAndUserProgress RetroAchievements::getGameInfoAndUserProgress(int gameId
 		doc.Parse(httpreq.getContent().c_str());
 		if (doc.HasParseError())
 			return ret;
+			
+		// Save to cache for next time
+		AchievementCache::saveGameData(gameId, httpreq.getContent());
 
 		ret.ID = jsonInt(doc, "ID");
 		ret.Title = jsonString(doc, "Title");
@@ -298,6 +376,10 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 
 	std::string count = std::to_string(gameCount);
 
+	if (AchievementCache::loadUserSummary(ret)) {
+		return ret;
+	}
+
 	auto options = getHttpOptions();
 	HttpReq httpreq(getApiUrl("API_GetUserSummary", "u="+ HttpReq::urlEncode(usrName) +"&g="+ count +"&a="+ count), &options);
 	if (httpreq.wait())
@@ -309,6 +391,8 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 			ret.Status = _("INVALID CONTENT");
 			return ret;
 		}
+
+		AchievementCache::saveUserSummary(httpreq.getContent());
 
 		ret.Username = usrName;
 		ret.RecentlyPlayedCount = jsonInt(doc, "RecentlyPlayedCount");
