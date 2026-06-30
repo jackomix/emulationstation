@@ -29,8 +29,20 @@ if [ ! -f "RAHasher" ]; then
         echo "macOS detected. Downloading and compiling RAHasher from source..."
         git clone --recursive --depth 1 https://github.com/LeXofLeviafan/RAHasher.git rahasher_src
         cd rahasher_src
-        make -f Makefile.RAHasher
-        cp bin/RAHasher ../
+        
+        # Determine correct architecture (Mac uses 'arm64' instead of 'aarch64' expected by Makefile)
+        MAC_ARCH=$(uname -m)
+        if [ "$MAC_ARCH" = "arm64" ]; then
+            MAKE_ARCH="arm64"
+        else
+            MAKE_ARCH="x64"
+        fi
+        
+        # Compile without static libgcc (unsupported on macOS clang)
+        make -f Makefile.RAHasher ARCH=$MAKE_ARCH LDFLAGS=""
+        
+        # 64-bit outputs to bin64 instead of bin
+        cp bin64/RAHasher ../
         cd ..
         rm -rf rahasher_src
         echo "RAHasher compiled successfully!"
