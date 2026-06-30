@@ -5,16 +5,34 @@ Write-Host "========================================="
 Write-Host " RetroAchievements Offline PC Scraper    "
 Write-Host "========================================="
 Write-Host ""
-Write-Host "This script downloads achievement data to your SD card so you can"
-Write-Host "play offline on your R36S without a Wi-Fi adapter."
-Write-Host ""
+
+# 1. Download RAHasher if it doesn't exist
+$HasherPath = Join-Path -Path $PSScriptRoot -ChildPath "RAHasher.exe"
+
+if (-not (Test-Path -Path $HasherPath)) {
+    Write-Host "RAHasher.exe not found. Downloading..."
+    $ZipPath = Join-Path -Path $PSScriptRoot -ChildPath "rahasher.zip"
+    $Url = "https://github.com/LeXofLeviafan/RAHasher/releases/download/1.8.3/RAHasher-x64-Windows-1.8.3.zip"
+    
+    try {
+        Invoke-WebRequest -Uri $Url -OutFile $ZipPath
+        Expand-Archive -Path $ZipPath -DestinationPath $PSScriptRoot -Force
+        Remove-Item -Path $ZipPath
+        Write-Host "RAHasher downloaded successfully."
+    } catch {
+        Write-Error "Failed to download RAHasher automatically. Please download it from https://github.com/LeXofLeviafan/RAHasher/releases and place RAHasher.exe in this folder."
+        exit
+    }
+}
 
 $RA_USER = Read-Host "Enter your RetroAchievements Username"
 $RA_API_KEY = Read-Host "Enter your Web API Key (from retroachievements.org/settings)"
 $SD_PATH = Read-Host "Enter the path to your SD card's ROM partition (e.g. E:\)"
 
-if (-not (Test-Path -Path $SD_PATH)) {
-    Write-Error "SD card path not found at $SD_PATH"
+$RomsPath = Join-Path -Path $SD_PATH -ChildPath "roms"
+
+if (-not (Test-Path -Path $RomsPath)) {
+    Write-Error "ROM directory not found at $RomsPath"
     exit
 }
 
@@ -23,24 +41,49 @@ New-Item -ItemType Directory -Force -Path (Join-Path -Path $DEST_DIR -ChildPath 
 New-Item -ItemType Directory -Force -Path (Join-Path -Path $DEST_DIR -ChildPath "badges") | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path -Path $DEST_DIR -ChildPath "progress") | Out-Null
 
-Write-Host "Setup complete. Ready to scrape games on $SD_PATH"
-Write-Host "Note: Full ROM hashing is complex. This script is a stub for Phase 0."
-Write-Host "In a complete implementation, this would scan $SD_PATH\roms,"
-Write-Host "hash each file, and call the RA API."
+Write-Host "Setup complete. Scanning ROMs..."
 
-# Example hardcoded fetch for game ID 1234
-$GAME_ID = 1234
-Write-Host "Fetching sample game $GAME_ID..."
-$URL = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GAME_ID"
+# 2. Iterate over systems and ROMs
+$Extensions = @("*.gba", "*.zip", "*.sfc", "*.nes", "*.md", "*.z64", "*.cue", "*.chd")
+$RomFiles = Get-ChildItem -Path $RomsPath -Include $Extensions -Recurse -File
 
-try {
-    $JSON_OUT = Invoke-RestMethod -Uri $URL
-    $JsonString = $JSON_OUT | ConvertTo-Json -Depth 10
-    $OutFile = Join-Path -Path $DEST_DIR -ChildPath "games\$GAME_ID.json"
-    Set-Content -Path $OutFile -Value $JsonString
-    Write-Host "Saved $GAME_ID.json"
-} catch {
-    Write-Host "Failed to fetch data. Check your API key."
+foreach ($File in $RomFiles) {
+    Write-Host "Hashing: $($File.Name)"
+    
+    # Run RAHasher to get the hash
+    $HashOutput = & $HasherPath $File.FullName
+    $HashLine = $HashOutput | Where-Object { $_ -match "^Hash:\s+(.+)" }
+    
+    if ($HashLine) {
+        $Hash = $matches[1]
+        
+        # Call API to get Game ID from hash
+        $IdUrl = "https://retroachievements.org/API/API_GetGameID.php?z=$RA_USER&y=$RA_API_KEY&i=$Hash"
+        
+        try {
+            $IdJson = Invoke-RestMethod -Uri $IdUrl
+            $GameId = $IdJson.GameID
+            
+            if ($GameId -and $GameId -ne 0) {
+                Write-Host "Found Game ID: $GameId. Fetching achievements..."
+                
+                $DataUrl = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GameId"
+                $DataJson = Invoke-RestMethod -Uri $DataUrl
+                
+                $JsonString = $DataJson | ConvertTo-Json -Depth 10
+                $OutFile = Join-Path -Path $DEST_DIR -ChildPath "games\$GameId.json"
+                Set-Content -Path $OutFile -Value $JsonString
+                Write-Host "Saved data for Game $GameId."
+            } else {
+                Write-Host "No RetroAchievements match for this ROM hash."
+            }
+        } catch {
+            Write-Host "Failed to lookup hash or fetch data from RA API."
+        }
+    } else {
+        Write-Host "Failed to hash file."
+    }
+    Write-Host "---------------------------------"
 }
 
-Write-Host "Scrape complete."
+Write-Host "Scraping complete!"
