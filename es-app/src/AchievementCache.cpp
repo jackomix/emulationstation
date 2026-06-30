@@ -14,7 +14,7 @@ std::string AchievementCache::getGlobalAchievementsPath()
 std::string AchievementCache::getUserProgressPath()
 {
 	if (ProfileManager::getInstance()->isProfilesEnabled()) {
-		return ProfileManager::getInstance()->getProfileDataPath() + "/achievements/progress";
+		return ProfileManager::getInstance()->getProfileDataPath() + "/achievements";
 	}
 	return getGlobalAchievementsPath() + "/progress";
 }

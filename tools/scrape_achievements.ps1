@@ -39,7 +39,6 @@ if (-not (Test-Path -Path (Join-Path $SD_PATH "gba")) -and -not (Test-Path -Path
 $DEST_DIR = Join-Path -Path $SD_PATH -ChildPath "achievements"
 New-Item -ItemType Directory -Force -Path (Join-Path -Path $DEST_DIR -ChildPath "games") | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path -Path $DEST_DIR -ChildPath "badges") | Out-Null
-New-Item -ItemType Directory -Force -Path (Join-Path -Path $DEST_DIR -ChildPath "progress") | Out-Null
 
 Write-Host "Setup complete. Scanning ROMs..."
 
@@ -147,6 +146,21 @@ foreach ($File in $RomFiles) {
                     Set-Content -Path $OutFile -Value $JsonString
                     Write-Host "  -> Saved data for Game $GameId."
                     $CountSaved++
+                    
+                    # Parse badges and download them
+                    if ($DataJson.Achievements -and $DataJson.Achievements.PSObject.Properties) {
+                        foreach ($Prop in $DataJson.Achievements.PSObject.Properties) {
+                            $BadgeName = $Prop.Value.BadgeName
+                            if ($BadgeName) {
+                                $BadgeFile = Join-Path -Path $DEST_DIR -ChildPath "badges\$BadgeName.png"
+                                if (-not (Test-Path -Path $BadgeFile)) {
+                                    try {
+                                        Invoke-WebRequest -Uri "https://media.retroachievements.org/Badge/$BadgeName.png" -OutFile $BadgeFile -ErrorAction SilentlyContinue
+                                    } catch {}
+                                }
+                            }
+                        }
+                    }
                     
                     Start-Sleep -Milliseconds 200
                 }

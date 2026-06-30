@@ -67,7 +67,6 @@ fi
 DEST_DIR="$SD_PATH/achievements"
 mkdir -p "$DEST_DIR/games"
 mkdir -p "$DEST_DIR/badges"
-mkdir -p "$DEST_DIR/progress"
 
 echo "Setup complete. Scanning ROMs..."
 
@@ -175,6 +174,14 @@ while IFS= read -r ROM_FILE; do
                         echo "$JSON_OUT" > "$DEST_DIR/games/${GAME_ID}.json"
                         echo "  -> Saved data for Game $GAME_ID."
                         ((COUNT_SAVED++))
+                        
+                        # Parse badges and download them
+                        BADGES=$(echo "$JSON_OUT" | grep -o '"BadgeName":"[^"]*"' | cut -d'"' -f4 | sort -u)
+                        for badge in $BADGES; do
+                            if [ ! -f "$DEST_DIR/badges/${badge}.png" ]; then
+                                curl -sL "https://media.retroachievements.org/Badge/${badge}.png" -o "$DEST_DIR/badges/${badge}.png"
+                            fi
+                        done
                     else
                         echo "  -> Error: Failed to fetch data for Game ID $GAME_ID."
                     fi
