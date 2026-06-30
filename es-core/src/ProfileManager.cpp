@@ -183,7 +183,6 @@ bool ProfileManager::createProfile(const std::string& name, const std::string& a
 	// Auto-enable if it's the first profile
 	if (mProfiles.size() == 1) {
 		mActiveProfileName = cleanName;
-		mProfilesEnabled = true;
 		Paths::recalculateProfilePaths();
 		Settings::getInstance()->loadFile();
 	}
@@ -212,8 +211,8 @@ bool ProfileManager::deleteProfile(const std::string& name)
 				if (!mProfiles.empty()) {
 					mActiveProfileName = mProfiles[0].name;
 				} else {
-					mActiveProfileName = "";
-					mProfilesEnabled = false;
+					createProfile("Player 1");
+					mActiveProfileName = "Player 1";
 				}
 				Paths::recalculateProfilePaths();
 				Settings::getInstance()->loadFile();
