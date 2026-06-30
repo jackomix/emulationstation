@@ -124,10 +124,10 @@ foreach ($File in $RomFiles) {
     }
     
     if ($Hash -and $Hash.Length -eq 32) {
-        $IdUrl = "https://retroachievements.org/API/API_GetGameID.php?z=$RA_USER&y=$RA_API_KEY&i=$Hash"
+        $IdUrl = "https://retroachievements.org/dorequest.php?r=gameid&m=$Hash"
         
         try {
-            $IdJson = Invoke-RestMethod -Uri $IdUrl
+            $IdJson = Invoke-RestMethod -Uri $IdUrl -UserAgent "RetroArch"
             $GameId = $IdJson.GameID
             
             if ($GameId -and $GameId -ne 0) {
@@ -140,7 +140,7 @@ foreach ($File in $RomFiles) {
                 } else {
                     Write-Host "  -> Found Game ID: $GameId. Fetching achievements..."
                     
-                    $DataUrl = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GameId"
+                    $DataUrl = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GameId&u=$RA_USER"
                     $DataJson = Invoke-RestMethod -Uri $DataUrl
                     
                     $JsonString = $DataJson | ConvertTo-Json -Depth 10

@@ -152,7 +152,7 @@ while IFS= read -r ROM_FILE; do
     
     if [ -n "$HASH" ] && [ ${#HASH} -eq 32 ]; then # Valid MD5 length
         # Use RA API to get Game ID from hash
-        GAME_ID_JSON=$(curl -s "https://retroachievements.org/API/API_GetGameID.php?z=${RA_USER}&y=${RA_API_KEY}&i=${HASH}")
+        GAME_ID_JSON=$(curl -s -A "RetroArch" "https://retroachievements.org/dorequest.php?r=gameid&m=${HASH}")
         
         # Check if the API returned a valid Game ID
         if [[ "$GAME_ID_JSON" =~ \"GameID\":([0-9]+) ]]; then
@@ -169,7 +169,7 @@ while IFS= read -r ROM_FILE; do
                     echo "  -> Found Game ID: $GAME_ID. Fetching achievements..."
                     
                     # Fetch full game data
-                    JSON_OUT=$(curl -s "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=${RA_USER}&y=${RA_API_KEY}&g=${GAME_ID}")
+                    JSON_OUT=$(curl -s "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=${RA_USER}&y=${RA_API_KEY}&g=${GAME_ID}&u=${RA_USER}")
                     
                     if [ -n "$JSON_OUT" ] && [[ "$JSON_OUT" == *"{"* ]]; then
                         echo "$JSON_OUT" > "$DEST_DIR/games/${GAME_ID}.json"
