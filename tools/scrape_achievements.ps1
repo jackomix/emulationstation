@@ -6,6 +6,9 @@ Write-Host " RetroAchievements Offline PC Scraper    "
 Write-Host "========================================="
 Write-Host ""
 
+$SCRIPT_DIR = Split-Path -Path $PSScriptRoot -Parent
+$SD_PATH = $SCRIPT_DIR
+
 # 1. Download RAHasher if it doesn't exist
 $HasherPath = Join-Path -Path $PSScriptRoot -ChildPath "RAHasher.exe"
 
@@ -28,9 +31,6 @@ if (-not (Test-Path -Path $HasherPath)) {
 $RA_USER = Read-Host "Enter your RetroAchievements Username"
 $RA_API_KEY = Read-Host "Enter your Web API Key (from retroachievements.org/settings)"
 
-# Assume the script is inside EASYROMS/tools/
-$SD_PATH = Split-Path -Path $PSScriptRoot -Parent
-
 if (-not (Test-Path -Path (Join-Path $SD_PATH "gba")) -and -not (Test-Path -Path (Join-Path $SD_PATH "snes")) -and -not (Test-Path -Path (Join-Path $SD_PATH "achievements"))) {
     Write-Host "Warning: It looks like this script isn't located on your SD card."
     Write-Host "Please copy the 'tools' folder to the root of your EASYROMS partition and run it from there."
@@ -43,21 +43,87 @@ New-Item -ItemType Directory -Force -Path (Join-Path -Path $DEST_DIR -ChildPath 
 
 Write-Host "Setup complete. Scanning ROMs..."
 
+function Get-SystemKey {
+    param([string]$FolderName)
+    switch -Regex ($FolderName.ToLower()) {
+        "^(nes|famicom)$" { return "NES" }
+        "^(snes|sfc)$" { return "SNES" }
+        "^gba$" { return "GBA" }
+        "^gb$" { return "GB" }
+        "^gbc$" { return "GBC" }
+        "^n64$" { return "N64" }
+        "^nds$" { return "DS" }
+        "^(genesis|megadrive)$" { return "MD" }
+        "^mastersystem$" { return "SMS" }
+        "^gamegear$" { return "GG" }
+        "^atari2600$" { return "2600" }
+        "^atari7800$" { return "7800" }
+        "^atarilynx$" { return "Lynx" }
+        "^psx$" { return "PS1" }
+        "^psp$" { return "PSP" }
+        "^dreamcast$" { return "DC" }
+        "^saturn$" { return "SAT" }
+        "^segacd$" { return "SCD" }
+        "^sega32x$" { return "32X" }
+        "^pcengine$" { return "PCE" }
+        "^pcenginecd$" { return "PCCD" }
+        "^(neogeo|arcade|mame|mame2003)$" { return "ARC" }
+        "^neogeocd$" { return "NGCD" }
+        "^(ngp|ngpc)$" { return "NGP" }
+        "^fds$" { return "FDS" }
+        "^virtualboy$" { return "VB" }
+        "^(wonderswan|wonderswancolor)$" { return "WSWAN" }
+        "^coleco$" { return "CV" }
+        "^pokemonmini$" { return "MINI" }
+        "^sg-1000$" { return "SG1K" }
+        "^3do$" { return "3DO" }
+        "^gameandwatch$" { return "G&W" }
+        "^pico$" { return "Pico" }
+        "^supergrafx$" { return "SGFX" }
+        "^vectrex$" { return "VEC" }
+        "^intellivision$" { return "INTV" }
+        default { return "UNKNOWN" }
+    }
+}
+
 # 2. Iterate over systems and ROMs
+Write-Host "Counting files..."
 $Extensions = @("*.gba", "*.zip", "*.sfc", "*.nes", "*.md", "*.z64", "*.cue", "*.chd")
-$RomFiles = Get-ChildItem -Path $SD_PATH -Include $Extensions -Recurse -File | Where-Object { $_.Name -notmatch "^._" -and $_.Name -notmatch "^readme\.md$" }
+$RomFiles = Get-ChildItem -Path $SD_PATH -Include $Extensions -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "^._" -and $_.Name -notmatch "^readme\.md$" }
+
+$TotalRoms = $RomFiles.Count
+Write-Host "Found $TotalRoms ROMs to process."
+
+$CountProcessed = 0
+$CountMatched = 0
+$CountSaved = 0
+$CountNoMatch = 0
+$CountFailed = 0
+$CountSkipped = 0
 
 foreach ($File in $RomFiles) {
-    Write-Host "Hashing: $($File.Name)"
+    $CountProcessed++
+    $ParentDir = $File.Directory.Name
+    $SysKey = Get-SystemKey -FolderName $ParentDir
     
-    # Run RAHasher to get the hash
-    $HashOutput = & $HasherPath $File.FullName
-    $HashLine = $HashOutput | Where-Object { $_ -match "^Hash:\s+(.+)" }
+    Write-Host "[$CountProcessed/$TotalRoms] Hashing: $($File.Name)"
     
-    if ($HashLine) {
-        $Hash = $matches[1]
-        
-        # Call API to get Game ID from hash
+    if ($SysKey -eq "UNKNOWN") {
+        Write-Host "  -> Skipping: Unknown system folder '$ParentDir'"
+        $CountSkipped++
+        continue
+    }
+    
+    # Run RAHasher
+    $HashOutput = & $HasherPath $SysKey $File.FullName 2>$null
+    
+    if ($HashOutput -is [array]) {
+        $Hash = $HashOutput[-1].Trim()
+    } else {
+        $Hash = $HashOutput.Trim()
+    }
+    
+    if ($Hash -and $Hash.Length -eq 32) {
         $IdUrl = "https://retroachievements.org/API/API_GetGameID.php?z=$RA_USER&y=$RA_API_KEY&i=$Hash"
         
         try {
@@ -65,25 +131,46 @@ foreach ($File in $RomFiles) {
             $GameId = $IdJson.GameID
             
             if ($GameId -and $GameId -ne 0) {
-                Write-Host "Found Game ID: $GameId. Fetching achievements..."
+                $CountMatched++
                 
-                $DataUrl = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GameId"
-                $DataJson = Invoke-RestMethod -Uri $DataUrl
-                
-                $JsonString = $DataJson | ConvertTo-Json -Depth 10
                 $OutFile = Join-Path -Path $DEST_DIR -ChildPath "games\$GameId.json"
-                Set-Content -Path $OutFile -Value $JsonString
-                Write-Host "Saved data for Game $GameId."
+                if (Test-Path -Path $OutFile) {
+                    Write-Host "  -> Found Game ID: $GameId (Already cached, skipping)"
+                    $CountSaved++
+                } else {
+                    Write-Host "  -> Found Game ID: $GameId. Fetching achievements..."
+                    
+                    $DataUrl = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GameId"
+                    $DataJson = Invoke-RestMethod -Uri $DataUrl
+                    
+                    $JsonString = $DataJson | ConvertTo-Json -Depth 10
+                    Set-Content -Path $OutFile -Value $JsonString
+                    Write-Host "  -> Saved data for Game $GameId."
+                    $CountSaved++
+                    
+                    Start-Sleep -Milliseconds 200
+                }
             } else {
-                Write-Host "No RetroAchievements match for this ROM hash."
+                Write-Host "  -> No RetroAchievements match for this ROM."
+                $CountNoMatch++
             }
         } catch {
-            Write-Host "Failed to lookup hash or fetch data from RA API."
+            Write-Host "  -> Error: Failed to lookup hash or fetch data from RA API."
+            $CountNoMatch++
         }
     } else {
-        Write-Host "Failed to hash file."
+        Write-Host "  -> Error: Failed to hash file or unsupported format."
+        $CountFailed++
     }
-    Write-Host "---------------------------------"
 }
 
-Write-Host "Scraping complete!"
+Write-Host ""
+Write-Host "=========================================="
+Write-Host " Scraping Complete!"
+Write-Host " ROMs scanned:  $CountProcessed"
+Write-Host " Matched on RA: $CountMatched"
+Write-Host " Saved to SD:   $CountSaved"
+Write-Host " No match:      $CountNoMatch"
+Write-Host " Hash failed:   $CountFailed"
+Write-Host " Skipped (dir): $CountSkipped"
+Write-Host "=========================================="
