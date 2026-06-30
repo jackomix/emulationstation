@@ -18,9 +18,18 @@ if [ ! -f "RAHasher" ]; then
         chmod +x RAHasher
         rm rahasher.zip
         echo "RAHasher downloaded successfully."
+    elif [ "$OS_NAME" = "Darwin" ]; then
+        echo "macOS detected. Downloading and compiling RAHasher from source..."
+        git clone --recursive --depth 1 https://github.com/LeXofLeviafan/RAHasher.git rahasher_src
+        cd rahasher_src
+        make -f Makefile.RAHasher
+        cp bin/RAHasher ../
+        cd ..
+        rm -rf rahasher_src
+        echo "RAHasher compiled successfully!"
     else
         echo "Error: Pre-compiled RAHasher is only available for Linux and Windows."
-        echo "Please compile RAHasher for macOS manually and place the 'RAHasher' executable in this folder."
+        echo "Please compile RAHasher for your OS manually and place the 'RAHasher' executable in this folder."
         exit 1
     fi
 fi
