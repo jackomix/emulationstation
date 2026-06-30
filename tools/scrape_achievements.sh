@@ -2,6 +2,13 @@
 # RetroAchievements Offline Scraper for Linux / macOS
 # Fetches game achievement data so EmulationStation can use it offline on the R36S.
 
+# Set our working directory to the location of this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# Assume the script is inside EASYROMS/tools/
+SD_PATH="$SCRIPT_DIR/.."
+
 echo "========================================="
 echo " RetroAchievements Offline PC Scraper    "
 echo "========================================="
@@ -37,10 +44,6 @@ fi
 read -p "Enter your RetroAchievements Username: " RA_USER
 read -p "Enter your Web API Key (from retroachievements.org/settings): " RA_API_KEY
 
-# Assume the script is inside EASYROMS/tools/
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SD_PATH="$SCRIPT_DIR/.."
-
 if [ ! -d "$SD_PATH/gba" ] && [ ! -d "$SD_PATH/snes" ] && [ ! -d "$SD_PATH/achievements" ]; then
     echo "Warning: It looks like this script isn't located on your SD card."
     echo "Please copy the 'tools' folder to the root of your EASYROMS partition and run it from there."
@@ -53,27 +56,18 @@ mkdir -p "$DEST_DIR/progress"
 
 echo "Setup complete. Scanning ROMs..."
 
-# 2. Iterate over systems and ROMs
-find "$SD_PATH" -type f \( -iname \*.gba -o -iname \*.zip -o -iname \*.sfc -o -iname \*.nes -o -iname \*.md -o -iname \*.z64 -o -iname \*.cue -o -iname \*.chd \) | while read ROM_FILE; do
+# 2. Iterate over systems and ROMs (ignoring macOS ._ files and README.md files)
+find "$SD_PATH" -type f \( -iname \*.gba -o -iname \*.zip -o -iname \*.sfc -o -iname \*.nes -o -iname \*.md -o -iname \*.z64 -o -iname \*.cue -o -iname \*.chd \) \
+    ! -name "._*" ! -iname "readme.md" | while read ROM_FILE; do
     echo "Hashing: $(basename "$ROM_FILE")"
     
     # Run RAHasher to get the hash
-    HASH_OUTPUT=$(./RAHasher "$ROM_FILE")
-    # RAHasher output looks like:
-    # File: /path/to/game.gba
-    # Hash: 1234567890abcdef1234567890abcdef
+    HASH_OUTPUT=$(./RAHasher "$ROM_FILE" 2>/dev/null)
     
     HASH=$(echo "$HASH_OUTPUT" | grep "^Hash:" | awk '{print $2}')
     
     if [ -n "$HASH" ]; then
         # Use RA API to get Game ID from hash
-        # Wait, the official API endpoint to get Game ID from hash requires developer permissions if using Web API,
-        # but the Web API v1 supports fetching game info directly by hash!
-        
-        # We can try fetching the game data by hash via the Web API directly.
-        # But wait, the standard API requires game ID. 
-        # Actually, let's use the API_GetGameInfoAndUserProgress endpoint which might accept hash.
-        # Ah, no, the Web API to get GameID from Hash is API_GetGameID.php?i=<hash>
         GAME_ID_JSON=$(curl -s "https://retroachievements.org/API/API_GetGameID.php?z=${RA_USER}&y=${RA_API_KEY}&i=${HASH}")
         
         # Check if the API returned a valid Game ID

@@ -45,7 +45,7 @@ Write-Host "Setup complete. Scanning ROMs..."
 
 # 2. Iterate over systems and ROMs
 $Extensions = @("*.gba", "*.zip", "*.sfc", "*.nes", "*.md", "*.z64", "*.cue", "*.chd")
-$RomFiles = Get-ChildItem -Path $SD_PATH -Include $Extensions -Recurse -File
+$RomFiles = Get-ChildItem -Path $SD_PATH -Include $Extensions -Recurse -File | Where-Object { $_.Name -notmatch "^._" -and $_.Name -notmatch "^readme\.md$" }
 
 foreach ($File in $RomFiles) {
     Write-Host "Hashing: $($File.Name)"
