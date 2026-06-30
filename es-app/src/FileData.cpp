@@ -753,6 +753,18 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	if (command.empty())
 		return false;
 
+	if (ProfileManager::getInstance()->isProfilesEnabled()) {
+		size_t pos = command.find("retroarch ");
+		if (pos != std::string::npos) {
+			command.insert(pos + 10, "--appendconfig /tmp/es_profile.cfg ");
+		} else {
+			pos = command.find("retroarch32 ");
+			if (pos != std::string::npos) {
+				command.insert(pos + 12, "--appendconfig /tmp/es_profile.cfg ");
+			}
+		}
+	}
+
 	AudioManager::getInstance()->deinit();
 	VolumeControl::getInstance()->deinit();
 
