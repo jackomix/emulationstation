@@ -796,6 +796,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			f << "screenshot_directory = \"" << base << "/screenshots\"\n";
 			f << "savefiles_in_content_dir = \"false\"\n";
 			f << "savestates_in_content_dir = \"false\"\n";
+			f << "config_save_on_exit = \"false\"\n";
 			f.close();
 		}
 	}
