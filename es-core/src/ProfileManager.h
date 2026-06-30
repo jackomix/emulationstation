@@ -37,7 +37,6 @@ private:
 
 	std::vector<Profile> mProfiles;
 	std::string mActiveProfileName;
-	bool mProfilesEnabled;
 
 	void createProfileDirectoryStructure(const std::string& name);
 };

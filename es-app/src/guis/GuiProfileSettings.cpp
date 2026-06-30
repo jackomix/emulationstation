@@ -28,39 +28,10 @@ void GuiProfileSettings::refreshMenu()
 	auto pm = ProfileManager::getInstance();
 
 	// Switch profile entry
-	if (pm->isProfilesEnabled())
-	{
-		std::string activeName = pm->getActiveProfileName();
-		addEntry(_("ACTIVE PROFILE: ") + activeName, true, [this]() {
-			switchProfile();
-		});
-	}
-
-	// Enable profiles switch
-	auto enableProfiles = std::make_shared<SwitchComponent>(mWindow);
-	enableProfiles->setState(pm->isProfilesEnabled());
-	addSaveFunc([this, enableProfiles]() {
-		bool wasEnabled = ProfileManager::getInstance()->isProfilesEnabled();
-		bool nowEnabled = enableProfiles->getState();
-		if (wasEnabled != nowEnabled)
-		{
-			ProfileManager::getInstance()->setProfilesEnabled(nowEnabled);
-			Paths::recalculateProfilePaths();
-
-			// If enabled and no profiles, trigger creation
-			if (nowEnabled && ProfileManager::getInstance()->getProfiles().empty())
-			{
-				createProfile();
-			}
-			else
-			{
-				mWindow->postToUiThread([this]() {
-					refreshMenu();
-				});
-			}
-		}
+	std::string activeName = pm->getActiveProfileName();
+	addEntry(_("ACTIVE PROFILE: ") + activeName, true, [this]() {
+		switchProfile();
 	});
-	addWithLabel(_("ENABLE MULTI-USER PROFILES"), enableProfiles);
 
 	// Profile management entries
 	addEntry(_("CREATE NEW PROFILE"), true, [this]() {

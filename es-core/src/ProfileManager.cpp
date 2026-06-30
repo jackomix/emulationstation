@@ -17,7 +17,7 @@ ProfileManager* ProfileManager::getInstance()
 	return sInstance;
 }
 
-ProfileManager::ProfileManager() : mProfilesEnabled(false), mActiveProfileName("")
+ProfileManager::ProfileManager() : mActiveProfileName("")
 {
 	loadProfiles();
 }
@@ -32,13 +32,12 @@ std::string ProfileManager::getProfilesRoot()
 
 bool ProfileManager::isProfilesEnabled()
 {
-	return mProfilesEnabled;
+	return true;
 }
 
 void ProfileManager::setProfilesEnabled(bool enabled)
 {
-	mProfilesEnabled = enabled;
-	saveProfiles();
+	// Deprecated, profiles are always enabled
 }
 
 std::vector<Profile> ProfileManager::getProfiles()
@@ -79,8 +78,8 @@ void ProfileManager::loadProfiles()
 	std::string root = getProfilesRoot();
 	std::string path = root + "/profiles.xml";
 	if (!Utils::FileSystem::exists(path)) {
-		mProfilesEnabled = false;
-		mActiveProfileName = "";
+		createProfile("Player 1");
+		mActiveProfileName = "Player 1";
 		return;
 	}
 
@@ -88,19 +87,18 @@ void ProfileManager::loadProfiles()
 	pugi::xml_parse_result result = doc.load_file(WINSTRINGW(path).c_str());
 	if (!result) {
 		LOG(LogError) << "Could not parse profiles.xml file!\n   " << result.description();
-		mProfilesEnabled = false;
-		mActiveProfileName = "";
+		createProfile("Player 1");
+		mActiveProfileName = "Player 1";
 		return;
 	}
 
 	pugi::xml_node rootNode = doc.child("profiles");
 	if (!rootNode) {
-		mProfilesEnabled = false;
-		mActiveProfileName = "";
+		createProfile("Player 1");
+		mActiveProfileName = "Player 1";
 		return;
 	}
 
-	mProfilesEnabled = rootNode.attribute("enabled").as_bool(false);
 	mActiveProfileName = rootNode.attribute("active").as_string("");
 
 	for (pugi::xml_node node = rootNode.child("profile"); node; node = node.next_sibling("profile")) {
@@ -125,10 +123,15 @@ void ProfileManager::loadProfiles()
 			if (!mProfiles.empty()) {
 				mActiveProfileName = mProfiles[0].name;
 			} else {
-				mActiveProfileName = "";
-				mProfilesEnabled = false;
+				createProfile("Player 1");
+				mActiveProfileName = "Player 1";
 			}
 		}
+	} else if (!mProfiles.empty()) {
+		mActiveProfileName = mProfiles[0].name;
+	} else {
+		createProfile("Player 1");
+		mActiveProfileName = "Player 1";
 	}
 }
 
@@ -142,7 +145,7 @@ void ProfileManager::saveProfiles()
 
 	pugi::xml_document doc;
 	pugi::xml_node rootNode = doc.append_child("profiles");
-	rootNode.append_attribute("enabled").set_value(mProfilesEnabled);
+	rootNode.append_attribute("enabled").set_value(true);
 	rootNode.append_attribute("active").set_value(mActiveProfileName.c_str());
 
 	for (const auto& p : mProfiles) {
