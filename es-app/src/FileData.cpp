@@ -287,8 +287,12 @@ const bool FileData::hasCheevos()
 			hashMapLoaded = true;
 		}
 		
-		if (hashMap.find(Utils::String::toUpper(hash)) != hashMap.end())
+		auto it = hashMap.find(Utils::String::toUpper(hash));
+		if (it != hashMap.end())
+		{
+			setMetadata(MetaDataId::CheevosId, it->second);
 			return getSourceFileData()->getSystem()->isCheevosSupported();
+		}
 	}
 
 	return false;

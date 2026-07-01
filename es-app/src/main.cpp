@@ -589,27 +589,6 @@ int main(int argc, char* argv[])
 	{
 		systemConf->set("global.retroachievements", "1");
 		Settings::getInstance()->setString("RetroachievementsOfflineMode", "always_offline");
-
-		std::string userJson = "/roms/achievements/user.json";
-		if (Utils::FileSystem::exists(userJson))
-		{
-			std::string content = Utils::FileSystem::readAllText(userJson);
-			rapidjson::Document doc;
-			doc.Parse(content.c_str());
-			if (!doc.HasParseError() && doc.IsObject())
-			{
-				std::string username = "";
-				if (doc.HasMember("Username") && doc["Username"].IsString())
-					username = doc["Username"].GetString();
-				else if (doc.HasMember("username") && doc["username"].IsString())
-					username = doc["username"].GetString();
-				else if (doc.HasMember("User") && doc["User"].IsString())
-					username = doc["User"].GetString();
-				
-				if (!username.empty())
-					systemConf->set("global.retroachievements.username", username);
-			}
-		}
 		systemConf->set("global.retroachievements.token", "offline_token");
 		systemConf->saveSystemConf();
 		Settings::getInstance()->setBool("CheevosCheckIndexesAtStart", true);

@@ -156,7 +156,7 @@ std::string GameInfoAndUserProgress::getImageUrl(const std::string& image)
 	std::string filename = Utils::FileSystem::getFileName(img);
 	std::string localPath = "/roms/achievements/badges/" + filename;
 	if (Utils::FileSystem::exists(localPath))
-		return "file://" + localPath;
+		return localPath;
 
 	return "http://i.retroachievements.org" + img;
 }
@@ -166,7 +166,7 @@ std::string Achievement::getBadgeUrl()
 	std::string badgeStr = (!DateEarned.empty() || !DateEarnedHardcore.empty()) ? BadgeName + ".png" : BadgeName + "_lock.png";
 	std::string localPath = "/roms/achievements/badges/" + badgeStr;
 	if (Utils::FileSystem::exists(localPath))
-		return "file://" + localPath;
+		return localPath;
 
 	return "http://i.retroachievements.org/Badge/" + badgeStr;
 }
@@ -175,7 +175,7 @@ std::string UserSummary::getBadge()
 {
 	std::string localPath = "/roms/achievements/avatar.png";
 	if (Utils::FileSystem::exists(localPath))
-		return "file://" + localPath;
+		return localPath;
 		
 	return "https://retroachievements.org" + UserPic;
 }

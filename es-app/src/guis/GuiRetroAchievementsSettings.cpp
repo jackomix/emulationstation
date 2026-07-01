@@ -4,6 +4,7 @@
 #include "SystemConf.h"
 #include "ApiSystem.h"
 #include "RetroAchievements.h"
+#include "ProfileManager.h"
 #include "ThemeData.h"
 #include "components/TextComponent.h"
 
@@ -26,7 +27,9 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
 	if (isOffline) {
-		auto usernameComp = std::make_shared<TextComponent>(mWindow, username, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, ALIGN_RIGHT);
+		std::string profileName = ProfileManager::getInstance()->getActiveProfileName();
+		if (profileName.empty()) profileName = "Player";
+		auto usernameComp = std::make_shared<TextComponent>(mWindow, profileName, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, ALIGN_RIGHT);
 		addWithLabel(_("USERNAME"), usernameComp);
 	} else {
 		addWithLabel(_("RETROACHIEVEMENTS"), retroachievements_enabled);
