@@ -83,7 +83,7 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		if (newState && (!retroachievementsEnabled || username != newUsername || password != newPassword || token.empty()))
 		{
 			std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
-			bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED");
+			bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
 			if (isOffline) {
 				SystemConf::getInstance()->set("global.retroachievements.token", "offline_token");
