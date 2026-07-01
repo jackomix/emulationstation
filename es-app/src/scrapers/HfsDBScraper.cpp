@@ -20,7 +20,7 @@
 using namespace PlatformIds;
 using namespace rapidjson;
 
-namespace httplib { namespace detail { extern std::string base64_encode(const std::string &in); } } // see declaration in httplib.h
+#include "services/httplib.h"
 
 const std::map<PlatformId, std::string> hfsdb_platformids
 { 
