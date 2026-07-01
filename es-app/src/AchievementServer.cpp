@@ -51,7 +51,10 @@ void AchievementServer::start()
 			res.set_content("{\"Success\":true}", "application/json");
 		}
 		else if (r == "login") {
-			res.set_content("{\"Success\":true,\"User\":\"offline\",\"Token\":\"offline_token\"}", "application/json");
+			std::string u = req.get_param_value("u");
+			if (u.empty()) u = "offline";
+			std::string jsonStr = "{\"Success\":true,\"User\":\"" + u + "\",\"Token\":\"offline_token\",\"Score\":0,\"SoftcoreScore\":0,\"DisplayName\":\"" + u + "\"}";
+			res.set_content(jsonStr, "application/json");
 		}
 		else if (r == "awardachievement") {
 			std::string a = req.get_param_value("a");

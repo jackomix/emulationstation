@@ -2,6 +2,7 @@
 #include "Paths.h"
 #include "ProfileManager.h"
 #include "utils/FileSystemUtil.h"
+#include "Log.h"
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
@@ -9,12 +10,19 @@
 
 std::string AchievementCache::getGlobalAchievementsPath()
 {
-	return "/roms/achievements";
+	return Paths::getGlobalAchievementsPath();
 }
 
 std::string AchievementCache::getUserProgressPath()
 {
-	return Paths::getAchievementProgressPath();
+	std::string path = Paths::getAchievementProgressPath();
+	std::string userJson = path + "/user.json";
+	if (!Utils::FileSystem::exists(userJson))
+	{
+		Utils::FileSystem::createDirectory(path);
+		Utils::FileSystem::writeAllText(userJson, "{ \"RecentlyPlayedCount\": 0, \"TotalPoints\": \"0\", \"TotalTruePoints\": \"0\", \"Points\": \"0\", \"Rank\": \"0\" }");
+	}
+	return path;
 }
 
 void AchievementCache::init()
@@ -153,9 +161,14 @@ void AchievementCache::saveUserSummary(const std::string& jsonData)
 	Utils::FileSystem::writeAllText(path, jsonData);
 }
 
-std::map<std::string, std::string> AchievementCache::loadHashMap()
+const std::map<std::string, std::string>& AchievementCache::loadHashMap()
 {
-	std::map<std::string, std::string> map;
+	static std::map<std::string, std::string> map;
+	static bool loaded = false;
+
+	if (loaded)
+		return map;
+
 	std::string path = getGlobalAchievementsPath() + "/hashes.json";
 	if (!Utils::FileSystem::exists(path))
 		return map;
@@ -165,12 +178,17 @@ std::map<std::string, std::string> AchievementCache::loadHashMap()
 	doc.Parse(json.c_str());
 
 	if (doc.HasParseError() || !doc.IsObject())
+	{
+		if (doc.HasParseError())
+			LOG(LogError) << "AchievementCache::loadHashMap() parse error!";
 		return map;
+	}
 
 	for (rapidjson::Value::ConstMemberIterator itr = doc.MemberBegin(); itr != doc.MemberEnd(); ++itr)
 	{
 		map[Utils::String::toUpper(itr->name.GetString())] = std::to_string(itr->value.GetInt());
 	}
 
+	loaded = true;
 	return map;
 }
