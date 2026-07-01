@@ -12,9 +12,6 @@ class ProfileManager
 {
 public:
 	static ProfileManager* getInstance();
-
-	bool isProfilesEnabled();
-	void setProfilesEnabled(bool enabled);
 	
 	std::vector<Profile> getProfiles();
 	Profile getActiveProfile();

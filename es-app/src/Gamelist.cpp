@@ -539,10 +539,7 @@ void updateGamelist(SystemData* system)
 	else
 		clearTemporaryGamelistRecovery(system);
 
-	if (ProfileManager::getInstance()->isProfilesEnabled())
-	{
-		updateProfileGamelist(system, dirtyFiles);
-	}
+	updateProfileGamelist(system, dirtyFiles);
 }
 
 void resetGamelistUsageData(SystemData* system)

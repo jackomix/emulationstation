@@ -627,7 +627,7 @@ int main(int argc, char* argv[])
 
 	window.closeSplashScreen();
 
-	if (errorMsg == NULL && ProfileManager::getInstance()->isProfilesEnabled())
+	if (errorMsg == NULL)
 	{
 		window.pushGui(new GuiProfileSelect(&window, nullptr));
 	}

@@ -72,6 +72,12 @@ public:
 	static void recalculateProfilePaths();
 	static std::string getGamelistOverridePath();
 
+	static std::string& getProfileSavesPath() { return getInstance()->mProfileSavesPath; }
+	static std::string& getProfileSaveStatesPath() { return getInstance()->mProfileSaveStatesPath; }
+	static std::string& getProfileScreenshotsPath() { return getInstance()->mProfileScreenshotsPath; }
+	static std::string& getProfileSettingsPath() { return getInstance()->mProfileSettingsPath; }
+	static std::string& getAchievementProgressPath() { return getInstance()->mAchievementProgressPath; }
+
 private:
 	static Paths* getInstance() 
 	{
@@ -112,4 +118,10 @@ private:
 	std::string mUserManualPath;
 	std::string mVersionInfoPath;
 	std::string mKodiPath;	
+
+	std::string mProfileSavesPath;
+	std::string mProfileSaveStatesPath;
+	std::string mProfileScreenshotsPath;
+	std::string mProfileSettingsPath;
+	std::string mAchievementProgressPath;
 };

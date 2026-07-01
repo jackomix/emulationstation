@@ -30,16 +30,6 @@ std::string ProfileManager::getProfilesRoot()
 	return Paths::getUserEmulationStationPath() + "/profiles";
 }
 
-bool ProfileManager::isProfilesEnabled()
-{
-	return true;
-}
-
-void ProfileManager::setProfilesEnabled(bool enabled)
-{
-	// Deprecated, profiles are always enabled
-}
-
 std::vector<Profile> ProfileManager::getProfiles()
 {
 	return mProfiles;
@@ -145,7 +135,6 @@ void ProfileManager::saveProfiles()
 
 	pugi::xml_document doc;
 	pugi::xml_node rootNode = doc.append_child("profiles");
-	rootNode.append_attribute("enabled").set_value(true);
 	rootNode.append_attribute("active").set_value(mActiveProfileName.c_str());
 
 	for (const auto& p : mProfiles) {

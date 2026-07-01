@@ -753,15 +753,13 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	if (command.empty())
 		return false;
 
-	if (ProfileManager::getInstance()->isProfilesEnabled()) {
-		size_t pos = command.find("retroarch ");
+	size_t pos = command.find("retroarch ");
+	if (pos != std::string::npos) {
+		command.insert(pos + 10, "--appendconfig /tmp/es_profile.cfg ");
+	} else {
+		pos = command.find("retroarch32 ");
 		if (pos != std::string::npos) {
-			command.insert(pos + 10, "--appendconfig /tmp/es_profile.cfg ");
-		} else {
-			pos = command.find("retroarch32 ");
-			if (pos != std::string::npos) {
-				command.insert(pos + 12, "--appendconfig /tmp/es_profile.cfg ");
-			}
+			command.insert(pos + 12, "--appendconfig /tmp/es_profile.cfg ");
 		}
 	}
 
@@ -787,25 +785,20 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	ProcessStartInfo process(command);
 	process.window = hideWindow ? NULL : window;
 	
-	if (ProfileManager::getInstance()->isProfilesEnabled()) {
-		std::string base = ProfileManager::getInstance()->getProfileDataPath();
-		std::ofstream f("/tmp/es_profile.cfg");
-		if (f.is_open()) {
-			f << "savefile_directory = \"" << base << "/saves\"\n";
-			f << "savestate_directory = \"" << base << "/savestates\"\n";
-			f << "screenshot_directory = \"" << base << "/screenshots\"\n";
-			f << "savefiles_in_content_dir = \"false\"\n";
-			f << "savestates_in_content_dir = \"false\"\n";
-			f << "config_save_on_exit = \"false\"\n";
-			f.close();
-		}
+	std::ofstream f("/tmp/es_profile.cfg");
+	if (f.is_open()) {
+		f << "savefile_directory = \"" << Paths::getProfileSavesPath() << "\"\n";
+		f << "savestate_directory = \"" << Paths::getProfileSaveStatesPath() << "\"\n";
+		f << "screenshot_directory = \"" << Paths::getProfileScreenshotsPath() << "\"\n";
+		f << "savefiles_in_content_dir = \"false\"\n";
+		f << "savestates_in_content_dir = \"false\"\n";
+		f << "config_save_on_exit = \"false\"\n";
+		f.close();
 	}
 
 	int exitCode = process.run();
 	
-	if (ProfileManager::getInstance()->isProfilesEnabled()) {
-		Utils::FileSystem::removeFile("/tmp/es_profile.cfg");
-	}
+	Utils::FileSystem::removeFile("/tmp/es_profile.cfg");
 
 	if (exitCode != 0)
 		LOG(LogWarning) << "...launch terminated with nonzero exit code " << exitCode << "!";

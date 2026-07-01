@@ -442,17 +442,12 @@ static void loadSettingsFromFile(Settings* settings, const std::string& path)
 }
 
 template <typename K, typename V>
-void saveMap(pugi::xml_node &node, std::map<K, V>& map, const char* type, std::map<K, V>& defaultMap, V defaultValue, bool profileOnly)
+void saveMap(pugi::xml_node &node, std::map<K, V>& map, const char* type, std::map<K, V>& defaultMap, V defaultValue)
 {
 	for(auto iter = map.cbegin(); iter != map.cend(); iter++)
 	{
 		// key is on the "don't save" list, so don't save it
 		if(std::find(settings_dont_save.cbegin(), settings_dont_save.cend(), iter->first) != settings_dont_save.cend())
-			continue;
-
-		bool isProfileKey = (iter->first == "StartupSystem" || iter->first == "SortSystems" || iter->first == "LastSystem" || iter->first == "LastSelectedSystem");
-		// Remove profile filtering: save all settings per profile.
-		if (!profileOnly && ProfileManager::getInstance()->isProfilesEnabled())
 			continue;
 
 		auto def = defaultMap.find(iter->first);
@@ -477,27 +472,18 @@ bool Settings::saveFile()
 
 	LOG(LogDebug) << "Settings::saveFile() : Saving Settings to file.";
 
-	const std::string path = Paths::getUserEmulationStationPath() + "/es_settings.cfg";
+	const std::string pPath = Paths::getProfileSettingsPath();
+	pugi::xml_document pDoc;
+	pugi::xml_node pConfig = pDoc.append_child("config");
 
-	pugi::xml_document doc;
-	pugi::xml_node config = doc.append_child("config"); // root element
-
-	saveMap<std::string, bool>(config, mBoolMap, "bool", mDefaultBoolMap, false, false);
-	saveMap<std::string, int>(config, mIntMap, "int", mDefaultIntMap, 0, false);
-	saveMap<std::string, float>(config, mFloatMap, "float", mDefaultFloatMap, 0, false);
+	saveMap<std::string, bool>(pConfig, mBoolMap, "bool", mDefaultBoolMap, false);
+	saveMap<std::string, int>(pConfig, mIntMap, "int", mDefaultIntMap, 0);
+	saveMap<std::string, float>(pConfig, mFloatMap, "float", mDefaultFloatMap, 0);
 
 	for(auto iter = mStringMap.cbegin(); iter != mStringMap.cend(); iter++)
 	{
 		if (std::find(settings_dont_save.cbegin(), settings_dont_save.cend(), iter->first) != settings_dont_save.cend())
 			continue;
-
-		bool isProfileKey = (iter->first == "StartupSystem" || iter->first == "SortSystems" || iter->first == "LastSystem" || iter->first == "LastSelectedSystem");
-		if (!ProfileManager::getInstance()->isProfilesEnabled()) {
-			// Save everything normally if profiles are disabled.
-		} else {
-			// If profiles are enabled, we don't save to the global file to avoid bleed.
-			continue;
-		}
 
 		auto def = mDefaultStringMap.find(iter->first);
 		if (def == mDefaultStringMap.cend() && iter->second.empty())
@@ -506,46 +492,12 @@ bool Settings::saveFile()
 		if (def != mDefaultStringMap.cend() && def->second == iter->second)
 			continue;
 #endif
-		pugi::xml_node node = config.append_child("string");
+		pugi::xml_node node = pConfig.append_child("string");
 		node.append_attribute("name").set_value(iter->first.c_str());
 		node.append_attribute("value").set_value(iter->second.c_str());
 	}
 
-	doc.save_file(WINSTRINGW(path).c_str());
-
-	// Profile-specific save
-	if (ProfileManager::getInstance()->isProfilesEnabled())
-	{
-		const std::string pPath = ProfileManager::getInstance()->getProfileDataPath() + "/es_settings.cfg";
-		pugi::xml_document pDoc;
-		pugi::xml_node pConfig = pDoc.append_child("config");
-
-		saveMap<std::string, bool>(pConfig, mBoolMap, "bool", mDefaultBoolMap, false, true);
-		saveMap<std::string, int>(pConfig, mIntMap, "int", mDefaultIntMap, 0, true);
-		saveMap<std::string, float>(pConfig, mFloatMap, "float", mDefaultFloatMap, 0, true);
-
-		for(auto iter = mStringMap.cbegin(); iter != mStringMap.cend(); iter++)
-		{
-			if (std::find(settings_dont_save.cbegin(), settings_dont_save.cend(), iter->first) != settings_dont_save.cend())
-				continue;
-
-			bool isProfileKey = (iter->first == "StartupSystem" || iter->first == "SortSystems" || iter->first == "LastSystem" || iter->first == "LastSelectedSystem");
-			// Remove the check so we save all string settings per profile
-
-			auto def = mDefaultStringMap.find(iter->first);
-			if (def == mDefaultStringMap.cend() && iter->second.empty())
-				continue;
-#ifndef _ENABLEAMBERELEC
-			if (def != mDefaultStringMap.cend() && def->second == iter->second)
-				continue;
-#endif
-			pugi::xml_node node = pConfig.append_child("string");
-			node.append_attribute("name").set_value(iter->first.c_str());
-			node.append_attribute("value").set_value(iter->second.c_str());
-		}
-
-		pDoc.save_file(WINSTRINGW(pPath).c_str());
-	}
+	pDoc.save_file(WINSTRINGW(pPath).c_str());
 
 	Scripting::fireEvent("config-changed");
 	Scripting::fireEvent("settings-changed");
@@ -557,15 +509,12 @@ void Settings::loadFile()
 {
 	loadSettingsFromFile(this, Paths::getUserEmulationStationPath() + "/es_settings.cfg");
 
-	if (ProfileManager::getInstance()->isProfilesEnabled())
-	{
-		setString("StartupSystem", "lastsystem");
-		setString("SortSystems", "manufacturer");
-		setString("LastSystem", "");
-		setString("LastSelectedSystem", "");
+	setString("StartupSystem", "lastsystem");
+	setString("SortSystems", "manufacturer");
+	setString("LastSystem", "");
+	setString("LastSelectedSystem", "");
 
-		loadSettingsFromFile(this, ProfileManager::getInstance()->getProfileDataPath() + "/es_settings.cfg");
-	}
+	loadSettingsFromFile(this, Paths::getProfileSettingsPath());
 
 	// Migrate old preferences
 	auto it = mBoolMap.find("UseCustomCollectionsSystem");

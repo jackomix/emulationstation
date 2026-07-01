@@ -292,14 +292,12 @@ void MetaDataList::appendToXML(pugi::xml_node& parent, bool ignoreDefaults, cons
 		if (mddIter->id == MetaDataId::GenreIds)
 			continue;
 
-		// Don't save profile-specific stats to global gamelist if profiles are enabled
-		if (ProfileManager::getInstance()->isProfilesEnabled()) {
-			if (mddIter->id == MetaDataId::Favorite ||
-				mddIter->id == MetaDataId::PlayCount ||
-				mddIter->id == MetaDataId::LastPlayed ||
-				mddIter->id == MetaDataId::GameTime)
-				continue;
-		}
+		// Don't save profile-specific stats to global gamelist
+		if (mddIter->id == MetaDataId::Favorite ||
+			mddIter->id == MetaDataId::PlayCount ||
+			mddIter->id == MetaDataId::LastPlayed ||
+			mddIter->id == MetaDataId::GameTime)
+			continue;
 
 		auto mapIter = mMap.find(mddIter->id);
 		if(mapIter != mMap.cend())

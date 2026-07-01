@@ -1,4 +1,4 @@
-#include "AchievementCache.h"
+#include "Paths.h"
 #include "ProfileManager.h"
 #include "utils/FileSystemUtil.h"
 #include "Log.h"
@@ -13,10 +13,7 @@ std::string AchievementCache::getGlobalAchievementsPath()
 
 std::string AchievementCache::getUserProgressPath()
 {
-	if (ProfileManager::getInstance()->isProfilesEnabled()) {
-		return ProfileManager::getInstance()->getProfileDataPath() + "/achievements";
-	}
-	return getGlobalAchievementsPath() + "/progress";
+	return Paths::getAchievementProgressPath();
 }
 
 void AchievementCache::init()

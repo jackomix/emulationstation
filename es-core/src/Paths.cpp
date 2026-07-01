@@ -339,20 +339,18 @@ std::string Paths::findEmulationStationFile(const std::string& fileName)
 void Paths::recalculateProfilePaths()
 {
 	Paths* instance = getInstance();
-	if (ProfileManager::getInstance()->isProfilesEnabled()) {
-		std::string profileBase = ProfileManager::getInstance()->getProfileDataPath();
-		instance->mSaveStatesPath = profileBase + "/savestates";
-		instance->mScreenShotsPath = profileBase + "/screenshots";
-	} else {
-		// Fallback to reload custom config for default saves/screenshots directories
-		instance->loadCustomConfiguration(true);
-	}
+	std::string profileBase = ProfileManager::getInstance()->getProfileDataPath();
+	instance->mSaveStatesPath = profileBase + "/savestates";
+	instance->mScreenShotsPath = profileBase + "/screenshots";
+	
+	instance->mProfileSavesPath = profileBase + "/saves";
+	instance->mProfileSaveStatesPath = profileBase + "/savestates";
+	instance->mProfileScreenshotsPath = profileBase + "/screenshots";
+	instance->mProfileSettingsPath = profileBase + "/es_settings.cfg";
+	instance->mAchievementProgressPath = profileBase + "/achievements";
 }
 
 std::string Paths::getGamelistOverridePath()
 {
-	if (ProfileManager::getInstance()->isProfilesEnabled()) {
-		return ProfileManager::getInstance()->getProfileDataPath() + "/gamelists";
-	}
-	return "";
+	return ProfileManager::getInstance()->getProfileDataPath() + "/gamelists";
 }
