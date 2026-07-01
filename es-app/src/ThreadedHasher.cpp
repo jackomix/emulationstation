@@ -1,6 +1,7 @@
 #include "ThreadedHasher.h"
 #include "Window.h"
 #include "FileData.h"
+#include "AchievementCache.h"
 #include "components/AsyncNotificationComponent.h"
 #include "guis/GuiMsgBox.h"
 #include "Gamelist.h"
@@ -39,8 +40,12 @@ ThreadedHasher::ThreadedHasher(Window* window, HasherType type, std::queue<FileD
 		{
 			mCheevosHashes = RetroAchievements::getCheevosHashes();
 			if (mCheevosHashes.size() == 0)
-				while (!mSearchQueue.empty())
-					mSearchQueue.pop();
+			{
+				mCheevosHashes = AchievementCache::loadHashMap();
+				if (mCheevosHashes.size() == 0)
+					while (!mSearchQueue.empty())
+						mSearchQueue.pop();
+			}
 		}
 		catch (const std::exception& e)
 		{

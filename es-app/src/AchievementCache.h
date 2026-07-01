@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "RetroAchievements.h"
 
 class AchievementCache
@@ -21,6 +22,8 @@ public:
 	// User summary cache
 	static bool loadUserSummary(std::string& outJson);
 	static void saveUserSummary(const std::string& jsonData);
+
+	static std::map<std::string, std::string> loadHashMap();
 
 private:
 	static std::string getGlobalAchievementsPath();

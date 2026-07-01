@@ -584,6 +584,33 @@ int main(int argc, char* argv[])
 
 	SystemConf* systemConf = SystemConf::getInstance();
 
+	if (Utils::FileSystem::exists("/roms/achievements/hashes.json") && systemConf->get("global.retroachievements") != "1")
+	{
+		systemConf->set("global.retroachievements", "1");
+		Settings::getInstance()->setString("RetroachievementsOfflineMode", "always_offline");
+
+		std::string userJson = "/roms/achievements/user.json";
+		if (Utils::FileSystem::exists(userJson))
+		{
+			std::string content = Utils::FileSystem::readAllText(userJson);
+			size_t pos = content.find("\"Username\"");
+			if (pos != std::string::npos)
+			{
+				size_t start = content.find("\"", pos + 10);
+				if (start != std::string::npos)
+				{
+					size_t end = content.find("\"", start + 1);
+					if (end != std::string::npos)
+						systemConf->set("global.retroachievements.username", content.substr(start + 1, end - start - 1));
+				}
+			}
+		}
+		systemConf->set("global.retroachievements.token", "offline_token");
+		systemConf->saveSystemConf();
+		Settings::getInstance()->setBool("CheevosCheckIndexesAtStart", true);
+		Settings::getInstance()->saveFile();
+	}
+
 #ifdef _ENABLE_KODI_
 	if (systemConf->getBool("kodi.enabled", true) && systemConf->getBool("kodi.atstartup"))
 	{

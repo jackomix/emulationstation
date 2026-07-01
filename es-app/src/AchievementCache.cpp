@@ -5,6 +5,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
+#include "utils/StringUtil.h"
 
 std::string AchievementCache::getGlobalAchievementsPath()
 {
@@ -150,4 +151,26 @@ void AchievementCache::saveUserSummary(const std::string& jsonData)
 	init();
 	std::string path = getUserProgressPath() + "/user.json";
 	Utils::FileSystem::writeAllText(path, jsonData);
+}
+
+std::map<std::string, std::string> AchievementCache::loadHashMap()
+{
+	std::map<std::string, std::string> map;
+	std::string path = getGlobalAchievementsPath() + "/hashes.json";
+	if (!Utils::FileSystem::exists(path))
+		return map;
+
+	std::string json = Utils::FileSystem::readAllText(path);
+	rapidjson::Document doc;
+	doc.Parse(json.c_str());
+
+	if (doc.HasParseError() || !doc.IsObject())
+		return map;
+
+	for (rapidjson::Value::ConstMemberIterator itr = doc.MemberBegin(); itr != doc.MemberEnd(); ++itr)
+	{
+		map[Utils::String::toUpper(itr->name.GetString())] = std::to_string(itr->value.GetInt());
+	}
+
+	return map;
 }

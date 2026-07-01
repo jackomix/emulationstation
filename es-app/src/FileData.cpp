@@ -802,6 +802,9 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 
 		if (isOffline) {
 			f << "cheevos_custom_host = \"http://127.0.0.1:9191\"\n";
+			f << "cheevos_enable = \"true\"\n";
+			f << "cheevos_username = \"" << SystemConf::getInstance()->get("global.retroachievements.username") << "\"\n";
+			f << "cheevos_token = \"offline_token\"\n";
 		}
 
 		f.close();
