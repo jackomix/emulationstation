@@ -4,6 +4,8 @@
 #include "SystemConf.h"
 #include "ApiSystem.h"
 #include "RetroAchievements.h"
+#include "ThemeData.h"
+#include "components/TextComponent.h"
 
 #include "guis/GuiMsgBox.h"
 #include "components/SwitchComponent.h"
@@ -17,14 +19,20 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	std::string username = SystemConf::getInstance()->get("global.retroachievements.username");
 	std::string password = SystemConf::getInstance()->get("global.retroachievements.password");
 
-	// retroachievements_enable
 	auto retroachievements_enabled = std::make_shared<SwitchComponent>(mWindow);
 	retroachievements_enabled->setState(retroachievementsEnabled);
-	addWithLabel(_("RETROACHIEVEMENTS"), retroachievements_enabled);
 
-	// retroachievements, username, password
-	addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
-	addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
+	std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
+	bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
+
+	if (isOffline) {
+		auto usernameComp = std::make_shared<TextComponent>(mWindow, username, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, ALIGN_RIGHT);
+		addWithLabel(_("USERNAME"), usernameComp);
+	} else {
+		addWithLabel(_("RETROACHIEVEMENTS"), retroachievements_enabled);
+		addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
+		addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
+	}
 
 	addGroup(_("OPTIONS"));
 

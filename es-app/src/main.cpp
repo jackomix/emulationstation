@@ -46,6 +46,7 @@
 #include "watchers/WatchersManager.h"
 #include "HttpReq.h"
 #include <thread>
+#include <rapidjson/document.h>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -593,22 +594,28 @@ int main(int argc, char* argv[])
 		if (Utils::FileSystem::exists(userJson))
 		{
 			std::string content = Utils::FileSystem::readAllText(userJson);
-			size_t pos = content.find("\"Username\"");
-			if (pos != std::string::npos)
+			rapidjson::Document doc;
+			doc.Parse(content.c_str());
+			if (!doc.HasParseError() && doc.IsObject())
 			{
-				size_t start = content.find("\"", pos + 10);
-				if (start != std::string::npos)
-				{
-					size_t end = content.find("\"", start + 1);
-					if (end != std::string::npos)
-						systemConf->set("global.retroachievements.username", content.substr(start + 1, end - start - 1));
-				}
+				std::string username = "";
+				if (doc.HasMember("Username") && doc["Username"].IsString())
+					username = doc["Username"].GetString();
+				else if (doc.HasMember("username") && doc["username"].IsString())
+					username = doc["username"].GetString();
+				else if (doc.HasMember("User") && doc["User"].IsString())
+					username = doc["User"].GetString();
+				
+				if (!username.empty())
+					systemConf->set("global.retroachievements.username", username);
 			}
 		}
 		systemConf->set("global.retroachievements.token", "offline_token");
 		systemConf->saveSystemConf();
 		Settings::getInstance()->setBool("CheevosCheckIndexesAtStart", true);
 		Settings::getInstance()->saveFile();
+		
+		ThreadedHasher::start(&window, ThreadedHasher::HASH_CHEEVOS_MD5, false, true);
 	}
 
 #ifdef _ENABLE_KODI_

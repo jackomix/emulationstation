@@ -276,6 +276,21 @@ const bool FileData::hasCheevos()
 	if (Utils::String::toInteger(getMetadata(MetaDataId::CheevosId)) > 0)
 		return getSourceFileData()->getSystem()->isCheevosSupported();
 
+	std::string hash = getMetadata(MetaDataId::CheevosHash);
+	if (!hash.empty())
+	{
+		static std::map<std::string, std::string> hashMap;
+		static bool hashMapLoaded = false;
+		
+		if (!hashMapLoaded) {
+			hashMap = AchievementCache::loadHashMap();
+			hashMapLoaded = true;
+		}
+		
+		if (hashMap.find(Utils::String::toUpper(hash)) != hashMap.end())
+			return getSourceFileData()->getSystem()->isCheevosSupported();
+	}
+
 	return false;
 }
 
@@ -801,10 +816,16 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			isOffline = (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
 		if (isOffline) {
+			std::string username = SystemConf::getInstance()->get("global.retroachievements.username");
+			if (username.empty()) username = ProfileManager::getInstance()->getActiveProfileName();
+			if (username.empty()) username = "Player";
+
 			f << "cheevos_custom_host = \"http://127.0.0.1:9191\"\n";
 			f << "cheevos_enable = \"true\"\n";
-			f << "cheevos_username = \"" << SystemConf::getInstance()->get("global.retroachievements.username") << "\"\n";
+			f << "cheevos_username = \"" << username << "\"\n";
+			f << "cheevos_password = \"offline_password\"\n";
 			f << "cheevos_token = \"offline_token\"\n";
+			LOG(LogInfo) << "Injected offline cheevos config for user " << username;
 		}
 
 		f.close();
