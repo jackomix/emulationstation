@@ -798,7 +798,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
 		bool isOffline = (mode == "always_offline");
 		if (mode == "auto" || mode.empty())
-			isOffline = (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED");
+			isOffline = (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
 		if (isOffline) {
 			f << "cheevos_custom_host = \"http://127.0.0.1:9191\"\n";
