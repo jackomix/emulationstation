@@ -57,6 +57,14 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 
 	addSwitch(_("SHOW RETROACHIEVEMENTS ENTRY IN MAIN MENU"), _("View your RetroAchievement stats right from the main menu!"), "RetroachievementsMenuitem", true, nullptr);
 
+	auto offline_mode = std::make_shared<OptionListComponent<std::string>>(mWindow, _("OFFLINE MODE"), false);
+	std::string currentOfflineMode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
+	if (currentOfflineMode.empty()) currentOfflineMode = "auto";
+	offline_mode->add(_("AUTO (IF NO NETWORK)"), "auto", currentOfflineMode == "auto");
+	offline_mode->add(_("ALWAYS OFFLINE"), "always_offline", currentOfflineMode == "always_offline");
+	addWithLabel(_("OFFLINE MODE"), offline_mode);
+	addSaveFunc([offline_mode] { Settings::getInstance()->setString("RetroachievementsOfflineMode", offline_mode->getSelected()); });
+
 	addGroup(_("GAME INDEXES"));
 	addSwitch(_("INDEX NEW GAMES AT STARTUP"), "CheevosCheckIndexesAtStart", true);
 	addEntry(_("INDEX GAMES"), true, [this]
@@ -74,18 +82,26 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 
 		if (newState && (!retroachievementsEnabled || username != newUsername || password != newPassword || token.empty()))
 		{
-			std::string tokenOrError;
-			if (RetroAchievements::testAccount(newUsername, newPassword, tokenOrError))
-			{
-				SystemConf::getInstance()->set("global.retroachievements.token", tokenOrError);
-			}
-			else
-			{
-				SystemConf::getInstance()->set("global.retroachievements.token", "");
+			std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
+			bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED");
 
-				window->pushGui(new GuiMsgBox(window, _("UNABLE TO ACTIVATE RETROACHIEVEMENTS:") + "\n" + tokenOrError, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
-				retroachievements_enabled->setState(false);
-				newState = false;
+			if (isOffline) {
+				SystemConf::getInstance()->set("global.retroachievements.token", "offline_token");
+			}
+			else {
+				std::string tokenOrError;
+				if (RetroAchievements::testAccount(newUsername, newPassword, tokenOrError))
+				{
+					SystemConf::getInstance()->set("global.retroachievements.token", tokenOrError);
+				}
+				else
+				{
+					SystemConf::getInstance()->set("global.retroachievements.token", "");
+
+					window->pushGui(new GuiMsgBox(window, _("UNABLE TO ACTIVATE RETROACHIEVEMENTS:") + "\n" + tokenOrError, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
+					retroachievements_enabled->setState(false);
+					newState = false;
+				}
 			}
 		}
 		else if (!newState)

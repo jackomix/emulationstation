@@ -58,6 +58,7 @@ struct GameInfoAndUserProgress
 	int NumAwardedToUserHardcore;
 	std::string UserCompletion;
 	std::string UserCompletionHardcore;
+	bool isOfflineData = false;
 
 	std::string getImageUrl(const std::string& image = "");
 };
@@ -137,9 +138,7 @@ struct UserSummary
 {
 	std::string Username;
 
-	std::string getBadge() {
-		return "https://retroachievements.org" + UserPic;
-	}
+	std::string getBadge();
 
 	int RecentlyPlayedCount;
 	std::vector<RecentGame> RecentlyPlayed;
@@ -165,6 +164,7 @@ struct UserSummary
 	std::string Points;
 	std::string UserPic;
 	std::string Status;
+	bool isOfflineData = false;
 };
 
 struct UserRankAndScore
@@ -204,6 +204,7 @@ struct RetroAchievementInfo
 	std::string userpic;
 	std::string registered;
 	std::string error;
+	bool isOfflineData = false;
 	std::vector<RetroAchievementGame> games;
 };
 

@@ -67,6 +67,19 @@ fi
 DEST_DIR="$SD_PATH/achievements"
 mkdir -p "$DEST_DIR/games"
 mkdir -p "$DEST_DIR/badges"
+mkdir -p "$DEST_DIR/patchdata"
+
+echo "Downloading user summary..."
+curl -s "https://retroachievements.org/API/API_GetUserSummary.php?z=${RA_USER}&y=${RA_API_KEY}&u=${RA_USER}&g=100&a=100" > "$DEST_DIR/user.json"
+
+AVATAR_URL=$(grep -o '"UserPic":"[^"]*"' "$DEST_DIR/user.json" | cut -d'"' -f4 | head -n 1)
+if [ -n "$AVATAR_URL" ]; then
+    echo "Downloading user avatar..."
+    curl -sL "https://retroachievements.org${AVATAR_URL}" -o "$DEST_DIR/avatar.png"
+fi
+
+echo "{" > "$DEST_DIR/hashes.json"
+FIRST_HASH=1
 
 echo "Setup complete. Scanning ROMs..."
 
@@ -160,6 +173,13 @@ while IFS= read -r ROM_FILE; do
             if [ "$GAME_ID" -ne 0 ]; then
                 ((COUNT_MATCHED++))
                 
+                if [ "$FIRST_HASH" -eq 1 ]; then
+                    echo "  \"$HASH\": $GAME_ID" >> "$DEST_DIR/hashes.json"
+                    FIRST_HASH=0
+                else
+                    echo ", \"$HASH\": $GAME_ID" >> "$DEST_DIR/hashes.json"
+                fi
+                
                 # Check if we already have it
                 if [ -f "$DEST_DIR/games/${GAME_ID}.json" ]; then
                     echo "  -> Found Game ID: $GAME_ID (Already cached, skipping)"
@@ -181,7 +201,15 @@ while IFS= read -r ROM_FILE; do
                             if [ ! -f "$DEST_DIR/badges/${badge}.png" ]; then
                                 curl -sL "https://media.retroachievements.org/Badge/${badge}.png" -o "$DEST_DIR/badges/${badge}.png"
                             fi
+                            if [ ! -f "$DEST_DIR/badges/${badge}_lock.png" ]; then
+                                curl -sL "https://media.retroachievements.org/Badge/${badge}_lock.png" -o "$DEST_DIR/badges/${badge}_lock.png"
+                            fi
                         done
+                        
+                        # Download patchdata for rcheevos
+                        if [ ! -f "$DEST_DIR/patchdata/${GAME_ID}.json" ]; then
+                            curl -s "https://retroachievements.org/dorequest.php?r=patch&u=${RA_USER}&g=${GAME_ID}" > "$DEST_DIR/patchdata/${GAME_ID}.json"
+                        fi
                     else
                         echo "  -> Error: Failed to fetch data for Game ID $GAME_ID."
                     fi
@@ -204,6 +232,8 @@ while IFS= read -r ROM_FILE; do
     
 done < <(find "$SD_PATH" -type f \( -iname \*.gba -o -iname \*.zip -o -iname \*.sfc -o -iname \*.nes -o -iname \*.md -o -iname \*.z64 -o -iname \*.cue -o -iname \*.chd \) \
     ! -name "._*" ! -iname "readme.md" 2>/dev/null)
+
+echo "}" >> "$DEST_DIR/hashes.json"
 
 echo ""
 echo "=========================================="

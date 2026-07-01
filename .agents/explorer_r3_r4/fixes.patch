@@ -1,0 +1,35 @@
+diff --git a/es-app/src/views/ViewController.cpp b/es-app/src/views/ViewController.cpp
+index 3574c8d..f9d0c2e 100645
+--- a/es-app/src/views/ViewController.cpp
++++ b/es-app/src/views/ViewController.cpp
+@@ -980,5 +980,9 @@ bool ViewController::input(InputConfig* config, Input input)
+ 				return true;
+ 			}
+-			else if (mState.viewing == SYSTEM_SELECT && mState.system != nullptr)
++			else if (mState.viewing == SYSTEM_SELECT)
+ 			{
+-				goToGameList(mState.system, false);
+-				return true;
++				auto sysList = getSystemListView();
++				if (sysList != nullptr && sysList->getSelected() != nullptr)
++				{
++					goToGameList(sysList->getSelected(), false);
++				}
++				return true;
+ 			}
+ 		}
+ 	}
+@@ -1055,2 +1059,2 @@ bool ViewController::input(InputConfig* config, Input input)
+-//	if(UIModeController::getInstance()->listen(config, input))  // check if UI mode has changed due to passphrase completion
+-//		return true;
++	if(UIModeController::getInstance()->listen(config, input))  // check if UI mode has changed due to passphrase completion
++		return true;
+@@ -1072,4 +1076,4 @@ void ViewController::update(int deltaTime)
+-	if (mYTransitioning && !isAnimationPlaying(0))
+-	{
+-		mYTransitioning = false;
+-	}
++	if (mYTransitioning && !isAnimationPlaying(0) && mDeferPlayViewTransitionTo == nullptr)
++	{
++		mYTransitioning = false;
++	}

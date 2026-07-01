@@ -152,18 +152,32 @@ std::string RetroAchievements::getApiUrl(const std::string& method, const std::s
 
 std::string GameInfoAndUserProgress::getImageUrl(const std::string& image)
 {
-	if (image.empty())
-		return "http://i.retroachievements.org" + ImageIcon;
+	std::string img = image.empty() ? ImageIcon : image;
+	std::string filename = Utils::FileSystem::getFileName(img);
+	std::string localPath = "/roms/achievements/badges/" + filename;
+	if (Utils::FileSystem::exists(localPath))
+		return "file://" + localPath;
 
-	return "http://i.retroachievements.org" + image;
+	return "http://i.retroachievements.org" + img;
 }
 
 std::string Achievement::getBadgeUrl()
 {
-	if (!DateEarned.empty() || !DateEarnedHardcore.empty())
-		return "http://i.retroachievements.org/Badge/" + BadgeName + ".png";
+	std::string badgeStr = (!DateEarned.empty() || !DateEarnedHardcore.empty()) ? BadgeName + ".png" : BadgeName + "_lock.png";
+	std::string localPath = "/roms/achievements/badges/" + badgeStr;
+	if (Utils::FileSystem::exists(localPath))
+		return "file://" + localPath;
 
-	return "http://i.retroachievements.org/Badge/" + BadgeName + "_lock.png";
+	return "http://i.retroachievements.org/Badge/" + badgeStr;
+}
+
+std::string UserSummary::getBadge()
+{
+	std::string localPath = "/roms/achievements/avatar.png";
+	if (Utils::FileSystem::exists(localPath))
+		return "file://" + localPath;
+		
+	return "https://retroachievements.org" + UserPic;
 }
 
 
@@ -290,6 +304,7 @@ GameInfoAndUserProgress RetroAchievements::getGameInfoAndUserProgress(int gameId
 		// Skip hitting the API since we have the data, unless we explicitly want to refresh.
 		// For Phase 1 we will just return the cached data to avoid slow boot times and 
 		// allow offline play to work immediately.
+		ret.isOfflineData = true;
 		return ret;
 	}
 
@@ -376,23 +391,34 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 
 	std::string count = std::to_string(gameCount);
 
-	if (AchievementCache::loadUserSummary(ret)) {
-		return ret;
-	}
+	std::string cachedJson;
+	std::string jsonToParse;
 
-	auto options = getHttpOptions();
-	HttpReq httpreq(getApiUrl("API_GetUserSummary", "u="+ HttpReq::urlEncode(usrName) +"&g="+ count +"&a="+ count), &options);
-	if (httpreq.wait())
-	{
-		rapidjson::Document doc;
-		doc.Parse(httpreq.getContent().c_str());
-		if (doc.HasParseError())
+	if (AchievementCache::loadUserSummary(cachedJson)) {
+		jsonToParse = cachedJson;
+		ret.isOfflineData = true;
+	} else {
+		auto options = getHttpOptions();
+		HttpReq httpreq(getApiUrl("API_GetUserSummary", "u="+ HttpReq::urlEncode(usrName) +"&g="+ count +"&a="+ count), &options);
+		if (httpreq.wait())
 		{
-			ret.Status = _("INVALID CONTENT");
+			jsonToParse = httpreq.getContent();
+			AchievementCache::saveUserSummary(jsonToParse);
+		}
+		else
+		{
+			ret.Status = _("No cached data available. Run the PC scraper to populate offline data.");
 			return ret;
 		}
+	}
 
-		AchievementCache::saveUserSummary(httpreq.getContent());
+	rapidjson::Document doc;
+	doc.Parse(jsonToParse.c_str());
+	if (doc.HasParseError())
+	{
+		ret.Status = _("INVALID CONTENT");
+		return ret;
+	}
 
 		ret.Username = usrName;
 		ret.RecentlyPlayedCount = jsonInt(doc, "RecentlyPlayedCount");
@@ -478,8 +504,7 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 			}
 		}
 	}
-	else
-		ret.Status = httpreq.getErrorMsg();
+	// (Removed else block because httpreq.wait() is handled inside the if/else above)
 
 	return ret;
 }
@@ -500,7 +525,7 @@ UserRankAndScore RetroAchievements::getUserRankAndScore(const std::string& userN
 		rapidjson::Document doc;
 		doc.Parse(request.getContent().c_str());
 		if (doc.HasParseError())
-			throw std::domain_error("Error while parsing API GetUserRankAndScore response");
+			return ret;
 
 		ret.Score = jsonInt(doc, "Score");
 		ret.SoftcoreScore = jsonInt(doc, "SoftcoreScore");
@@ -508,7 +533,7 @@ UserRankAndScore RetroAchievements::getUserRankAndScore(const std::string& userN
 		ret.TotalRanked = jsonInt(doc, "TotalRanked");
 	}
 	else
-		throw std::domain_error("Error while accessing API GetUserRankAndScore :\n" + request.getErrorMsg());
+		return ret;
 
 	return ret;
 }
@@ -516,6 +541,7 @@ UserRankAndScore RetroAchievements::getUserRankAndScore(const std::string& userN
 RetroAchievementInfo RetroAchievements::toRetroAchivementInfo(UserSummary& ret)
 {
 	RetroAchievementInfo info;
+	info.isOfflineData = ret.isOfflineData;
 
 	if (ret.Username.empty() && !ret.Status.empty())
 	{

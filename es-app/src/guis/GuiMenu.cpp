@@ -264,8 +264,6 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			Settings::getInstance()->getBool("RetroachievementsMenuitem") &&
 			SystemConf::getInstance()->get("global.retroachievements.username") != "")
 			addEntry(_("RETROACHIEVEMENTS").c_str(), true, [this] {
-					if (!checkNetwork())
-						return;
 					GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
 		addEntry(_("USER INTERFACE SETTINGS").c_str(), true, [this] { openUISettings(); }, "iconUI");
@@ -3068,9 +3066,6 @@ void GuiMenu::openGamesSettings()
 	{
 		s->addEntry(_("RETROACHIEVEMENTS").c_str(), true, [this]
 		{
-			if (!checkNetwork())
-				return;
-
 			GuiRetroAchievements::show(mWindow);
 		});
 	}

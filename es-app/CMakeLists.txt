@@ -23,6 +23,7 @@ set(ES_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpServerThread.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpApi.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/httplib.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/AchievementServer.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/RetroAchievements.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SaveState.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SaveStateRepository.h
@@ -133,6 +134,7 @@ set(ES_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpServerThread.cpp	
 	${CMAKE_CURRENT_SOURCE_DIR}/src/services/HttpApi.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/AchievementCache.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/AchievementServer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/RetroAchievements.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SaveState.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/SaveStateRepository.cpp

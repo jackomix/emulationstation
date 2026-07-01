@@ -1,0 +1,44 @@
+diff --git a/es-core/src/Log.cpp b/es-core/src/Log.cpp
+index d652da1..f88cc10 100644
+--- a/es-core/src/Log.cpp
++++ b/es-core/src/Log.cpp
+@@ -43,11 +43,19 @@ void Log::init()
+ 		else
+ 			lvl = (LogLevel) -1; // Disabled
+ 	}
+-#ifdef _ENABLEAMBERELEC
+-	auto logPath = Paths::getLogPath() + "/es_log.txt";
+-#else	
+-    auto logPath = Paths::getUserEmulationStationPath() + "/es_log.txt";
+-#endif
++	std::string logPath;
++	if (Paths::getExePath() == "/roms/ports/es_test")
++	{
++		logPath = "/roms/ports/es_log.txt";
++	}
++	else
++	{
++#ifdef _ENABLEAMBERELEC
++		logPath = Paths::getLogPath() + "/es_log.txt";
++#else	
++		logPath = Paths::getUserEmulationStationPath() + "/es_log.txt";
++#endif
++	}
+ 	auto bakPath = logPath + ".bak";
+ 
+ 	if ((int)lvl < 0) 
+diff --git a/es-core/src/Paths.cpp b/es-core/src/Paths.cpp
+index cb65d3a..12cd4e0 100644
+--- a/es-core/src/Paths.cpp
++++ b/es-core/src/Paths.cpp
+@@ -82,5 +82,10 @@ Paths::Paths()
+ 
+ #endif
+ 	loadCustomConfiguration(true); // Load paths overrides from emulationstation.ini file
++
++	if (getExePath() == "/roms/ports/es_test")
++	{
++		mLogPath = "/roms/ports";
++	}
+ }
+ 

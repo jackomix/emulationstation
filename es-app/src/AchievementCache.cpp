@@ -135,15 +135,14 @@ void AchievementCache::saveUserProgress(int gameId, const GameInfoAndUserProgres
 	Utils::FileSystem::writeAllText(path, buffer.GetString());
 }
 
-bool AchievementCache::loadUserSummary(UserSummary& outSummary)
+bool AchievementCache::loadUserSummary(std::string& outJson)
 {
 	std::string path = getUserProgressPath() + "/user.json";
 	if (!Utils::FileSystem::exists(path))
 		return false;
 
-	// In a full implementation, we would deserialize this from our cached JSON.
-	// For Phase 1, we just return false if it's missing.
-	return false;
+	outJson = Utils::FileSystem::readAllText(path);
+	return true;
 }
 
 void AchievementCache::saveUserSummary(const std::string& jsonData)

@@ -7,6 +7,8 @@
 #include "guis/GuiDetectDevice.h"
 #include "guis/GuiMsgBox.h"
 #include "utils/FileSystemUtil.h"
+#include "scrapers/ThreadedScraper.h"
+#include "AchievementServer.h"
 #include "views/ViewController.h"
 #include "CollectionSystemManager.h"
 #include "EmulationStation.h"
@@ -539,6 +541,7 @@ int main(int argc, char* argv[])
 	ViewController::init(&window);
 	CollectionSystemManager::init(&window);
 	VideoVlcComponent::init();
+	AchievementServer::start();
 
 	window.pushGui(ViewController::get());
 	if(!window.init(true, false))
@@ -751,6 +754,7 @@ int main(int argc, char* argv[])
 	if (Utils::Platform::isFastShutdown())
 		Settings::getInstance()->setBool("IgnoreGamelist", true);
 
+	AchievementServer::stop();
 	WatchersManager::stop();
 	ThreadedHasher::stop();
 	ThreadedScraper::stop();

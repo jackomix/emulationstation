@@ -291,7 +291,8 @@ GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo 
 		return;
 	}
 
-	auto txt = _("Softcore points") + ":\t" + ra.softpoints; 
+	std::string indicator = ra.isOfflineData ? "\U0001F4E6 Offline Data" : "\U0001F310 Live Data";
+	auto txt = indicator + "\r\n" + _("Softcore points") + ":\t" + ra.softpoints; 
 	txt += "\r\n" + _("Points (hardcore)") + ":\t" + ra.points;
 	if (!ra.rank.empty())
 		txt += "\r\n" + _("Rank") + ":\t" + ra.rank;

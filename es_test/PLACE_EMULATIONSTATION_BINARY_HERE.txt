@@ -1,0 +1,1 @@
+Download the 'emulationstation-r36s' artifact from GitHub Actions, rename the binary file to 'emulationstation', and place it inside this 'es_test' folder.

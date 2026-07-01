@@ -108,7 +108,13 @@ private:
 
 
 GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra) : 
-	GuiSettings(window, "", "", nullptr)
+	GuiSettings(window, _("ACHIEVEMENTS"), ([&ra]() {
+		std::string title = ra.Title;
+		if (ra.isOfflineData) {
+			title += " (\U0001F4E6 Offline Data)";
+		}
+		return title;
+	})(), nullptr)
 {
 	// Required for WebImageComponent
 	setUpdateType(ComponentListFlags::UPDATE_ALWAYS);

@@ -19,6 +19,7 @@
 #include "views/UIModeController.h"
 #include <assert.h>
 #include "SystemConf.h"
+#include "AchievementCache.h"
 #include "InputManager.h"
 #include "scrapers/ThreadedScraper.h"
 #include "Gamelist.h" 
@@ -793,10 +794,51 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		f << "savefiles_in_content_dir = \"false\"\n";
 		f << "savestates_in_content_dir = \"false\"\n";
 		f << "config_save_on_exit = \"false\"\n";
+
+		std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
+		bool isOffline = (mode == "always_offline");
+		if (mode == "auto" || mode.empty())
+			isOffline = (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED");
+
+		if (isOffline) {
+			f << "cheevos_custom_host = \"http://127.0.0.1:9191\"\n";
+		}
+
 		f.close();
 	}
 
+	int raGameId = 0;
+	std::string cheevosIdStr = getMetadata(MetaDataId::CheevosId);
+	if (!cheevosIdStr.empty()) raGameId = Utils::String::toInteger(cheevosIdStr);
+	
+	GameInfoAndUserProgress preProgress;
+	if (raGameId > 0) {
+		AchievementCache::loadGameData(raGameId, preProgress);
+		AchievementCache::loadUserProgress(raGameId, preProgress);
+	}
+
 	int exitCode = process.run();
+	
+	if (raGameId > 0 && window) {
+		GameInfoAndUserProgress postProgress;
+		AchievementCache::loadGameData(raGameId, postProgress);
+		AchievementCache::loadUserProgress(raGameId, postProgress);
+		
+		for (auto& postAch : postProgress.Achievements) {
+			if (!postAch.DateEarned.empty() || !postAch.DateEarnedHardcore.empty()) {
+				bool wasEarned = false;
+				for (auto& preAch : preProgress.Achievements) {
+					if (preAch.ID == postAch.ID && (!preAch.DateEarned.empty() || !preAch.DateEarnedHardcore.empty())) {
+						wasEarned = true;
+						break;
+					}
+				}
+				if (!wasEarned) {
+					window->displayNotificationMessage("\U0001F3C6 " + postAch.Title + " Unlocked!");
+				}
+			}
+		}
+	}
 	
 	Utils::FileSystem::removeFile("/tmp/es_profile.cfg");
 

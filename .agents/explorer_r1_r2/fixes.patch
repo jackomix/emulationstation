@@ -1,0 +1,26 @@
+diff --git a/es-app/src/views/HomeView.cpp b/es-app/src/views/HomeView.cpp
+--- a/es-app/src/views/HomeView.cpp
++++ b/es-app/src/views/HomeView.cpp
+@@ -235,2 +235,5 @@ void HomeView::onSizeChanged()
+ {
++	if (mSize.x() <= 0.0f || mSize.y() <= 0.0f)
++		return;
++
+ 	float padX = mSize.x() * 0.05f;
+@@ -373,2 +376,4 @@ void HomeView::render(const Transform4x4f& parentTrans)
+ {
++	Renderer::setMatrix(parentTrans);
++
+ 	// Draw screen background gradient
+diff --git a/es-app/src/views/ViewController.cpp b/es-app/src/views/ViewController.cpp
+--- a/es-app/src/views/ViewController.cpp
++++ b/es-app/src/views/ViewController.cpp
+@@ -91,2 +91,3 @@ ViewController::ViewController(Window* window)
+ 	mHomeView = std::make_shared<HomeView>(window);
++	addChild(mHomeView.get());
+ 	mYTransitioning = false;
+@@ -1156,3 +1157,3 @@ void ViewController::render(const Transform4x4f& parentTrans)
+ #ifdef ES_HOME_VIEW
+-	if (mState.viewing == HOME_VIEW || mState.viewing == SYSTEM_SELECT)
++	if (mState.viewing == HOME_VIEW || (mState.viewing == SYSTEM_SELECT && mCamera.translation().y() > -(float)Renderer::getScreenHeight() + 1.0f))
+ 	{

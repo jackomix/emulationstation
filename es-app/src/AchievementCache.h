@@ -19,7 +19,7 @@ public:
 	static void saveUserProgress(int gameId, const GameInfoAndUserProgress& gameInfo);
 
 	// User summary cache
-	static bool loadUserSummary(UserSummary& outSummary);
+	static bool loadUserSummary(std::string& outJson);
 	static void saveUserSummary(const std::string& jsonData);
 
 private:
