@@ -503,7 +503,6 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 				}
 			}
 		}
-	}
 	// (Removed else block because httpreq.wait() is handled inside the if/else above)
 
 	return ret;
