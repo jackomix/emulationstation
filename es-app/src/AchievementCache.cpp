@@ -1,7 +1,7 @@
+#include "AchievementCache.h"
 #include "Paths.h"
 #include "ProfileManager.h"
 #include "utils/FileSystemUtil.h"
-#include "Log.h"
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
