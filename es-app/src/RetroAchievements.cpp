@@ -1,6 +1,7 @@
 #include "RetroAchievements.h"
 #include "AchievementCache.h"
 #include "HttpReq.h"
+#include "ProfileManager.h"
 #include "ApiSystem.h"
 #include "SystemConf.h"
 #include "PlatformId.h"
@@ -386,6 +387,10 @@ UserSummary RetroAchievements::getUserSummary(const std::string& userName, int g
 	auto usrName = userName;
 	if (usrName.empty())
 		usrName = SystemConf::getInstance()->get("global.retroachievements.username");
+	if (usrName.empty())
+		usrName = ProfileManager::getInstance()->getActiveProfileName();
+	if (usrName.empty())
+		usrName = "Player";
 
 	UserSummary ret;
 

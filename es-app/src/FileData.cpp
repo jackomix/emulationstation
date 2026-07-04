@@ -890,9 +890,6 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	ProcessStartInfo process(command);
 	process.window = hideWindow ? NULL : window;
 	
-	std::map<std::string, std::string> patchedValues;
-	std::string raConfigToPatch;
-
 	std::ofstream f("/tmp/es_profile.cfg");
 	if (f.is_open()) {
 		f << "savefile_directory = \"" << Paths::getProfileSavesPath() << "\"\n";
@@ -919,20 +916,6 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			f << "cheevos_token = \"offline_token\"\n";
 			LOG(LogInfo) << "Injected offline cheevos config for user " << username;
 
-			// Also patch it directly into the ArkOS config in case the wrapper drops --appendconfig
-			std::map<std::string, std::string> cheevosVars = {
-				{"cheevos_custom_host", "http://127.0.0.1:9191"},
-				{"cheevos_enable", "true"},
-				{"cheevos_username", username},
-				{"cheevos_password", "offline_password"},
-				{"cheevos_token", "offline_token"}
-			};
-			if (command.find("retroarch32") != std::string::npos) {
-				raConfigToPatch = "/home/ark/.config/retroarch32/retroarch.cfg";
-			} else {
-				raConfigToPatch = "/home/ark/.config/retroarch/retroarch.cfg";
-			}
-			patchedValues = patchRetroarchConfig(raConfigToPatch, cheevosVars);
 		}
 
 		f.close();
@@ -950,10 +933,6 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 
 	int exitCode = process.run();
 	
-	if (!raConfigToPatch.empty() && !patchedValues.empty()) {
-		restoreRetroarchConfig(raConfigToPatch, patchedValues);
-	}
-
 	if (raGameId > 0 && window) {
 		GameInfoAndUserProgress postProgress;
 		AchievementCache::loadGameData(raGameId, postProgress);

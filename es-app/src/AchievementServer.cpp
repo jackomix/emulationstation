@@ -1,5 +1,6 @@
 #include "AchievementServer.h"
 #include "services/httplib.h"
+#include "Paths.h"
 #include "utils/FileSystemUtil.h"
 #include "AchievementCache.h"
 #include "RetroAchievements.h"
@@ -26,7 +27,7 @@ void AchievementServer::start()
 		
 		if (r == "gameid") {
 			std::string hash = req.get_param_value("m");
-			std::string hashesPath = "/roms/achievements/hashes.json";
+			std::string hashesPath = Paths::getGlobalAchievementsPath() + "/hashes.json";
 			int gameId = 0;
 			if (Utils::FileSystem::exists(hashesPath)) {
 				std::string json = Utils::FileSystem::readAllText(hashesPath);
@@ -40,7 +41,7 @@ void AchievementServer::start()
 		}
 		else if (r == "patch") {
 			std::string g = req.get_param_value("g");
-			std::string patchPath = "/roms/achievements/patchdata/" + g + ".json";
+			std::string patchPath = Paths::getGlobalAchievementsPath() + "/patchdata/" + g + ".json";
 			if (Utils::FileSystem::exists(patchPath)) {
 				res.set_content(Utils::FileSystem::readAllText(patchPath), "application/json");
 			} else {
@@ -117,7 +118,7 @@ void AchievementServer::start()
 
 	sServer->Get(R"(/Badge/(.*))", [](const httplib::Request& req, httplib::Response& res) {
 		std::string name = req.matches[1];
-		std::string localPath = "/roms/achievements/badges/" + name;
+		std::string localPath = Paths::getGlobalAchievementsPath() + "/badges/" + name;
 		if (Utils::FileSystem::exists(localPath)) {
 			res.set_content(Utils::FileSystem::readAllText(localPath), "image/png");
 		} else {

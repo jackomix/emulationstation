@@ -585,7 +585,7 @@ int main(int argc, char* argv[])
 
 	SystemConf* systemConf = SystemConf::getInstance();
 
-	if (Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json") && systemConf->get("global.retroachievements") != "1")
+	if (Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json") && systemConf->get("global.retroachievements") != "1") 
 	{
 		systemConf->set("global.retroachievements", "1");
 		Settings::getInstance()->setString("RetroachievementsOfflineMode", "always_offline");

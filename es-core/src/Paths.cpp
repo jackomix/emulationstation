@@ -85,7 +85,7 @@ Paths::Paths()
 #endif
 	loadCustomConfiguration(true); // Load paths overrides from emulationstation.ini file
 	recalculateProfilePaths();
-	mGlobalAchievementsPath = "/roms/achievements";
+	mGlobalAchievementsPath = mRootPath + "/achievements";
 }
 
 void Paths::loadCustomConfiguration(bool overridesOnly)
