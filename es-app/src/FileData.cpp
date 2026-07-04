@@ -901,10 +901,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		f << "savefiles_in_content_dir = \"false\"\n";
 		f << "savestates_in_content_dir = \"false\"\n";
 		f << "config_save_on_exit = \"false\"\n";
-	}
 
-	if (SystemConf::getInstance()->get("global.retroachievements") == "1")
-	{
 		std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
 		bool isOffline = (mode == "always_offline");
 		if (mode == "auto" || mode.empty())
