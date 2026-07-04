@@ -898,14 +898,15 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		f << "savefiles_in_content_dir = \"false\"\n";
 		f << "savestates_in_content_dir = \"false\"\n";
 		f << "config_save_on_exit = \"false\"\n";
+	std::map<std::string, std::string> patchedValues;
+	std::string raConfigToPatch;
 
+	if (systemConf->get("global.retroachievements") == "1")
+	{
 		std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
 		bool isOffline = (mode == "always_offline");
 		if (mode == "auto" || mode.empty())
 			isOffline = (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
-
-		std::map<std::string, std::string> patchedValues;
-		std::string raConfigToPatch;
 
 		if (isOffline) {
 			std::string username = SystemConf::getInstance()->get("global.retroachievements.username");

@@ -77,6 +77,7 @@ public:
 	static std::string& getProfileScreenshotsPath() { return getInstance()->mProfileScreenshotsPath; }
 	static std::string& getProfileSettingsPath() { return getInstance()->mProfileSettingsPath; }
 	static std::string& getAchievementProgressPath() { return getInstance()->mAchievementProgressPath; }
+	static std::string& getGlobalAchievementsPath() { return getInstance()->mGlobalAchievementsPath; }
 
 private:
 	static Paths* getInstance() 
@@ -124,4 +125,5 @@ private:
 	std::string mProfileScreenshotsPath;
 	std::string mProfileSettingsPath;
 	std::string mAchievementProgressPath;
+	std::string mGlobalAchievementsPath;
 };
