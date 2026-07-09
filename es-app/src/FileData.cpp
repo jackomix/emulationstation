@@ -1,6 +1,7 @@
 #include "FileData.h"
 #include "ProfileManager.h"
 #include <fstream>
+#include <stdio.h>
 
 #include "utils/FileSystemUtil.h"
 #include "utils/StringUtil.h"
