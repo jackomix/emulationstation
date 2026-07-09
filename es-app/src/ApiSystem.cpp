@@ -1685,6 +1685,8 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
 #ifdef CHEEVOS_DEV_LOGIN
 		return true;
 #endif
+		if (Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json"))
+			return true;
 		break;
 	case ApiSystem::KODI:
 		executables.push_back("kodi");

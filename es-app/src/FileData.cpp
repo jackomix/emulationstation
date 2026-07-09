@@ -39,97 +39,6 @@
 
 using namespace Utils::Platform;
 
-namespace {
-	std::map<std::string, std::string> patchRetroarchConfig(const std::string& path, const std::map<std::string, std::string>& newValues)
-	{
-		std::map<std::string, std::string> originalValues;
-		if (!Utils::FileSystem::exists(path))
-			return originalValues;
-
-		std::vector<std::string> lines;
-		std::ifstream f(path);
-		if (f.is_open())
-		{
-			std::string line;
-			while (std::getline(f, line))
-				lines.push_back(line);
-			f.close();
-		}
-		else
-			return originalValues;
-
-		std::map<std::string, std::string> toWrite = newValues;
-
-		for (auto& line : lines)
-		{
-			auto eqPos = line.find("=");
-			if (eqPos != std::string::npos)
-			{
-				std::string key = Utils::String::trim(line.substr(0, eqPos));
-				if (toWrite.find(key) != toWrite.end())
-				{
-					originalValues[key] = line; // Save original line
-					line = key + " = \"" + toWrite[key] + "\"";
-					toWrite.erase(key);
-				}
-			}
-		}
-
-		// Append any keys that were not found in the file
-		for (auto& pair : toWrite)
-		{
-			originalValues[pair.first] = ""; // empty string means it was appended
-			lines.push_back(pair.first + " = \"" + pair.second + "\"");
-		}
-
-		std::ofstream out(path);
-		for (const auto& line : lines)
-			out << line << "\n";
-		
-		return originalValues;
-	}
-
-	void restoreRetroarchConfig(const std::string& path, const std::map<std::string, std::string>& originalLines)
-	{
-		if (originalLines.empty() || !Utils::FileSystem::exists(path))
-			return;
-			
-		std::vector<std::string> lines;
-		std::ifstream f(path);
-		if (f.is_open())
-		{
-			std::string line;
-			while (std::getline(f, line))
-				lines.push_back(line);
-			f.close();
-		}
-		else
-			return;
-
-		std::vector<std::string> newLines;
-		for (auto& line : lines)
-		{
-			auto eqPos = line.find("=");
-			if (eqPos != std::string::npos)
-			{
-				std::string key = Utils::String::trim(line.substr(0, eqPos));
-				auto it = originalLines.find(key);
-				if (it != originalLines.end())
-				{
-					if (!it->second.empty())
-						newLines.push_back(it->second);
-					continue;
-				}
-			}
-			newLines.push_back(line);
-		}
-
-		std::ofstream out(path);
-		for (const auto& line : newLines)
-			out << line << "\n";
-	}
-}
-
 static std::map<std::string, std::function<BindableProperty(FileData*)>> properties =
 {
 	{ "name",				[](FileData* file) { return file->getName(); } },
@@ -371,6 +280,7 @@ const bool FileData::hasCheevos()
 	if (!hash.empty())
 	{
 		const std::map<std::string, std::string>& hashMap = AchievementCache::loadHashMap();
+		LOG(LogInfo) << "hasCheevos: hash=" << hash << " mapSize=" << hashMap.size();
 		
 		auto it = hashMap.find(Utils::String::toUpper(hash));
 		if (it != hashMap.end())
@@ -890,9 +800,6 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	ProcessStartInfo process(command);
 	process.window = hideWindow ? NULL : window;
 	
-	std::map<std::string, std::string> patchedValues;
-	std::string raConfigToPatch;
-
 	std::ofstream f("/tmp/es_profile.cfg");
 	if (f.is_open()) {
 		f << "savefile_directory = \"" << Paths::getProfileSavesPath() << "\"\n";
@@ -917,22 +824,8 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			f << "cheevos_username = \"" << username << "\"\n";
 			f << "cheevos_password = \"offline_password\"\n";
 			f << "cheevos_token = \"offline_token\"\n";
-			LOG(LogInfo) << "Injected offline cheevos config for user " << username;
+			LOG(LogInfo) << "Injected offline cheevos config for user " << username << " (mode=" << mode << ")";
 
-			// Also patch it directly into the ArkOS config in case the wrapper drops --appendconfig
-			std::map<std::string, std::string> cheevosVars = {
-				{"cheevos_custom_host", "http://127.0.0.1:9191"},
-				{"cheevos_enable", "true"},
-				{"cheevos_username", username},
-				{"cheevos_password", "offline_password"},
-				{"cheevos_token", "offline_token"}
-			};
-			if (command.find("retroarch32") != std::string::npos) {
-				raConfigToPatch = "/home/ark/.config/retroarch32/retroarch.cfg";
-			} else {
-				raConfigToPatch = "/home/ark/.config/retroarch/retroarch.cfg";
-			}
-			patchedValues = patchRetroarchConfig(raConfigToPatch, cheevosVars);
 		}
 
 		f.close();
@@ -950,10 +843,6 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 
 	int exitCode = process.run();
 	
-	if (!raConfigToPatch.empty() && !patchedValues.empty()) {
-		restoreRetroarchConfig(raConfigToPatch, patchedValues);
-	}
-
 	if (raGameId > 0 && window) {
 		GameInfoAndUserProgress postProgress;
 		AchievementCache::loadGameData(raGameId, postProgress);
@@ -1880,6 +1769,7 @@ void FileData::checkCheevosHash(bool force)
 		return;
 
 	auto crc = RetroAchievements::getCheevosHash(system, getPath());
+	LOG(LogInfo) << "checkCheevosHash computed: " << crc << " for " << getPath();
 	getMetadata().set(MetaDataId::CheevosHash, Utils::String::toUpper(crc));
 	saveToGamelistRecovery(this);
 }

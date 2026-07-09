@@ -262,7 +262,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS) &&
 			SystemConf::getInstance()->getBool("global.retroachievements") &&
 			Settings::getInstance()->getBool("RetroachievementsMenuitem") &&
-			(SystemConf::getInstance()->get("global.retroachievements.username") != "" || Utils::FileSystem::exists("/roms/achievements/hashes.json")))
+			(SystemConf::getInstance()->get("global.retroachievements.username") != "" || Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json")))
 			addEntry(_("RETROACHIEVEMENTS").c_str(), true, [this] {
 					GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
