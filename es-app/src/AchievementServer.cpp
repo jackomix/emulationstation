@@ -162,8 +162,7 @@ void AchievementServer::start()
 						res.set_content(buffer.GetString(), "application/json");
 						return;
 					}
-					res.set_content(jsonStr, "application/json");
-					return;
+					// If it wasn't valid PatchData, fall through to fallback
 				}
 			}
 			std::string fallbackJson = "{\"Success\":true,\"GameId\":0,\"Title\":\"Unknown Game\",\"ConsoleId\":0,\"ImageIconUrl\":\"\",\"RichPresenceGameId\":0,\"RichPresencePatch\":\"\",\"Sets\":[]}";
