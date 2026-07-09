@@ -8,6 +8,7 @@
 #include <iomanip> 
 #include <SDL_timer.h>
 #include "Paths.h"
+#include "utils/StringUtil.h"
 
 #if WIN32
 #include <Windows.h>
@@ -49,8 +50,8 @@ void Log::init()
     auto logPath = Paths::getUserEmulationStationPath() + "/es_log.txt";
 #endif
 
-	if (Paths::getExePath() == "/roms/ports/es_test") {
-		logPath = "/roms/ports/es_log.txt";
+	if (Utils::String::startsWith(Paths::getExePath(), "/roms/")) {
+		logPath = Paths::getExePath() + "/es_log.txt";
 	}
 	auto bakPath = logPath + ".bak";
 
