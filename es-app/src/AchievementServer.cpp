@@ -7,6 +7,7 @@
 #include <thread>
 #include <memory>
 #include <rapidjson/document.h>
+#include "Log.h"
 
 static std::unique_ptr<httplib::Server> sServer;
 static std::thread sThread;
