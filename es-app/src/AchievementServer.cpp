@@ -166,7 +166,8 @@ void AchievementServer::start()
 					return;
 				}
 			}
-			res.status = 404;
+			std::string fallbackJson = "{\"Success\":true,\"GameId\":0,\"Title\":\"Unknown Game\",\"ConsoleId\":0,\"ImageIconUrl\":\"\",\"RichPresenceGameId\":0,\"RichPresencePatch\":\"\",\"Sets\":[]}";
+			res.set_content(fallbackJson, "application/json");
 		}
 		else if (r == "startsession") {
 			res.set_content("{\"Success\":true,\"ServerNow\":" + std::to_string(time(nullptr)) + ",\"Unlocks\":[],\"HardcoreUnlocks\":[]}", "application/json");
@@ -228,7 +229,7 @@ void AchievementServer::start()
 				AchievementCache::saveUserProgress(gameId, prog);
 				res.set_content("{\"Success\":true,\"Score\":10,\"SoftcoreScore\":10,\"AchievementID\":" + a + ",\"AchievementsRemaining\":0}", "application/json");
 			} else {
-				res.status = 404;
+				res.set_content("{\"Success\":false,\"Error\":\"Game not found\"}", "application/json");
 			}
 		}
 	};
