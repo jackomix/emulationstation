@@ -800,10 +800,10 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 
 	ProcessStartInfo process(command);
 	
-	FILE* f_dbg = fopen("/home/ark/es_debug.log", "a");
-	if (f_dbg) {
-		fprintf(f_dbg, "\n[RetroArch Launch]\nCommand: %s\n\n", command.c_str());
-		fclose(f_dbg);
+	std::ofstream f_dbg("/home/ark/es_debug.log", std::ios::app);
+	if (f_dbg.is_open()) {
+		f_dbg << "\n[RetroArch Launch]\nCommand: " << command << "\n\n";
+		f_dbg.close();
 	}
 	process.window = hideWindow ? NULL : window;
 	
