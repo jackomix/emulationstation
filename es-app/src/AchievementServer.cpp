@@ -37,7 +37,7 @@ void AchievementServer::start()
 		}
 		std::string r = req.get_param_value("r");
 		
-		if (r == "gameid") {
+		if (r == "achievementsets") {
 			std::string hash = req.get_param_value("m");
 			std::string hashesPath = Paths::getGlobalAchievementsPath() + "/hashes.json";
 			int gameId = 0;
@@ -49,21 +49,19 @@ void AchievementServer::start()
 					gameId = doc[hash.c_str()].GetInt();
 				}
 			}
-			res.set_content("{\"GameID\":" + std::to_string(gameId) + "}", "application/json");
-		}
-		else if (r == "patch") {
-			std::string g = req.get_param_value("g");
-			std::string patchPath = Paths::getGlobalAchievementsPath() + "/patchdata/" + g + ".json";
-			if (Utils::FileSystem::exists(patchPath)) {
-				res.set_content(Utils::FileSystem::readAllText(patchPath), "application/json");
-			} else {
-				res.status = 404;
+			if (gameId != 0) {
+				std::string patchPath = Paths::getGlobalAchievementsPath() + "/patchdata/" + std::to_string(gameId) + ".json";
+				if (Utils::FileSystem::exists(patchPath)) {
+					res.set_content(Utils::FileSystem::readAllText(patchPath), "application/json");
+					return;
+				}
 			}
+			res.status = 404;
 		}
 		else if (r == "startsession") {
 			res.set_content("{\"Success\":true}", "application/json");
 		}
-		else if (r == "login") {
+		else if (r == "login" || r == "login2") {
 			std::string u = req.get_param_value("u");
 			if (u.empty()) u = "offline";
 			std::string jsonStr = "{\"Success\":true,\"User\":\"" + u + "\",\"Token\":\"offline_token\",\"Score\":0,\"SoftcoreScore\":0,\"DisplayName\":\"" + u + "\"}";
