@@ -31,14 +31,39 @@ void AchievementServer::start()
 			std::string action = req.get_param_value("r");
 			LOG(LogInfo) << "AchievementServer action: " << action;
 		}
-		if (!req.has_param("r")) {
+		std::map<std::string, std::string> postParams;
+		if (!req.body.empty()) {
+			std::string body = req.body;
+			size_t pos = 0;
+			while ((pos = body.find('&')) != std::string::npos) {
+				std::string pair = body.substr(0, pos);
+				size_t eqPos = pair.find('=');
+				if (eqPos != std::string::npos) {
+					postParams[pair.substr(0, eqPos)] = pair.substr(eqPos + 1);
+				}
+				body.erase(0, pos + 1);
+			}
+			size_t eqPos = body.find('=');
+			if (eqPos != std::string::npos) {
+				postParams[body.substr(0, eqPos)] = body.substr(eqPos + 1);
+			}
+		}
+
+		auto getParam = [&](const std::string& key) -> std::string {
+			if (req.has_param(key.c_str())) return req.get_param_value(key.c_str());
+			if (postParams.find(key) != postParams.end()) return postParams[key];
+			return "";
+		};
+
+		if (getParam("r").empty()) {
 			res.status = 400;
 			return;
 		}
-		std::string r = req.get_param_value("r");
+		std::string r = getParam("r");
+
 		
 		if (r == "achievementsets") {
-			std::string hash = req.get_param_value("m");
+			std::string hash = getParam("m");
 			std::string hashesPath = Paths::getGlobalAchievementsPath() + "/hashes.json";
 			int gameId = 0;
 			if (Utils::FileSystem::exists(hashesPath)) {
@@ -62,13 +87,13 @@ void AchievementServer::start()
 			res.set_content("{\"Success\":true}", "application/json");
 		}
 		else if (r == "login" || r == "login2") {
-			std::string u = req.get_param_value("u");
+			std::string u = getParam("u");
 			if (u.empty()) u = "offline";
 			std::string jsonStr = "{\"Success\":true,\"User\":\"" + u + "\",\"Token\":\"offline_token\",\"Score\":0,\"SoftcoreScore\":0,\"DisplayName\":\"" + u + "\"}";
 			res.set_content(jsonStr, "application/json");
 		}
 		else if (r == "awardachievement") {
-			std::string a = req.get_param_value("a");
+			std::string a = getParam("a");
 			int gameId = -1;
 			std::string gamesDir = "/roms/achievements/games";
 			auto files = Utils::FileSystem::getDirContent(gamesDir);
@@ -101,7 +126,7 @@ void AchievementServer::start()
 				AchievementCache::loadGameData(gameId, prog);
 				AchievementCache::loadUserProgress(gameId, prog);
 				
-				bool hardcore = req.has_param("h") && req.get_param_value("h") == "1";
+				bool hardcore = getParam("h") == "1";
 				
 				for (auto& ach : prog.Achievements) {
 					if (ach.ID == a) {
