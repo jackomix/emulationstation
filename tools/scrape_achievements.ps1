@@ -114,100 +114,108 @@ $CountNoMatch = 0
 $CountFailed = 0
 $CountSkipped = 0
 
-foreach ($File in $RomFiles) {
-    $CountProcessed++
-    $ParentDir = $File.Directory.Name
-    $SysKey = Get-SystemKey -FolderName $ParentDir
-    
-    Write-Host "[$CountProcessed/$TotalRoms] Hashing: $($File.Name)"
-    
-    if ($SysKey -eq "UNKNOWN") {
-        Write-Host "  -> Skipping: Unknown system folder '$ParentDir'"
-        $CountSkipped++
-        continue
-    }
-    
-    # Run RAHasher
-    $HashOutput = & $HasherPath $SysKey $File.FullName 2>$null
-    
-    if ($HashOutput -is [array]) {
-        $Hash = $HashOutput[-1].Trim()
-    } else {
-        $Hash = $HashOutput.Trim()
-    }
-    
-    if ($Hash -and $Hash.Length -eq 32) {
-        $IdUrl = "https://retroachievements.org/dorequest.php?r=gameid&m=$Hash"
+try {
+    foreach ($File in $RomFiles) {
+        $CountProcessed++
+        $ParentDir = $File.Directory.Name
+        $SysKey = Get-SystemKey -FolderName $ParentDir
         
-        try {
-            $IdJson = Invoke-RestMethod -Uri $IdUrl -UserAgent "RetroArch"
-            $GameId = $IdJson.GameID
+        Write-Host "[$CountProcessed/$TotalRoms] Hashing: $($File.Name)"
+        
+        if ($SysKey -eq "UNKNOWN") {
+            Write-Host "  -> Skipping: Unknown system folder '$ParentDir'"
+            $CountSkipped++
+            continue
+        }
+        
+        # Run RAHasher
+        $HashOutput = & $HasherPath $SysKey $File.FullName 2>$null
+        
+        if ($HashOutput -is [array]) {
+            $Hash = $HashOutput[-1].Trim()
+        } else {
+            $Hash = $HashOutput.Trim()
+        }
+        
+        if ($Hash -and $Hash.Length -eq 32) {
+            $IdUrl = "https://retroachievements.org/dorequest.php?r=gameid&m=$Hash"
             
-            if ($GameId -and $GameId -ne 0) {
-                $CountMatched++
+            try {
+                $IdJson = Invoke-RestMethod -Uri $IdUrl -UserAgent "RetroArch"
+                $GameId = $IdJson.GameID
                 
-                $HashesObj[$Hash] = [int]$GameId
-                
-                $OutFile = Join-Path -Path $DEST_DIR -ChildPath "games\$GameId.json"
-                if (Test-Path -Path $OutFile) {
-                    Write-Host "  -> Found Game ID: $GameId (Already cached, skipping)"
-                    $CountSaved++
-                } else {
-                    Write-Host "  -> Found Game ID: $GameId. Fetching achievements..."
+                if ($GameId -and $GameId -ne 0) {
+                    $CountMatched++
                     
-                    $DataUrl = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GameId&u=$RA_USER"
-                    $DataJson = Invoke-RestMethod -Uri $DataUrl
+                    if ($FirstHash) {
+                        (Get-Content -Path $HashesFile) -replace '}', "  `"$Hash`": $GameId`}" | Set-Content -Path $HashesFile
+                        $FirstHash = $false
+                    } else {
+                        (Get-Content -Path $HashesFile) -replace '}', ", `"$Hash`": $GameId`}" | Set-Content -Path $HashesFile
+                    }
                     
-                    $JsonString = $DataJson | ConvertTo-Json -Depth 10
-                    Set-Content -Path $OutFile -Value $JsonString
-                    Write-Host "  -> Saved data for Game $GameId."
-                    $CountSaved++
-                    
-                    # Parse badges and download them
-                    if ($DataJson.Achievements -and $DataJson.Achievements.PSObject.Properties) {
-                        foreach ($Prop in $DataJson.Achievements.PSObject.Properties) {
-                            $BadgeName = $Prop.Value.BadgeName
-                            if ($BadgeName) {
-                                $BadgeFile = Join-Path -Path $DEST_DIR -ChildPath "badges\$BadgeName.png"
-                                if (-not (Test-Path -Path $BadgeFile)) {
-                                    try {
-                                        Invoke-WebRequest -Uri "https://media.retroachievements.org/Badge/$BadgeName.png" -OutFile $BadgeFile -ErrorAction SilentlyContinue
-                                    } catch {}
-                                }
-                                $BadgeLockFile = Join-Path -Path $DEST_DIR -ChildPath "badges\${BadgeName}_lock.png"
-                                if (-not (Test-Path -Path $BadgeLockFile)) {
-                                    try {
-                                        Invoke-WebRequest -Uri "https://media.retroachievements.org/Badge/${BadgeName}_lock.png" -OutFile $BadgeLockFile -ErrorAction SilentlyContinue
-                                    } catch {}
+                    $OutFile = Join-Path -Path $DEST_DIR -ChildPath "games\$GameId.json"
+                    if (Test-Path -Path $OutFile) {
+                        Write-Host "  -> Found Game ID: $GameId (Already cached, skipping)"
+                        $CountSaved++
+                    } else {
+                        Write-Host "  -> Found Game ID: $GameId. Fetching achievements..."
+                        
+                        $DataUrl = "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=$RA_USER&y=$RA_API_KEY&g=$GameId&u=$RA_USER"
+                        $DataJson = Invoke-RestMethod -Uri $DataUrl
+                        
+                        $JsonString = $DataJson | ConvertTo-Json -Depth 10
+                        Set-Content -Path $OutFile -Value $JsonString
+                        Write-Host "  -> Saved data for Game $GameId."
+                        $CountSaved++
+                        
+                        # Parse badges and download them
+                        if ($DataJson.Achievements -and $DataJson.Achievements.PSObject.Properties) {
+                            foreach ($Prop in $DataJson.Achievements.PSObject.Properties) {
+                                $BadgeName = $Prop.Value.BadgeName
+                                if ($BadgeName) {
+                                    $BadgeFile = Join-Path -Path $DEST_DIR -ChildPath "badges\$BadgeName.png"
+                                    if (-not (Test-Path -Path $BadgeFile)) {
+                                        try {
+                                            Invoke-WebRequest -Uri "https://media.retroachievements.org/Badge/$BadgeName.png" -OutFile $BadgeFile -ErrorAction SilentlyContinue
+                                        } catch {}
+                                    }
+                                    $BadgeLockFile = Join-Path -Path $DEST_DIR -ChildPath "badges\${BadgeName}_lock.png"
+                                    if (-not (Test-Path -Path $BadgeLockFile)) {
+                                        try {
+                                            Invoke-WebRequest -Uri "https://media.retroachievements.org/Badge/${BadgeName}_lock.png" -OutFile $BadgeLockFile -ErrorAction SilentlyContinue
+                                        } catch {}
+                                    }
                                 }
                             }
                         }
+                        
+                        # Download patchdata for rcheevos
+                        $PatchFile = Join-Path -Path $DEST_DIR -ChildPath "patchdata\$GameId.json"
+                        if (-not (Test-Path -Path $PatchFile)) {
+                            $PatchDataUrl = "https://retroachievements.org/dorequest.php?r=patch&u=$RA_USER&g=$GameId"
+                            Invoke-WebRequest -Uri $PatchDataUrl -OutFile $PatchFile -ErrorAction SilentlyContinue
+                        }
+                        
+                        Start-Sleep -Milliseconds 200
                     }
-                    
-                    # Download patchdata for rcheevos
-                    $PatchFile = Join-Path -Path $DEST_DIR -ChildPath "patchdata\$GameId.json"
-                    if (-not (Test-Path -Path $PatchFile)) {
-                        $PatchDataUrl = "https://retroachievements.org/dorequest.php?r=patch&u=$RA_USER&g=$GameId"
-                        Invoke-WebRequest -Uri $PatchDataUrl -OutFile $PatchFile -ErrorAction SilentlyContinue
-                    }
-                    
-                    Start-Sleep -Milliseconds 200
+                } else {
+                    Write-Host "  -> No RetroAchievements match for this ROM."
+                    $CountNoMatch++
                 }
-            } else {
-                Write-Host "  -> No RetroAchievements match for this ROM."
+            } catch {
+                Write-Host "  -> Error: Failed to lookup hash or fetch data from RA API."
                 $CountNoMatch++
             }
-        } catch {
-            Write-Host "  -> Error: Failed to lookup hash or fetch data from RA API."
-            $CountNoMatch++
+        } else {
+            Write-Host "  -> Error: Failed to hash file or unsupported format."
+            $CountFailed++
         }
-    } else {
-        Write-Host "  -> Error: Failed to hash file or unsupported format."
-        $CountFailed++
     }
+} finally {
+    Write-Host ""
+    Write-Host "Processing finished."
 }
-
-$HashesObj | ConvertTo-Json | Set-Content -Path (Join-Path -Path $DEST_DIR -ChildPath "hashes.json")
 
 Write-Host ""
 Write-Host "=========================================="

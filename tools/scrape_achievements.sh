@@ -81,6 +81,15 @@ fi
 echo "{" > "$DEST_DIR/hashes.json"
 FIRST_HASH=1
 
+# Graceful exit on Ctrl+C so hashes.json doesn't get corrupted
+cleanup_and_exit() {
+    echo ""
+    echo "Process interrupted! Saving progress and closing JSON safely..."
+    echo "}" >> "$DEST_DIR/hashes.json"
+    exit 1
+}
+trap cleanup_and_exit SIGINT
+
 echo "Setup complete. Scanning ROMs..."
 
 # Function to map folder name to RAHasher system key
