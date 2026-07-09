@@ -7,6 +7,9 @@
 #include <thread>
 #include <memory>
 #include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
+#include <ctime>
 #include "Log.h"
 
 static std::unique_ptr<httplib::Server> sServer;
@@ -15,8 +18,6 @@ static bool sRunning = false;
 
 void AchievementServer::start()
 {
-	system("echo 'AchievementServer::start() explicitly invoked' >> /home/ark/es_debug.log");
-	
 	if (sRunning) return;
 	
 	sServer = std::make_unique<httplib::Server>();
@@ -55,14 +56,34 @@ void AchievementServer::start()
 			return "";
 		};
 
-		if (getParam("r").empty()) {
+		std::string r = getParam("r");
+		if (r.empty()) {
 			res.status = 400;
 			return;
 		}
-		std::string r = getParam("r");
 
 		
-		if (r == "achievementsets") {
+		if (r == "gameid") {
+			std::string hash = getParam("m");
+			std::string hashesPath = Paths::getGlobalAchievementsPath() + "/hashes.json";
+			int gameId = 0;
+			if (Utils::FileSystem::exists(hashesPath)) {
+				std::string json = Utils::FileSystem::readAllText(hashesPath);
+				rapidjson::Document doc;
+				doc.Parse(json.c_str());
+				if (!doc.HasParseError() && doc.HasMember(hash.c_str())) {
+					gameId = doc[hash.c_str()].GetInt();
+				}
+			}
+			res.set_content("{\"Success\":true,\"GameID\":" + std::to_string(gameId) + "}", "application/json");
+		}
+		else if (r == "ping") {
+			res.set_content("{\"Success\":true}", "application/json");
+		}
+		else if (r == "submitlbentry") {
+			res.set_content("{\"Success\":true,\"Response\":{\"Score\":0,\"BestScore\":0,\"RankInfo\":{\"Rank\":1,\"NumEntries\":1}}}", "application/json");
+		}
+		else if (r == "achievementsets") {
 			std::string hash = getParam("m");
 			std::string hashesPath = Paths::getGlobalAchievementsPath() + "/hashes.json";
 			int gameId = 0;
@@ -77,14 +98,78 @@ void AchievementServer::start()
 			if (gameId != 0) {
 				std::string patchPath = Paths::getGlobalAchievementsPath() + "/patchdata/" + std::to_string(gameId) + ".json";
 				if (Utils::FileSystem::exists(patchPath)) {
-					res.set_content(Utils::FileSystem::readAllText(patchPath), "application/json");
+					std::string jsonStr = Utils::FileSystem::readAllText(patchPath);
+					rapidjson::Document patchDoc;
+					patchDoc.Parse(jsonStr.c_str());
+					if (!patchDoc.HasParseError() && patchDoc.HasMember("PatchData")) {
+						const rapidjson::Value& pd = patchDoc["PatchData"];
+						rapidjson::Document v2Doc;
+						v2Doc.SetObject();
+						rapidjson::Document::AllocatorType& allocator = v2Doc.GetAllocator();
+						
+						v2Doc.AddMember("Success", true, allocator);
+						if (pd.HasMember("ID")) v2Doc.AddMember("GameId", rapidjson::Value(pd["ID"], allocator), allocator);
+						if (pd.HasMember("Title")) v2Doc.AddMember("Title", rapidjson::Value(pd["Title"], allocator), allocator);
+						if (pd.HasMember("ConsoleID")) v2Doc.AddMember("ConsoleId", rapidjson::Value(pd["ConsoleID"], allocator), allocator);
+						
+						rapidjson::Value imageIconValue;
+						if (pd.HasMember("ImageIcon") && pd["ImageIcon"].IsString()) {
+							std::string iconStr = pd["ImageIcon"].GetString();
+							if (iconStr.find("http") != 0) iconStr = "https://retroachievements.org" + iconStr;
+							imageIconValue.SetString(iconStr.c_str(), allocator);
+						} else {
+							imageIconValue.SetString("", allocator);
+						}
+						v2Doc.AddMember("ImageIconUrl", imageIconValue, allocator);
+						
+						if (pd.HasMember("ID")) v2Doc.AddMember("RichPresenceGameId", rapidjson::Value(pd["ID"], allocator), allocator);
+						v2Doc.AddMember("RichPresencePatch", "", allocator);
+						
+						rapidjson::Value setsArray(rapidjson::kArrayType);
+						rapidjson::Value setObj(rapidjson::kObjectType);
+						setObj.AddMember("AchievementSetId", 1, allocator);
+						if (pd.HasMember("ID")) setObj.AddMember("GameId", rapidjson::Value(pd["ID"], allocator), allocator);
+						setObj.AddMember("Title", rapidjson::Value(rapidjson::kNullType), allocator);
+						setObj.AddMember("Type", "core", allocator);
+						
+						rapidjson::Value setIconValue;
+						setIconValue.CopyFrom(v2Doc["ImageIconUrl"], allocator);
+						setObj.AddMember("ImageIconUrl", setIconValue, allocator);
+						
+						if (pd.HasMember("Achievements")) {
+							rapidjson::Value achArray(rapidjson::kArrayType);
+							achArray.CopyFrom(pd["Achievements"], allocator);
+							setObj.AddMember("Achievements", achArray, allocator);
+						} else {
+							setObj.AddMember("Achievements", rapidjson::Value(rapidjson::kArrayType), allocator);
+						}
+						
+						if (pd.HasMember("Leaderboards")) {
+							rapidjson::Value lbArray(rapidjson::kArrayType);
+							lbArray.CopyFrom(pd["Leaderboards"], allocator);
+							setObj.AddMember("Leaderboards", lbArray, allocator);
+						} else {
+							setObj.AddMember("Leaderboards", rapidjson::Value(rapidjson::kArrayType), allocator);
+						}
+						
+						setsArray.PushBack(setObj, allocator);
+						v2Doc.AddMember("Sets", setsArray, allocator);
+						
+						rapidjson::StringBuffer buffer;
+						rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+						v2Doc.Accept(writer);
+						
+						res.set_content(buffer.GetString(), "application/json");
+						return;
+					}
+					res.set_content(jsonStr, "application/json");
 					return;
 				}
 			}
 			res.status = 404;
 		}
 		else if (r == "startsession") {
-			res.set_content("{\"Success\":true}", "application/json");
+			res.set_content("{\"Success\":true,\"ServerNow\":" + std::to_string(time(nullptr)) + ",\"Unlocks\":[],\"HardcoreUnlocks\":[]}", "application/json");
 		}
 		else if (r == "login" || r == "login2") {
 			std::string u = getParam("u");
@@ -141,7 +226,7 @@ void AchievementServer::start()
 				}
 				
 				AchievementCache::saveUserProgress(gameId, prog);
-				res.set_content("{\"Success\":true,\"Score\":10}", "application/json");
+				res.set_content("{\"Success\":true,\"Score\":10,\"SoftcoreScore\":10,\"AchievementID\":" + a + ",\"AchievementsRemaining\":0}", "application/json");
 			} else {
 				res.status = 404;
 			}
@@ -164,13 +249,7 @@ void AchievementServer::start()
 
 	sRunning = true;
 	sThread = std::thread([]() {
-		system("echo 'AchievementServer thread started' >> /home/ark/es_debug.log");
-		bool res = sServer->listen("127.0.0.1", 9191);
-		if (res) {
-			system("echo 'AchievementServer listen() returned true' >> /home/ark/es_debug.log");
-		} else {
-			system("echo 'AchievementServer listen() FAILED' >> /home/ark/es_debug.log");
-		}
+		sServer->listen("127.0.0.1", 9191);
 	});
 }
 
