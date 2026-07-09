@@ -832,8 +832,17 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			f << "cheevos_username = \"" << username << "\"\n";
 			f << "cheevos_password = \"offline_password\"\n";
 			f << "cheevos_token = \"offline_token\"\n";
+			
+			f << "log_verbosity = \"true\"\n";
+			f << "log_to_file = \"true\"\n";
+			f << "log_to_file_timestamp = \"false\"\n";
+			f << "log_dir = \"/home/ark/\"\n";
+			f << "log_level = \"0\"\n";
+			f << "libretro_log_level = \"0\"\n";
+			f << "cheevos_verbose_enable = \"true\"\n";
+			
+			f.close();
 			LOG(LogError) << "Injected offline cheevos config for user " << username << " (mode=" << mode << ")";
-
 		}
 
 		f.close();
