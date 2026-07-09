@@ -48,6 +48,10 @@ void Log::init()
 #else	
     auto logPath = Paths::getUserEmulationStationPath() + "/es_log.txt";
 #endif
+
+	if (Paths::getExePath() == "/roms/ports/es_test") {
+		logPath = "/roms/ports/es_log.txt";
+	}
 	auto bakPath = logPath + ".bak";
 
 	if ((int)lvl < 0) 

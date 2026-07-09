@@ -280,7 +280,7 @@ const bool FileData::hasCheevos()
 	if (!hash.empty())
 	{
 		const std::map<std::string, std::string>& hashMap = AchievementCache::loadHashMap();
-		LOG(LogInfo) << "hasCheevos: hash=" << hash << " mapSize=" << hashMap.size();
+		LOG(LogError) << "hasCheevos: hash=" << hash << " mapSize=" << hashMap.size();
 		
 		auto it = hashMap.find(Utils::String::toUpper(hash));
 		if (it != hashMap.end())
@@ -824,7 +824,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			f << "cheevos_username = \"" << username << "\"\n";
 			f << "cheevos_password = \"offline_password\"\n";
 			f << "cheevos_token = \"offline_token\"\n";
-			LOG(LogInfo) << "Injected offline cheevos config for user " << username << " (mode=" << mode << ")";
+			LOG(LogError) << "Injected offline cheevos config for user " << username << " (mode=" << mode << ")";
 
 		}
 
@@ -1769,7 +1769,7 @@ void FileData::checkCheevosHash(bool force)
 		return;
 
 	auto crc = RetroAchievements::getCheevosHash(system, getPath());
-	LOG(LogInfo) << "checkCheevosHash computed: " << crc << " for " << getPath();
+	LOG(LogError) << "checkCheevosHash computed: " << crc << " for " << getPath();
 	getMetadata().set(MetaDataId::CheevosHash, Utils::String::toUpper(crc));
 	saveToGamelistRecovery(this);
 }
