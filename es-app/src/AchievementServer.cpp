@@ -15,6 +15,8 @@ static bool sRunning = false;
 
 void AchievementServer::start()
 {
+	system("echo 'AchievementServer::start() explicitly invoked' >> /home/ark/es_debug.log");
+	
 	if (sRunning) return;
 	
 	sServer = std::make_unique<httplib::Server>();
@@ -139,8 +141,13 @@ void AchievementServer::start()
 
 	sRunning = true;
 	sThread = std::thread([]() {
-		LOG(LogInfo) << "AchievementServer listening on 127.0.0.1:9191";
-		sServer->listen("127.0.0.1", 9191);
+		system("echo 'AchievementServer thread started' >> /home/ark/es_debug.log");
+		bool res = sServer->listen("127.0.0.1", 9191);
+		if (res) {
+			system("echo 'AchievementServer listen() returned true' >> /home/ark/es_debug.log");
+		} else {
+			system("echo 'AchievementServer listen() FAILED' >> /home/ark/es_debug.log");
+		}
 	});
 }
 
