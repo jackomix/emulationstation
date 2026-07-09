@@ -811,8 +811,10 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 
 		std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
 		bool isOffline = (mode == "always_offline");
-		if (mode == "auto" || mode.empty())
-			isOffline = (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
+		if (mode == "auto" || mode.empty()) {
+			isOffline = (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || 
+						Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json");
+		}
 
 		if (isOffline) {
 			std::string username = SystemConf::getInstance()->get("global.retroachievements.username");
