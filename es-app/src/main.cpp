@@ -584,6 +584,7 @@ int main(int argc, char* argv[])
 	}
 
 	SystemConf* systemConf = SystemConf::getInstance();
+	AchievementServer::getInstance()->start();
 
 	if (Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json") && systemConf->get("global.retroachievements") != "1")
 	{
