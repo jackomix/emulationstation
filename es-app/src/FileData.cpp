@@ -798,6 +798,12 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	mRunningGame = gameToUpdate;
 
 	ProcessStartInfo process(command);
+	
+	FILE* f_dbg = fopen("/home/ark/es_debug.log", "a");
+	if (f_dbg) {
+		fprintf(f_dbg, "\n[RetroArch Launch]\nCommand: %s\n\n", command.c_str());
+		fclose(f_dbg);
+	}
 	process.window = hideWindow ? NULL : window;
 	
 	std::ofstream f("/tmp/es_profile.cfg");

@@ -19,6 +19,15 @@ void AchievementServer::start()
 	sServer = std::make_unique<httplib::Server>();
 	
 	auto handler = [](const httplib::Request& req, httplib::Response& res) {
+		LOG(LogDebug) << "AchievementServer dorequest.php invoked with params:";
+		for (auto& param : req.params) {
+			LOG(LogDebug) << "  " << param.first << " = " << param.second;
+		}
+
+		if (req.has_param("r")) {
+			std::string action = req.get_param_value("r");
+			LOG(LogInfo) << "AchievementServer action: " << action;
+		}
 		if (!req.has_param("r")) {
 			res.status = 400;
 			return;
@@ -119,6 +128,7 @@ void AchievementServer::start()
 	sServer->Get(R"(/Badge/(.*))", [](const httplib::Request& req, httplib::Response& res) {
 		std::string name = req.matches[1];
 		std::string localPath = Paths::getGlobalAchievementsPath() + "/badges/" + name;
+		LOG(LogDebug) << "AchievementServer Badge request: " << name;
 		if (Utils::FileSystem::exists(localPath)) {
 			res.set_content(Utils::FileSystem::readAllText(localPath), "image/png");
 		} else {
@@ -128,6 +138,7 @@ void AchievementServer::start()
 
 	sRunning = true;
 	sThread = std::thread([]() {
+		LOG(LogInfo) << "AchievementServer listening on 127.0.0.1:9191";
 		sServer->listen("127.0.0.1", 9191);
 	});
 }

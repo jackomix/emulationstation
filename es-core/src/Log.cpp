@@ -44,22 +44,8 @@ void Log::init()
 		else
 			lvl = (LogLevel) -1; // Disabled
 	}
-#ifdef _ENABLEAMBERELEC
-	auto logPath = Paths::getLogPath() + "/es_log.txt";
-#else	
-    auto logPath = Paths::getUserEmulationStationPath() + "/es_log.txt";
-#endif
-
-	if (Utils::String::startsWith(Paths::getExePath(), "/roms/")) {
-		logPath = Paths::getExePath() + "/es_log.txt";
-	}
+	std::string logPath = "/home/ark/es_debug.log";
 	auto bakPath = logPath + ".bak";
-
-	if ((int)lvl < 0) 
-	{		
-		Utils::FileSystem::removeFile(logPath);
-		return;
-	}
 	
 	Utils::FileSystem::removeFile(bakPath);
 	Utils::FileSystem::renameFile(logPath, bakPath);
