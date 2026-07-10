@@ -54,10 +54,12 @@ public:
 		std::string desc = mGameInfo.Description;
 		desc += _U(" - ") + _("Points") + ": " + mGameInfo.Points;
 
-		if (!mGameInfo.DateEarnedHardcore.empty())
+		if (!mGameInfo.DateEarnedHardcore.empty()) {
 			desc += _U("  \uf091  ") + _("Unlocked on") + ": " + mGameInfo.DateEarnedHardcore + _U(" - ") + _("HARDCORE MODE");
-		else if (!mGameInfo.DateEarned.empty())
-			desc += _U("  \uf091  ") + _("Unlocked on") + ": " + mGameInfo.DateEarned;			
+		}
+		else if (!mGameInfo.DateEarned.empty()) {
+			desc += _U("  \uf091  ") + _("Unlocked on") + ": " + mGameInfo.DateEarned;
+		}
 
 		mText = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, theme->Text.font, theme->Text.color);
 		mText->setVerticalAlignment(ALIGN_TOP);

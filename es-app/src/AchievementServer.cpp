@@ -2,6 +2,7 @@
 #include "services/httplib.h"
 #include "Paths.h"
 #include "utils/FileSystemUtil.h"
+#include "utils/TimeUtil.h"
 #include "AchievementCache.h"
 #include "RetroAchievements.h"
 #include <thread>
@@ -211,14 +212,15 @@ void AchievementServer::start()
 				
 				bool hardcore = getParam("h") == "1";
 				int remaining = 0;
+				std::string nowStr = Utils::Time::timeToString(Utils::Time::now(), "%Y-%m-%d %H:%M:%S") + " (offline)";
 				
 				for (auto& ach : prog.Achievements) {
 					if (ach.ID == a) {
 						if (ach.DateEarned.empty()) {
-							ach.DateEarned = "offline";
+							ach.DateEarned = nowStr;
 						}
 						if (hardcore && ach.DateEarnedHardcore.empty()) {
-							ach.DateEarnedHardcore = "offline";
+							ach.DateEarnedHardcore = nowStr;
 						}
 					}
 					

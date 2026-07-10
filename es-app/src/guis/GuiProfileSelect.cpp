@@ -7,6 +7,7 @@
 #include "Settings.h"
 #include "Log.h"
 #include "ThemeData.h"
+#include "views/ViewController.h"
 
 GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& doneCallback)
 	: GuiSettings(window, _("SELECT PROFILE")), mDoneCallback(doneCallback)
@@ -28,6 +29,7 @@ void GuiProfileSelect::populateProfiles()
 	{
 		addEntry(profile.name, true, [this, profile]() {
 			ProfileManager::getInstance()->setActiveProfile(profile.name);
+			ViewController::get()->reloadAll(mWindow);
 
 			if (mDoneCallback)
 			{
@@ -55,6 +57,7 @@ void GuiProfileSelect::createNewProfilePrompt()
 		if (success)
 		{
 			ProfileManager::getInstance()->setActiveProfile(val);
+			ViewController::get()->reloadAll(mWindow);
 
 			if (mDoneCallback)
 			{
