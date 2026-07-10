@@ -66,6 +66,7 @@ fi
 
 DEST_DIR="$SD_PATH/achievements"
 mkdir -p "$DEST_DIR/games"
+mkdir -p "$DEST_DIR/images"
 mkdir -p "$DEST_DIR/badges"
 mkdir -p "$DEST_DIR/patchdata"
 
@@ -212,6 +213,15 @@ while IFS= read -r ROM_FILE; do
                             fi
                             if [ ! -f "$DEST_DIR/badges/${badge}_lock.png" ]; then
                                 curl -sL "https://media.retroachievements.org/Badge/${badge}_lock.png" -o "$DEST_DIR/badges/${badge}_lock.png"
+                            fi
+                        done
+                        
+                        # Parse game images and download them (BoxArt, Icon, Title)
+                        IMAGES=$(echo "$JSON_OUT" | grep -o '"Image[a-zA-Z]*":"[^"]*"' | cut -d'"' -f4 | sort -u | grep "^/Images/")
+                        for img in $IMAGES; do
+                            IMG_FILENAME=$(basename "$img")
+                            if [ ! -f "$DEST_DIR/images/${IMG_FILENAME}" ]; then
+                                curl -sL "https://media.retroachievements.org${img}" -o "$DEST_DIR/images/${IMG_FILENAME}"
                             fi
                         done
                         
