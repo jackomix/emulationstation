@@ -141,39 +141,7 @@ void AchievementServer::start()
 							rapidjson::Value achArray(rapidjson::kArrayType);
 							achArray.CopyFrom(pd["Achievements"], allocator);
 							
-							GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gameId);
-							
-							for (rapidjson::SizeType i = 0; i < achArray.Size(); i++) {
-								rapidjson::Value& achObj = achArray[i];
-								std::string achIdStr;
-								if (achObj.HasMember("ID")) {
-									if (achObj["ID"].IsInt()) achIdStr = std::to_string(achObj["ID"].GetInt());
-									else if (achObj["ID"].IsString()) achIdStr = achObj["ID"].GetString();
-								}
-								
-								if (!achIdStr.empty()) {
-									for (const auto& savedAch : prog.Achievements) {
-										if (savedAch.ID == achIdStr) {
-											if (!savedAch.DateEarned.empty()) {
-												if (achObj.HasMember("DateEarned")) {
-													achObj["DateEarned"].SetString(savedAch.DateEarned.c_str(), allocator);
-												} else {
-													achObj.AddMember("DateEarned", rapidjson::Value(savedAch.DateEarned.c_str(), allocator), allocator);
-												}
-											}
-											if (!savedAch.DateEarnedHardcore.empty()) {
-												if (achObj.HasMember("DateEarnedHardcore")) {
-													achObj["DateEarnedHardcore"].SetString(savedAch.DateEarnedHardcore.c_str(), allocator);
-												} else {
-													achObj.AddMember("DateEarnedHardcore", rapidjson::Value(savedAch.DateEarnedHardcore.c_str(), allocator), allocator);
-												}
-											}
-											break;
-										}
-									}
-								}
-							}
-							
+
 							setObj.AddMember("Achievements", achArray, allocator);
 						} else {
 							setObj.AddMember("Achievements", rapidjson::Value(rapidjson::kArrayType), allocator);
@@ -204,7 +172,59 @@ void AchievementServer::start()
 			res.set_content(fallbackJson, "application/json");
 		}
 		else if (r == "startsession") {
-			res.set_content("{\"Success\":true,\"ServerNow\":" + std::to_string(time(nullptr)) + ",\"Unlocks\":[],\"HardcoreUnlocks\":[]}", "application/json");
+			int gameId = 0;
+			try { gameId = std::stoi(getParam("g")); } catch(...) {}
+			
+			rapidjson::Document doc;
+			doc.SetObject();
+			rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
+			
+			doc.AddMember("Success", true, allocator);
+			doc.AddMember("ServerNow", static_cast<int>(time(nullptr)), allocator);
+			
+			rapidjson::Value unlocks(rapidjson::kArrayType);
+			rapidjson::Value hardcoreUnlocks(rapidjson::kArrayType);
+			
+			if (gameId > 0) {
+				GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gameId);
+				for (const auto& ach : prog.Achievements) {
+					int achId = 0;
+					try { achId = std::stoi(ach.ID); } catch(...) {}
+					if (achId > 0) {
+						if (!ach.DateEarned.empty()) {
+							std::string d = ach.DateEarned;
+							if (d == "offline") d = "";
+							time_t t = Utils::Time::stringToTime(d, "%Y-%m-%d %H:%M:%S");
+							if (t <= 0) t = time(nullptr);
+							
+							rapidjson::Value achObj(rapidjson::kObjectType);
+							achObj.AddMember("ID", achId, allocator);
+							achObj.AddMember("When", static_cast<int>(t), allocator);
+							unlocks.PushBack(achObj, allocator);
+						}
+						if (!ach.DateEarnedHardcore.empty()) {
+							std::string d = ach.DateEarnedHardcore;
+							if (d == "offline") d = "";
+							time_t t = Utils::Time::stringToTime(d, "%Y-%m-%d %H:%M:%S");
+							if (t <= 0) t = time(nullptr);
+							
+							rapidjson::Value achObj(rapidjson::kObjectType);
+							achObj.AddMember("ID", achId, allocator);
+							achObj.AddMember("When", static_cast<int>(t), allocator);
+							hardcoreUnlocks.PushBack(achObj, allocator);
+						}
+					}
+				}
+			}
+			
+			doc.AddMember("Unlocks", unlocks, allocator);
+			doc.AddMember("HardcoreUnlocks", hardcoreUnlocks, allocator);
+			
+			rapidjson::StringBuffer buffer;
+			rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+			doc.Accept(writer);
+			
+			res.set_content(buffer.GetString(), "application/json");
 		}
 		else if (r == "login" || r == "login2") {
 			std::string u = getParam("u");
