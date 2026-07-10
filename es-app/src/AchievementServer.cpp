@@ -140,6 +140,40 @@ void AchievementServer::start()
 						if (pd.HasMember("Achievements")) {
 							rapidjson::Value achArray(rapidjson::kArrayType);
 							achArray.CopyFrom(pd["Achievements"], allocator);
+							
+							GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gameId);
+							
+							for (rapidjson::SizeType i = 0; i < achArray.Size(); i++) {
+								rapidjson::Value& achObj = achArray[i];
+								std::string achIdStr;
+								if (achObj.HasMember("ID")) {
+									if (achObj["ID"].IsInt()) achIdStr = std::to_string(achObj["ID"].GetInt());
+									else if (achObj["ID"].IsString()) achIdStr = achObj["ID"].GetString();
+								}
+								
+								if (!achIdStr.empty()) {
+									for (const auto& savedAch : prog.Achievements) {
+										if (savedAch.ID == achIdStr) {
+											if (!savedAch.DateEarned.empty()) {
+												if (achObj.HasMember("DateEarned")) {
+													achObj["DateEarned"].SetString(savedAch.DateEarned.c_str(), allocator);
+												} else {
+													achObj.AddMember("DateEarned", rapidjson::Value(savedAch.DateEarned.c_str(), allocator), allocator);
+												}
+											}
+											if (!savedAch.DateEarnedHardcore.empty()) {
+												if (achObj.HasMember("DateEarnedHardcore")) {
+													achObj["DateEarnedHardcore"].SetString(savedAch.DateEarnedHardcore.c_str(), allocator);
+												} else {
+													achObj.AddMember("DateEarnedHardcore", rapidjson::Value(savedAch.DateEarnedHardcore.c_str(), allocator), allocator);
+												}
+											}
+											break;
+										}
+									}
+								}
+							}
+							
 							setObj.AddMember("Achievements", achArray, allocator);
 						} else {
 							setObj.AddMember("Achievements", rapidjson::Value(rapidjson::kArrayType), allocator);
