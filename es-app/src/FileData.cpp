@@ -823,13 +823,39 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 						Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json");
 		}
 
-		if (isOffline) {
-			std::string username = SystemConf::getInstance()->get("global.retroachievements.username");
-			if (username.empty()) username = ProfileManager::getInstance()->getActiveProfileName();
-			if (username.empty()) username = "Player";
+		auto sysConf = SystemConf::getInstance();
+		std::string username = sysConf->get("global.retroachievements.username");
+		if (username.empty()) username = ProfileManager::getInstance()->getActiveProfileName();
+		if (username.empty()) username = "Player";
 
+		// Common settings for both online and offline
+		f << "cheevos_enable = \"true\"\n";
+		
+		// Core Settings mapped from ES
+		f << "cheevos_hardcore_mode_enable = \"" << (sysConf->getBool("global.retroachievements.hardcore") ? "true" : "false") << "\"\n";
+		f << "cheevos_leaderboards_enable = \"" << (sysConf->getBool("global.retroachievements.leaderboards") ? "true" : "false") << "\"\n";
+		f << "cheevos_verbose_enable = \"" << (sysConf->getBool("global.retroachievements.verbose") ? "true" : "false") << "\"\n";
+		f << "cheevos_richpresence_enable = \"" << (sysConf->getBool("global.retroachievements.richpresence") ? "true" : "false") << "\"\n";
+		f << "cheevos_auto_screenshot = \"" << (sysConf->getBool("global.retroachievements.screenshot") ? "true" : "false") << "\"\n";
+		f << "cheevos_challenge_indicators = \"" << (sysConf->getBool("global.retroachievements.challenge_indicators") ? "true" : "false") << "\"\n";
+		f << "cheevos_start_active = \"" << (sysConf->getBool("global.retroachievements.encore") ? "true" : "false") << "\"\n";
+		
+		// UI Settings mapped from ES
+		std::string anchor = sysConf->get("global.retroachievements.ui.anchor");
+		if (anchor.empty()) anchor = "0"; // Top Left
+		f << "cheevos_appearance_anchor = \"" << anchor << "\"\n";
+		
+		std::string summary = sysConf->get("global.retroachievements.ui.summary");
+		if (summary.empty()) summary = "1"; // All
+		f << "cheevos_visibility_summary = \"" << summary << "\"\n";
+		
+		f << "cheevos_badges_enable = \"" << (sysConf->getBoolInit("global.retroachievements.ui.badges", true) ? "true" : "false") << "\"\n";
+		f << "cheevos_visibility_account = \"" << (sysConf->getBoolInit("global.retroachievements.ui.login", true) ? "true" : "false") << "\"\n";
+		f << "cheevos_visibility_unlock = \"" << (sysConf->getBoolInit("global.retroachievements.ui.unlock", true) ? "true" : "false") << "\"\n";
+		f << "cheevos_visibility_mastery = \"" << (sysConf->getBoolInit("global.retroachievements.ui.mastery", true) ? "true" : "false") << "\"\n";
+
+		if (isOffline) {
 			f << "cheevos_custom_host = \"http://127.0.0.1:9191\"\n";
-			f << "cheevos_enable = \"true\"\n";
 			f << "cheevos_username = \"" << username << "\"\n";
 			f << "cheevos_password = \"offline_password\"\n";
 			f << "cheevos_token = \"offline_token\"\n";
@@ -840,10 +866,20 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			f << "log_dir = \"/home/ark/\"\n";
 			f << "log_level = \"0\"\n";
 			f << "libretro_log_level = \"0\"\n";
-			f << "cheevos_verbose_enable = \"true\"\n";
+			f << "cheevos_verbose_enable = \"true\"\n"; // Force verbose for offline logging if needed
 			
 			f.close();
 			LOG(LogError) << "Injected offline cheevos config for user " << username << " (mode=" << mode << ")";
+		} else {
+			f << "cheevos_username = \"" << sysConf->get("global.retroachievements.username") << "\"\n";
+			f << "cheevos_password = \"" << sysConf->get("global.retroachievements.password") << "\"\n";
+			
+			std::string token = sysConf->get("global.retroachievements.token");
+			if (!token.empty()) {
+				f << "cheevos_token = \"" << token << "\"\n";
+			}
+			f.close();
+			LOG(LogInfo) << "Injected online cheevos config for user " << sysConf->get("global.retroachievements.username");
 		}
 
 		f.close();

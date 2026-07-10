@@ -76,6 +76,34 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	addWithLabel(_("OFFLINE MODE"), offline_mode);
 	addSaveFunc([offline_mode] { Settings::getInstance()->setString("RetroachievementsOfflineMode", offline_mode->getSelected()); });
 
+	addGroup(_("APPEARANCE / UI"));
+
+	auto anchor_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("POPUP POSITION"), false);
+	std::string currentAnchor = SystemConf::getInstance()->get("global.retroachievements.ui.anchor");
+	if (currentAnchor.empty()) currentAnchor = "0"; // Top Left
+	anchor_choices->add(_("TOP LEFT"), "0", currentAnchor == "0");
+	anchor_choices->add(_("TOP CENTER"), "1", currentAnchor == "1");
+	anchor_choices->add(_("TOP RIGHT"), "2", currentAnchor == "2");
+	anchor_choices->add(_("BOTTOM LEFT"), "3", currentAnchor == "3");
+	anchor_choices->add(_("BOTTOM CENTER"), "4", currentAnchor == "4");
+	anchor_choices->add(_("BOTTOM RIGHT"), "5", currentAnchor == "5");
+	addWithLabel(_("POPUP POSITION"), anchor_choices);
+	addSaveFunc([anchor_choices] { SystemConf::getInstance()->set("global.retroachievements.ui.anchor", anchor_choices->getSelected()); });
+
+	auto summary_choices = std::make_shared<OptionListComponent<std::string>>(mWindow, _("STARTUP SUMMARY"), false);
+	std::string currentSummary = SystemConf::getInstance()->get("global.retroachievements.ui.summary");
+	if (currentSummary.empty()) currentSummary = "1"; // All
+	summary_choices->add(_("HIDE"), "0", currentSummary == "0");
+	summary_choices->add(_("SHOW ALL"), "1", currentSummary == "1");
+	summary_choices->add(_("GAMES ONLY"), "2", currentSummary == "2");
+	addWithLabel(_("STARTUP SUMMARY"), summary_choices);
+	addSaveFunc([summary_choices] { SystemConf::getInstance()->set("global.retroachievements.ui.summary", summary_choices->getSelected()); });
+
+	addSwitch(_("SHOW ACHIEVEMENT BADGES"), _("Display achievement icons inside notifications."), "global.retroachievements.ui.badges", true, nullptr);
+	addSwitch(_("LOGIN NOTIFICATIONS"), _("Show 'Logged in' notification when a game starts."), "global.retroachievements.ui.login", true, nullptr);
+	addSwitch(_("UNLOCK NOTIFICATIONS"), _("Show a notification when an achievement is earned."), "global.retroachievements.ui.unlock", true, nullptr);
+	addSwitch(_("MASTERY NOTIFICATIONS"), _("Show a notification when all achievements are earned."), "global.retroachievements.ui.mastery", true, nullptr);
+
 	addGroup(_("GAME INDEXES"));
 	addSwitch(_("INDEX NEW GAMES AT STARTUP"), "CheevosCheckIndexesAtStart", true);
 	addEntry(_("INDEX GAMES"), true, [this]
