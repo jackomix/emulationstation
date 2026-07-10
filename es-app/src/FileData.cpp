@@ -828,7 +828,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			if (username.empty()) username = ProfileManager::getInstance()->getActiveProfileName();
 			if (username.empty()) username = "Player";
 
-			f << "cheevos_custom_host = \"http://127.0.0.1:9192\"\n";
+			f << "cheevos_custom_host = \"http://127.0.0.1:9191\"\n";
 			f << "cheevos_enable = \"true\"\n";
 			f << "cheevos_username = \"" << username << "\"\n";
 			f << "cheevos_password = \"offline_password\"\n";
