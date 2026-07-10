@@ -849,10 +849,10 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		if (summary.empty()) summary = "1"; // All
 		f << "cheevos_visibility_summary = \"" << summary << "\"\n";
 		
-		f << "cheevos_badges_enable = \"" << (sysConf->getBoolInit("global.retroachievements.ui.badges", true) ? "true" : "false") << "\"\n";
-		f << "cheevos_visibility_account = \"" << (sysConf->getBoolInit("global.retroachievements.ui.login", true) ? "true" : "false") << "\"\n";
-		f << "cheevos_visibility_unlock = \"" << (sysConf->getBoolInit("global.retroachievements.ui.unlock", true) ? "true" : "false") << "\"\n";
-		f << "cheevos_visibility_mastery = \"" << (sysConf->getBoolInit("global.retroachievements.ui.mastery", true) ? "true" : "false") << "\"\n";
+		f << "cheevos_badges_enable = \"" << (sysConf->getBool("global.retroachievements.ui.badges", true) ? "true" : "false") << "\"\n";
+		f << "cheevos_visibility_account = \"" << (sysConf->getBool("global.retroachievements.ui.login", true) ? "true" : "false") << "\"\n";
+		f << "cheevos_visibility_unlock = \"" << (sysConf->getBool("global.retroachievements.ui.unlock", true) ? "true" : "false") << "\"\n";
+		f << "cheevos_visibility_mastery = \"" << (sysConf->getBool("global.retroachievements.ui.mastery", true) ? "true" : "false") << "\"\n";
 
 		if (isOffline) {
 			f << "cheevos_custom_host = \"http://127.0.0.1:9191\"\n";
