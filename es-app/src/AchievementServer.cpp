@@ -207,11 +207,10 @@ void AchievementServer::start()
 			}
 			
 			if (gameId != -1) {
-				GameInfoAndUserProgress prog;
-				AchievementCache::loadGameData(gameId, prog);
-				AchievementCache::loadUserProgress(gameId, prog);
+				GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gameId);
 				
 				bool hardcore = getParam("h") == "1";
+				int remaining = 0;
 				
 				for (auto& ach : prog.Achievements) {
 					if (ach.ID == a) {
@@ -221,12 +220,18 @@ void AchievementServer::start()
 						if (hardcore && ach.DateEarnedHardcore.empty()) {
 							ach.DateEarnedHardcore = "offline";
 						}
-						break;
+					}
+					
+					// Count remaining achievements
+					if (hardcore) {
+						if (ach.DateEarnedHardcore.empty()) remaining++;
+					} else {
+						if (ach.DateEarned.empty()) remaining++;
 					}
 				}
 				
 				AchievementCache::saveUserProgress(gameId, prog);
-				res.set_content("{\"Success\":true,\"Score\":10,\"SoftcoreScore\":10,\"AchievementID\":" + a + ",\"AchievementsRemaining\":0}", "application/json");
+				res.set_content("{\"Success\":true,\"Score\":10,\"SoftcoreScore\":10,\"AchievementID\":" + a + ",\"AchievementsRemaining\":" + std::to_string(remaining) + "}", "application/json");
 			} else {
 				res.set_content("{\"Success\":false,\"Error\":\"Game not found\"}", "application/json");
 			}
