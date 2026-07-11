@@ -78,6 +78,12 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	online_mode->setState(!isOffline);
 	addWithLabel(_("ONLINE MODE"), online_mode);
 	addSaveFunc([online_mode] { Settings::getInstance()->setString("RetroachievementsOfflineMode", online_mode->getState() ? "none" : "always_offline"); });
+	online_mode->setOnChangedCallback([this, window]() {
+		window->postToUiThread([this, window]() {
+			this->close();
+			window->pushGui(new GuiRetroAchievementsSettings(window));
+		});
+	});
 
 	addGroup(_("APPEARANCE / UI"));
 
