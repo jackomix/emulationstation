@@ -22,19 +22,25 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window, bool 
 	std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
 	bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
-	if (isOffline) {
-		std::string profileName = ProfileManager::getInstance()->getActiveProfileName();
-		if (profileName.empty()) profileName = "Player";
-		auto usernameComp = std::make_shared<TextComponent>(mWindow, profileName, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, ALIGN_RIGHT);
-		addWithLabel(_("USERNAME"), usernameComp);
-	} else {
+	auto online_mode = std::make_shared<SwitchComponent>(mWindow);
+	online_mode->setState(!isOffline);
+	addWithLabel(_("ONLINE MODE"), online_mode, setCursorToOnlineMode);
+	addSaveFunc([online_mode] { Settings::getInstance()->setString("RetroachievementsOfflineMode", online_mode->getState() ? "none" : "always_offline"); });
+	online_mode->setOnChangedCallback([this, window]() {
+		window->postToUiThread([this, window]() {
+			this->close();
+			window->pushGui(new GuiRetroAchievementsSettings(window, true));
+		});
+	});
+
+	if (!isOffline) {
 		addInputTextRow(_("USERNAME"), "global.retroachievements.username", false);
 		addInputTextRow(_("PASSWORD"), "global.retroachievements.password", true);
 	}
 
-	addGroup(_("OPTIONS"));
-
 	if (!isOffline) {
+		addGroup(_("OPTIONS"));
+
 		addSwitch(_("HARDCORE MODE"), _("Disable loading states, rewind and cheats for more points."), "global.retroachievements.hardcore", false, nullptr);
 		addSwitch(_("LEADERBOARDS"), _("Compete in high-score and best time leaderboards (requires hardcore)."), "global.retroachievements.leaderboards", false, nullptr);
 		addSwitch(_("VERBOSE MODE"), _("Show achievement progression on game launch and other notifications."), "global.retroachievements.verbose", false, nullptr);
@@ -62,17 +68,6 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window, bool 
 			addSaveFunc([rsounds_choices] { SystemConf::getInstance()->set("global.retroachievements.sound", rsounds_choices->getSelected()); });
 		}
 	}
-
-	auto online_mode = std::make_shared<SwitchComponent>(mWindow);
-	online_mode->setState(!isOffline);
-	addWithLabel(_("ONLINE MODE"), online_mode, setCursorToOnlineMode);
-	addSaveFunc([online_mode] { Settings::getInstance()->setString("RetroachievementsOfflineMode", online_mode->getState() ? "none" : "always_offline"); });
-	online_mode->setOnChangedCallback([this, window]() {
-		window->postToUiThread([this, window]() {
-			this->close();
-			window->pushGui(new GuiRetroAchievementsSettings(window, true));
-		});
-	});
 
 	if (!isOffline) {
 		addGroup(_("APPEARANCE / UI"));
