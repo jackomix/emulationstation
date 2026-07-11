@@ -23,8 +23,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	auto retroachievements_enabled = std::make_shared<SwitchComponent>(mWindow);
 	retroachievements_enabled->setState(retroachievementsEnabled);
 
-	std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
-	bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
+	bool isOnlineMode = Settings::getInstance()->getBool("RetroachievementsOnlineMode");
+	bool isOffline = !isOnlineMode;
 
 	if (isOffline) {
 		std::string profileName = ProfileManager::getInstance()->getActiveProfileName();
@@ -40,10 +40,18 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	addGroup(_("OPTIONS"));
 
 	addSwitch(_("HARDCORE MODE"), _("Disable loading states, rewind and cheats for more points."), "global.retroachievements.hardcore", false, nullptr);
-	addSwitch(_("LEADERBOARDS"), _("Compete in high-score and best time leaderboards (requires hardcore)."), "global.retroachievements.leaderboards", false, nullptr);
+	
+	if (!isOffline) {
+		addSwitch(_("LEADERBOARDS"), _("Compete in high-score and best time leaderboards (requires hardcore)."), "global.retroachievements.leaderboards", false, nullptr);
+	}
+	
 	addSwitch(_("VERBOSE MODE"), _("Show achievement progression on game launch and other notifications."), "global.retroachievements.verbose", false, nullptr);
-	addSwitch(_("RICH PRESENCE"), "global.retroachievements.richpresence", false);
-	addSwitch(_("ENCORE MODE"), _("Unlocked achievements can be earned again."), "global.retroachievements.encore", false, nullptr);
+	
+	if (!isOffline) {
+		addSwitch(_("RICH PRESENCE"), "global.retroachievements.richpresence", false);
+		addSwitch(_("ENCORE MODE"), _("Unlocked achievements can be earned again."), "global.retroachievements.encore", false, nullptr);
+	}
+	
 	addSwitch(_("AUTOMATIC SCREENSHOT"), _("Automatically take a screenshot when an achievement is earned."), "global.retroachievements.screenshot", false, nullptr);
 	addSwitch(_("CHALLENGE INDICATORS"), _("Shows icons in the bottom right corner when eligible achievements can be earned."), "global.retroachievements.challenge_indicators", false, nullptr);
 
@@ -66,15 +74,10 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 		addSaveFunc([rsounds_choices] { SystemConf::getInstance()->set("global.retroachievements.sound", rsounds_choices->getSelected()); });
 	}
 
-	addSwitch(_("SHOW RETROACHIEVEMENTS ENTRY IN MAIN MENU"), _("View your RetroAchievement stats right from the main menu!"), "RetroachievementsMenuitem", true, nullptr);
-
-	auto offline_mode = std::make_shared<OptionListComponent<std::string>>(mWindow, _("OFFLINE MODE"), false);
-	std::string currentOfflineMode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
-	if (currentOfflineMode.empty()) currentOfflineMode = "auto";
-	offline_mode->add(_("AUTO (IF NO NETWORK)"), "auto", currentOfflineMode == "auto");
-	offline_mode->add(_("ALWAYS OFFLINE"), "always_offline", currentOfflineMode == "always_offline");
-	addWithLabel(_("OFFLINE MODE"), offline_mode);
-	addSaveFunc([offline_mode] { Settings::getInstance()->setString("RetroachievementsOfflineMode", offline_mode->getSelected()); });
+	auto online_mode = std::make_shared<SwitchComponent>(mWindow);
+	online_mode->setState(isOnlineMode);
+	addWithLabel(_("ONLINE MODE"), online_mode);
+	addSaveFunc([online_mode] { Settings::getInstance()->setBool("RetroachievementsOnlineMode", online_mode->getState()); });
 
 	addGroup(_("APPEARANCE / UI"));
 
@@ -121,8 +124,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 
 		if (newState && (!retroachievementsEnabled || username != newUsername || password != newPassword || token.empty()))
 		{
-			std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
-			bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
+			bool isOnlineMode = Settings::getInstance()->getBool("RetroachievementsOnlineMode");
+			bool isOffline = !isOnlineMode;
 
 			if (isOffline) {
 				SystemConf::getInstance()->set("global.retroachievements.token", "offline_token");

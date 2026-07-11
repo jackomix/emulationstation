@@ -816,17 +816,17 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		f << "savestates_in_content_dir = \"false\"\n";
 		f << "config_save_on_exit = \"false\"\n";
 
-		std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
-		bool isOffline = (mode == "always_offline");
-		if (mode == "auto" || mode.empty()) {
-			isOffline = (ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || 
-						Utils::FileSystem::exists(Paths::getGlobalAchievementsPath() + "/hashes.json");
-		}
+		bool isOnlineMode = Settings::getInstance()->getBool("RetroachievementsOnlineMode");
+		bool isOffline = !isOnlineMode;
 
 		auto sysConf = SystemConf::getInstance();
-		std::string username = sysConf->get("global.retroachievements.username");
-		if (username.empty()) username = ProfileManager::getInstance()->getActiveProfileName();
-		if (username.empty()) username = "Player";
+		std::string username;
+		if (isOffline) {
+			username = ProfileManager::getInstance()->getActiveProfileName();
+			if (username.empty()) username = "Player";
+		} else {
+			username = sysConf->get("global.retroachievements.username");
+		}
 
 		// Common settings for both online and offline
 		f << "cheevos_enable = \"true\"\n";
@@ -902,6 +902,8 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		AchievementCache::loadGameData(raGameId, postProgress);
 		AchievementCache::loadUserProgress(raGameId, postProgress);
 		
+		int newUnlocks = 0;
+		int newPoints = 0;
 		for (auto& postAch : postProgress.Achievements) {
 			if (!postAch.DateEarned.empty() || !postAch.DateEarnedHardcore.empty()) {
 				bool wasEarned = false;
@@ -912,9 +914,16 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 					}
 				}
 				if (!wasEarned) {
-					window->displayNotificationMessage("\U0001F3C6 " + postAch.Title + " Unlocked!");
+					newUnlocks++;
+					newPoints += Utils::String::toInteger(postAch.Points);
 				}
 			}
+		}
+		if (newUnlocks > 0) {
+			std::string msg = "Unlocked " + std::to_string(newUnlocks) + " achievement";
+			if (newUnlocks > 1) msg += "s";
+			msg += " (+" + std::to_string(newPoints) + " pts)!";
+			window->displayNotificationMessage("\U0001F3C6 " + msg);
 		}
 	}
 	

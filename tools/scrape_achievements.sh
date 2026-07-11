@@ -58,6 +58,17 @@ fi
 
 read -p "Enter your RetroAchievements Username: " RA_USER
 read -p "Enter your Web API Key (from retroachievements.org/settings): " RA_API_KEY
+read -s -p "Enter your Password (used once to fetch the auth token for patchdata): " RA_PASSWORD
+echo ""
+
+echo "Logging in to obtain Token..."
+LOGIN_RES=$(curl -s "https://retroachievements.org/dorequest.php?r=login&u=${RA_USER}&p=${RA_PASSWORD}")
+RA_TOKEN=$(echo "$LOGIN_RES" | grep -o '"Token":"[^"]*"' | cut -d'"' -f4)
+if [ -z "$RA_TOKEN" ]; then
+    echo "Error: Failed to obtain Token. Please check your username/password."
+    exit 1
+fi
+echo "Token obtained successfully!"
 
 if [ ! -d "$SD_PATH/gba" ] && [ ! -d "$SD_PATH/snes" ] && [ ! -d "$SD_PATH/achievements" ]; then
     echo "Warning: It looks like this script isn't located on your SD card."
@@ -227,7 +238,7 @@ while IFS= read -r ROM_FILE; do
                         
                         # Download patchdata for rcheevos
                         if [ ! -f "$DEST_DIR/patchdata/${GAME_ID}.json" ]; then
-                            curl -s "https://retroachievements.org/dorequest.php?r=patch&u=${RA_USER}&g=${GAME_ID}" > "$DEST_DIR/patchdata/${GAME_ID}.json"
+                            curl -s "https://retroachievements.org/dorequest.php?r=patch&u=${RA_USER}&t=${RA_TOKEN}&g=${GAME_ID}" > "$DEST_DIR/patchdata/${GAME_ID}.json"
                         fi
                     else
                         echo "  -> Error: Failed to fetch data for Game ID $GAME_ID."
