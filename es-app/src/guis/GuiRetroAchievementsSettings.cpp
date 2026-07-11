@@ -23,8 +23,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	auto retroachievements_enabled = std::make_shared<SwitchComponent>(mWindow);
 	retroachievements_enabled->setState(retroachievementsEnabled);
 
-	bool isOnlineMode = Settings::getInstance()->getBool("RetroachievementsOnlineMode");
-	bool isOffline = !isOnlineMode;
+	std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
+	bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
 	if (isOffline) {
 		std::string profileName = ProfileManager::getInstance()->getActiveProfileName();
@@ -75,9 +75,9 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 	}
 
 	auto online_mode = std::make_shared<SwitchComponent>(mWindow);
-	online_mode->setState(isOnlineMode);
+	online_mode->setState(!isOffline);
 	addWithLabel(_("ONLINE MODE"), online_mode);
-	addSaveFunc([online_mode] { Settings::getInstance()->setBool("RetroachievementsOnlineMode", online_mode->getState()); });
+	addSaveFunc([online_mode] { Settings::getInstance()->setString("RetroachievementsOfflineMode", online_mode->getState() ? "none" : "always_offline"); });
 
 	addGroup(_("APPEARANCE / UI"));
 
@@ -124,8 +124,8 @@ GuiRetroAchievementsSettings::GuiRetroAchievementsSettings(Window* window) : Gui
 
 		if (newState && (!retroachievementsEnabled || username != newUsername || password != newPassword || token.empty()))
 		{
-			bool isOnlineMode = Settings::getInstance()->getBool("RetroachievementsOnlineMode");
-			bool isOffline = !isOnlineMode;
+			std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
+			bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
 			if (isOffline) {
 				SystemConf::getInstance()->set("global.retroachievements.token", "offline_token");

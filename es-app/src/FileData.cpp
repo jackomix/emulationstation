@@ -816,8 +816,8 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		f << "savestates_in_content_dir = \"false\"\n";
 		f << "config_save_on_exit = \"false\"\n";
 
-		bool isOnlineMode = Settings::getInstance()->getBool("RetroachievementsOnlineMode");
-		bool isOffline = !isOnlineMode;
+		std::string mode = Settings::getInstance()->getString("RetroachievementsOfflineMode");
+		bool isOffline = (mode == "always_offline") || (mode == "auto" && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED") || (mode.empty() && ApiSystem::getInstance()->getIpAddress() == "NOT CONNECTED");
 
 		auto sysConf = SystemConf::getInstance();
 		std::string username;
@@ -885,47 +885,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		f.close();
 	}
 
-	int raGameId = 0;
-	std::string cheevosIdStr = getMetadata(MetaDataId::CheevosId);
-	if (!cheevosIdStr.empty()) raGameId = Utils::String::toInteger(cheevosIdStr);
-	
-	GameInfoAndUserProgress preProgress;
-	if (raGameId > 0) {
-		AchievementCache::loadGameData(raGameId, preProgress);
-		AchievementCache::loadUserProgress(raGameId, preProgress);
-	}
-
 	int exitCode = process.run();
-	
-	if (raGameId > 0 && window) {
-		GameInfoAndUserProgress postProgress;
-		AchievementCache::loadGameData(raGameId, postProgress);
-		AchievementCache::loadUserProgress(raGameId, postProgress);
-		
-		int newUnlocks = 0;
-		int newPoints = 0;
-		for (auto& postAch : postProgress.Achievements) {
-			if (!postAch.DateEarned.empty() || !postAch.DateEarnedHardcore.empty()) {
-				bool wasEarned = false;
-				for (auto& preAch : preProgress.Achievements) {
-					if (preAch.ID == postAch.ID && (!preAch.DateEarned.empty() || !preAch.DateEarnedHardcore.empty())) {
-						wasEarned = true;
-						break;
-					}
-				}
-				if (!wasEarned) {
-					newUnlocks++;
-					newPoints += Utils::String::toInteger(postAch.Points);
-				}
-			}
-		}
-		if (newUnlocks > 0) {
-			std::string msg = "Unlocked " + std::to_string(newUnlocks) + " achievement";
-			if (newUnlocks > 1) msg += "s";
-			msg += " (+" + std::to_string(newPoints) + " pts)!";
-			window->displayNotificationMessage("\U0001F3C6 " + msg);
-		}
-	}
 	
 	Utils::FileSystem::removeFile("/tmp/es_profile.cfg");
 
