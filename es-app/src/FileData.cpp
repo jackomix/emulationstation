@@ -869,7 +869,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 			f << "cheevos_verbose_enable = \"true\"\n"; // Force verbose for offline logging if needed
 			
 			f.close();
-			LOG(LogError) << "Injected offline cheevos config for user " << username << " (mode=" << mode << ")";
+			LOG(LogError) << "Injected offline cheevos config for user " << username << " (mode=offline)";
 		} else {
 			f << "cheevos_username = \"" << sysConf->get("global.retroachievements.username") << "\"\n";
 			f << "cheevos_password = \"" << sysConf->get("global.retroachievements.password") << "\"\n";
