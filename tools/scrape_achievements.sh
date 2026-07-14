@@ -38,6 +38,9 @@ if [ ! -f "RAHasher" ]; then
             MAKE_ARCH="x64"
         fi
         
+        sed -i '' 's/-static-libgcc//g' Makefile.RAHasher
+        sed -i '' 's/-static-libstdc++//g' Makefile.RAHasher
+        
         make -f Makefile.RAHasher ARCH=$MAKE_ARCH LDFLAGS=""
         
         if [ -f "bin64/RAHasher" ]; then
@@ -62,7 +65,7 @@ read -s -p "Enter your Password (used once to fetch the auth token for patchdata
 echo ""
 
 echo "Logging in to obtain Token..."
-LOGIN_RES=$(curl -s "https://retroachievements.org/dorequest.php?r=login&u=${RA_USER}&p=${RA_PASSWORD}")
+LOGIN_RES=$(curl -s -G --data-urlencode "r=login" --data-urlencode "u=${RA_USER}" --data-urlencode "p=${RA_PASSWORD}" "https://retroachievements.org/dorequest.php")
 RA_TOKEN=$(echo "$LOGIN_RES" | grep -o '"Token":"[^"]*"' | cut -d'"' -f4)
 if [ -z "$RA_TOKEN" ]; then
     echo "Error: Failed to obtain Token. Please check your username/password."

@@ -155,7 +155,7 @@ std::string GameInfoAndUserProgress::getImageUrl(const std::string& image)
 {
 	std::string img = image.empty() ? ImageIcon : image;
 	std::string filename = Utils::FileSystem::getFileName(img);
-	std::string localPath = "/roms/achievements/badges/" + filename;
+	std::string localPath = "/roms/achievements/images/" + filename;
 	if (Utils::FileSystem::exists(localPath))
 		return localPath;
 
