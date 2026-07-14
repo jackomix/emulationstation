@@ -553,7 +553,10 @@ RetroAchievementInfo RetroAchievements::toRetroAchivementInfo(UserSummary& ret)
 		return info;
 	}
 
-	info.userpic = "https://retroachievements.org" + ret.UserPic;
+	if (Utils::FileSystem::exists("/roms/achievements/avatar.png"))
+		info.userpic = "/roms/achievements/avatar.png";
+	else
+		info.userpic = "https://retroachievements.org" + ret.UserPic;
 	info.rank = ret.Rank;
 
 	if (!ret.TotalRanked.empty() && !ret.Rank.empty())
@@ -576,7 +579,14 @@ RetroAchievementInfo RetroAchievements::toRetroAchivementInfo(UserSummary& ret)
 		rg.id = played.GameID;
 
 		if (!played.ImageIcon.empty())
-			rg.badge = "http://i.retroachievements.org" + played.ImageIcon;
+		{
+			std::string filename = Utils::FileSystem::getFileName(played.ImageIcon);
+			std::string localPath = "/roms/achievements/images/" + filename;
+			if (Utils::FileSystem::exists(localPath))
+				rg.badge = localPath;
+			else
+				rg.badge = "http://i.retroachievements.org" + played.ImageIcon;
+		}
 
 		rg.name = played.Title; // +" [" + played.ConsoleName + "]";
 		rg.consoleName = played.ConsoleName;

@@ -117,7 +117,7 @@ void AchievementServer::start()
 						rapidjson::Value imageIconValue;
 						if (pd.HasMember("ImageIcon") && pd["ImageIcon"].IsString()) {
 							std::string iconStr = pd["ImageIcon"].GetString();
-							if (iconStr.find("http") != 0) iconStr = "https://retroachievements.org" + iconStr;
+							if (iconStr.find("http") != 0) iconStr = "http://127.0.0.1:9191" + iconStr;
 							imageIconValue.SetString(iconStr.c_str(), allocator);
 						} else {
 							imageIconValue.SetString("", allocator);
@@ -303,9 +303,34 @@ void AchievementServer::start()
 		std::string localPath = Paths::getGlobalAchievementsPath() + "/badges/" + name;
 		LOG(LogDebug) << "AchievementServer Badge request: " << name;
 		if (Utils::FileSystem::exists(localPath)) {
-			std::ifstream t(localPath, std::ios::binary);
-			std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-			res.set_content(str, "image/png");
+			std::ifstream t(localPath, std::ios::binary | std::ios::ate);
+			std::streamsize size = t.tellg();
+			t.seekg(0, std::ios::beg);
+			std::string str(size, '\0');
+			if (t.read(&str[0], size)) {
+				res.set_content(str, "image/png");
+			} else {
+				res.status = 500;
+			}
+		} else {
+			res.status = 404;
+		}
+	});
+
+	sServer->Get(R"(/Images/(.*))", [](const httplib::Request& req, httplib::Response& res) {
+		std::string name = req.matches[1];
+		std::string localPath = Paths::getGlobalAchievementsPath() + "/images/" + name;
+		LOG(LogDebug) << "AchievementServer Image request: " << name;
+		if (Utils::FileSystem::exists(localPath)) {
+			std::ifstream t(localPath, std::ios::binary | std::ios::ate);
+			std::streamsize size = t.tellg();
+			t.seekg(0, std::ios::beg);
+			std::string str(size, '\0');
+			if (t.read(&str[0], size)) {
+				res.set_content(str, "image/png");
+			} else {
+				res.status = 500;
+			}
 		} else {
 			res.status = 404;
 		}
