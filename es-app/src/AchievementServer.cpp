@@ -298,10 +298,16 @@ void AchievementServer::start()
 	sServer->Get("/dorequest.php", handler);
 	sServer->Post("/dorequest.php", handler);
 
-	sServer->Get(R"(/Badge/(.*))", [](const httplib::Request& req, httplib::Response& res) {
+	auto badgeHandler = [](const httplib::Request& req, httplib::Response& res) {
 		std::string name = req.matches[1];
 		std::string localPath = Paths::getGlobalAchievementsPath() + "/badges/" + name;
 		LOG(LogDebug) << "AchievementServer Badge request: " << name;
+		if (name.find('.') == std::string::npos) {
+			std::string altPath = localPath + ".png";
+			if (Utils::FileSystem::exists(altPath)) {
+				localPath = altPath;
+			}
+		}
 		if (Utils::FileSystem::exists(localPath)) {
 			std::ifstream t(localPath, std::ios::binary | std::ios::ate);
 			std::streamsize size = t.tellg();
@@ -315,9 +321,12 @@ void AchievementServer::start()
 		} else {
 			res.status = 404;
 		}
-	});
+	};
 
-	sServer->Get(R"(/Images/(.*))", [](const httplib::Request& req, httplib::Response& res) {
+	sServer->Get(R"(/Badge/(.*))", badgeHandler);
+	sServer->Get(R"(/badge/(.*))", badgeHandler);
+
+	auto imageHandler = [](const httplib::Request& req, httplib::Response& res) {
 		std::string name = req.matches[1];
 		std::string localPath = Paths::getGlobalAchievementsPath() + "/images/" + name;
 		LOG(LogDebug) << "AchievementServer Image request: " << name;
@@ -334,7 +343,10 @@ void AchievementServer::start()
 		} else {
 			res.status = 404;
 		}
-	});
+	};
+
+	sServer->Get(R"(/Images/(.*))", imageHandler);
+	sServer->Get(R"(/images/(.*))", imageHandler);
 
 	sRunning = true;
 	sThread = std::thread([]() {

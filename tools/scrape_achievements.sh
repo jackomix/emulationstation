@@ -33,16 +33,17 @@ if [ ! -f "RAHasher" ]; then
     echo -e "${YELLOW}RAHasher not found. Setting up...${NC}"
     
     OS_NAME=$(uname -s)
-    if [ "$OS_NAME" = "Linux" ]; then
-        echo -e "${BLUE}Downloading pre-compiled RAHasher for Linux...${NC}"
+    OS_ARCH=$(uname -m)
+    if [ "$OS_NAME" = "Linux" ] && [ "$OS_ARCH" = "x86_64" ]; then
+        echo -e "${BLUE}Downloading pre-compiled RAHasher for Linux x86_64...${NC}"
         curl -sL "https://github.com/LeXofLeviafan/RAHasher/releases/download/1.8.3/RAHasher-x64-Linux-1.8.3.zip" -o rahasher.zip
         unzip -q -o rahasher.zip RAHasher
         chmod +x RAHasher
         rm rahasher.zip
         echo -e "${GREEN}RAHasher downloaded successfully.${NC}"
         sleep 1
-    elif [ "$OS_NAME" = "Darwin" ]; then
-        echo -e "${BLUE}macOS detected. Downloading and compiling RAHasher from source...${NC}"
+    elif [ "$OS_NAME" = "Darwin" ] || [ "$OS_NAME" = "Linux" ]; then
+        echo -e "${BLUE}Unsupported architecture detected. Downloading and compiling RAHasher from source...${NC}"
         COMPILE_LOG="/tmp/rahasher_compile.log"
         echo -e "Compilation logs will be saved to: ${MAGENTA}$COMPILE_LOG${NC}"
         rm -rf /tmp/rahasher_src
@@ -57,26 +58,35 @@ if [ ! -f "RAHasher" ]; then
         
         cd /tmp/rahasher_src || exit 1
         
-        MAC_ARCH=$(uname -m)
-        if [ "$MAC_ARCH" = "arm64" ]; then
-            MAKE_ARCH="arm64"
+        # Strip flags incompatible with this arch from ALL Makefiles
+        # sed -i syntax differs: GNU needs -i, BSD needs -i ''
+        if [ "$OS_NAME" = "Darwin" ]; then
+            find . -name 'Makefile*' | xargs sed -i '' 's/-static-libgcc//g; s/-static-libstdc++//g; s/ -m32//g; s/ -m64//g'
         else
-            MAKE_ARCH="x64"
+            find . -name 'Makefile*' | xargs sed -i 's/-static-libgcc//g; s/-static-libstdc++//g'
         fi
         
-        sed -i '' 's/-static-libgcc//g' Makefile.RAHasher >> "$COMPILE_LOG" 2>&1
-        sed -i '' 's/-static-libstdc++//g' Makefile.RAHasher >> "$COMPILE_LOG" 2>&1
-        
         echo -ne "Compiling RAHasher (this may take a minute)... "
-        if make -f Makefile.RAHasher ARCH=$MAKE_ARCH LDFLAGS="" >> "$COMPILE_LOG" 2>&1; then
+        if make -f Makefile.RAHasher ARCH=x64 LDFLAGS="" >> "$COMPILE_LOG" 2>&1; then
             echo -e "${GREEN}Done.${NC}"
         else
             echo -e "${RED}Failed. See $COMPILE_LOG${NC}"
             exit 1
         fi
         
-        if [ -f "bin64/RAHasher" ]; then
-            cp bin64/RAHasher "$SCRIPT_DIR/"
+        # Find built binary (bin/ or bin64/ depending on arch)
+        BUILT_BIN=""
+        for d in bin bin64 .; do
+            if [ -f "$d/RAHasher" ]; then
+                BUILT_BIN="$d/RAHasher"
+                break
+            fi
+        done
+        
+        if [ -n "$BUILT_BIN" ]; then
+            cp "$BUILT_BIN" "$SCRIPT_DIR/RAHasher"
+            chmod +x "$SCRIPT_DIR/RAHasher"
+            cd "$SCRIPT_DIR" || exit 1
             rm -rf /tmp/rahasher_src
             rm -f "$COMPILE_LOG"
             echo -e "${GREEN}RAHasher compiled successfully!${NC}"
@@ -483,7 +493,7 @@ while IFS= read -r ROM_FILE; do
     fi
     
     # Hash the file
-    HASH_OUTPUT=$(./RAHasher "$SYS_KEY" "$ROM_FILE" 2>/dev/null)
+    HASH_OUTPUT=$("$SCRIPT_DIR/RAHasher" "$SYS_KEY" "$ROM_FILE" 2>/dev/null)
     HASH=$(echo "$HASH_OUTPUT" | tr -d '[:space:]')
     
     if [ -n "$HASH" ] && [ ${#HASH} -eq 32 ]; then
@@ -536,7 +546,7 @@ while IFS= read -r ROM_FILE; do
                     
                     # Parse badges and images
                     BADGES=$(echo "$JSON_OUT" | grep -o '"BadgeName":"[^"]*"' | cut -d'"' -f4 | sort -u)
-                    IMAGES=$(echo "$JSON_OUT" | grep -o '"Image[a-zA-Z]*":"[^"]*"' | cut -d'"' -f4 | sort -u | grep "^/Images/")
+                    IMAGES=$(echo "$JSON_OUT" | grep -o '"Image[a-zA-Z]*":"[^"]*"' | cut -d'"' -f4 | sed 's/\\//g' | sort -u | grep "^/Images/")
                     
                     declare -a ASSET_URLS=()
                     declare -a ASSET_PATHS=()
