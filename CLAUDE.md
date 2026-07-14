@@ -12,7 +12,7 @@ Don't make the user poll you for CI/build/test status. Use whatever async or bac
 Before trying a new approach, remove the failed one. Commit or stash current work first, then revert only the specific files you changed (`git checkout -- <file>`). Don't run `git reset --hard` unless git status is confirmed clean — it discards uncommitted work beyond just the failed attempt.
 
 ## 4. Unverified APIs
-Before writing code against an undocumented or third-party API, search for existing docs or reference implementations first. If none can be found, say so explicitly and label the implementation as unverified rather than presenting a guess with full confidence.
+Before writing code against an undocumented or third-party API, search for existing docs or reference implementations first. If none can be found, say so explicitly and label the implementation as unverified rather than presenting a guess with full confidence. **When integrating with web APIs (like RetroAchievements), NEVER arbitrarily spoof HTTP headers (like User-Agent) without verifying the exact format expected by the server via web search. Servers may use strict format checks (e.g. `App/Version (OS) Core/Version`) and may silently inject corrupt data, dummy achievements (e.g., ID 101000001 "Outdated Emulator"), or trigger IP blocks in response to guessed or malformed headers.**
 
 ## 5. Cross-system risk
 When a change could affect an adjacent system (e.g. online/offline sync, shared state), trace the actual dependency graph in the code before claiming it's safe. State which files/modules were checked — a verbal assurance alone isn't sufficient.
