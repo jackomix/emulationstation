@@ -493,7 +493,7 @@ while IFS= read -r ROM_FILE; do
             GAME_ID="$CACHED_ID"
             GAME_ID_JSON="{\"GameID\":$GAME_ID}"
         else
-            GAME_ID_JSON=$(curl -s -A "RetroArch" "https://retroachievements.org/dorequest.php?r=gameid&m=${HASH}")
+            GAME_ID_JSON=$(curl -s -A "RetroArch/1.19.1 (ArkOS)" "https://retroachievements.org/dorequest.php?r=gameid&m=${HASH}")
         fi
         
         if [[ "$GAME_ID_JSON" =~ \"GameID\":([0-9]+) ]]; then
@@ -574,7 +574,7 @@ while IFS= read -r ROM_FILE; do
                     CURR_ASSET=0
                     draw_status
                     if [ $TOTAL_ASSETS -gt 0 ]; then
-                        CURL_ARGS=("-A" "RetroArch")
+                        CURL_ARGS=("-A" "RetroArch/1.19.1 (ArkOS)")
                         if curl --help | grep -q -- "--parallel" 2>/dev/null; then
                             CURL_ARGS+=("--parallel" "--parallel-max" "20")
                         fi
@@ -595,6 +595,19 @@ while IFS= read -r ROM_FILE; do
                             sleep 0.1
                         done
                         wait $CURL_PID
+                        
+                        # Wrap patchdata files for ES offline daemon compatibility
+                        for path in "${ASSET_PATHS[@]}"; do
+                            if [[ "$path" == *"/patchdata/"* ]]; then
+                                if ! grep -q '"PatchData"' "$path" 2>/dev/null; then
+                                    tmp_file="${path}.tmp"
+                                    echo -n "{\"PatchData\":" > "$tmp_file"
+                                    cat "$path" >> "$tmp_file"
+                                    echo "}" >> "$tmp_file"
+                                    mv "$tmp_file" "$path"
+                                fi
+                            fi
+                        done
                         
                         CURR_ASSET=$TOTAL_ASSETS
                         draw_status
@@ -624,12 +637,12 @@ done < <(find "$SCAN_PATH" -type f \( -iname \*.gba -o -iname \*.zip -o -iname \
 # Close JSON safely by rebuilding it from the temp cache
 if [ "$HASHES_CLOSED" -eq 0 ]; then
     echo "{" > "$DEST_DIR/hashes.json"
-    local first=1
+    FIRST_ENTRY=1
     while IFS=: read -r h id; do
         if [ -n "$h" ] && [ -n "$id" ]; then
-            if [ "$first" -eq 1 ]; then
+            if [ "$FIRST_ENTRY" -eq 1 ]; then
                 echo "  \"$h\": $id" >> "$DEST_DIR/hashes.json"
-                first=0
+                FIRST_ENTRY=0
             else
                 echo ", \"$h\": $id" >> "$DEST_DIR/hashes.json"
             fi

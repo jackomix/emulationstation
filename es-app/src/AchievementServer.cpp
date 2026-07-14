@@ -11,6 +11,7 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 #include <ctime>
+#include <fstream>
 #include "Log.h"
 
 static std::unique_ptr<httplib::Server> sServer;
@@ -302,7 +303,9 @@ void AchievementServer::start()
 		std::string localPath = Paths::getGlobalAchievementsPath() + "/badges/" + name;
 		LOG(LogDebug) << "AchievementServer Badge request: " << name;
 		if (Utils::FileSystem::exists(localPath)) {
-			res.set_content(Utils::FileSystem::readAllText(localPath), "image/png");
+			std::ifstream t(localPath, std::ios::binary);
+			std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+			res.set_content(str, "image/png");
 		} else {
 			res.status = 404;
 		}
