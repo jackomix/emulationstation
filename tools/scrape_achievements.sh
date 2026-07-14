@@ -261,8 +261,11 @@ if [ "$TOTAL_ROMS" -eq 0 ]; then
     exit 0
 fi
 
-# Write hashes.json header safely
-echo "{" > "$DEST_DIR/hashes.json"
+# Cache existing hashes to avoid re-querying the API
+TEMP_HASHES=$(mktemp)
+if [ -f "$DEST_DIR/hashes.json" ]; then
+    grep -o '"[a-f0-9]\{32\}"[[:space:]]*:[[:space:]]*[0-9]*' "$DEST_DIR/hashes.json" | tr -d '" ' > "$TEMP_HASHES"
+fi
 FIRST_HASH=1
 HASHES_CLOSED=0
 
@@ -291,7 +294,7 @@ draw_bar() {
     local bar=""
     for ((k=0; k<filled; k++)); do bar="${bar}="; done
     if [ $filled -lt $width ] && [ $current -gt 0 ]; then
-        bar="${bar:0:-1}>"
+        bar="${bar%?}>"
     fi
     for ((k=0; k<empty; k++)); do bar="${bar} "; done
     
@@ -336,7 +339,21 @@ draw_status() {
 
 save_and_exit() {
     if [ "$HASHES_CLOSED" -eq 0 ]; then
+        # Rebuild hashes.json from our temp cache safely before exit
+        echo "{" > "$DEST_DIR/hashes.json"
+        local first=1
+        while IFS=: read -r h id; do
+            if [ -n "$h" ] && [ -n "$id" ]; then
+                if [ "$first" -eq 1 ]; then
+                    echo "  \"$h\": $id" >> "$DEST_DIR/hashes.json"
+                    first=0
+                else
+                    echo ", \"$h\": $id" >> "$DEST_DIR/hashes.json"
+                fi
+            fi
+        done < "$TEMP_HASHES"
         echo "}" >> "$DEST_DIR/hashes.json"
+        rm -f "$TEMP_HASHES"
         HASHES_CLOSED=1
     fi
     
@@ -374,7 +391,7 @@ trap_ctrl_c() {
     echo -e "  [s] Skip current game / ROM"
     echo -e "  [q] Save current progress and Quit"
     echo -e "${YELLOW}====================================================${NC}"
-    read -r -p "Select option (c/s/q) [c]: " choice
+    read -r -p "Select option (c/s/q) [c]: " choice < /dev/tty
     
     # Clear the menu we just printed (8 lines)
     echo -ne "\033[8A\033[K\033[B\033[K\033[B\033[K\033[B\033[K\033[B\033[K\033[B\033[K\033[B\033[K\033[B\033[K\033[8A"
@@ -449,7 +466,7 @@ echo ""
 # Start scraping loop
 while IFS= read -r ROM_FILE; do
     SKIP_CURRENT=0
-    ((COUNT_PROCESSED++))
+    COUNT_PROCESSED=$((COUNT_PROCESSED + 1))
     
     BASENAME=$(basename "$ROM_FILE")
     PARENT_DIR=$(basename "$(dirname "$ROM_FILE")")
@@ -461,7 +478,7 @@ while IFS= read -r ROM_FILE; do
     draw_status
     
     if [ "$SYS_KEY" = "UNKNOWN" ]; then
-        ((COUNT_SKIPPED++))
+        COUNT_SKIPPED=$((COUNT_SKIPPED + 1))
         continue
     fi
     
@@ -470,25 +487,30 @@ while IFS= read -r ROM_FILE; do
     HASH=$(echo "$HASH_OUTPUT" | tr -d '[:space:]')
     
     if [ -n "$HASH" ] && [ ${#HASH} -eq 32 ]; then
-        GAME_ID_JSON=$(curl -s -A "RetroArch" "https://retroachievements.org/dorequest.php?r=gameid&m=${HASH}")
+        # Check cache first
+        CACHED_ID=$(grep "^$HASH:" "$TEMP_HASHES" 2>/dev/null | cut -d: -f2)
+        if [ -n "$CACHED_ID" ]; then
+            GAME_ID="$CACHED_ID"
+            GAME_ID_JSON="{\"GameID\":$GAME_ID}"
+        else
+            GAME_ID_JSON=$(curl -s -A "RetroArch" "https://retroachievements.org/dorequest.php?r=gameid&m=${HASH}")
+        fi
         
         if [[ "$GAME_ID_JSON" =~ \"GameID\":([0-9]+) ]]; then
             GAME_ID="${BASH_REMATCH[1]}"
             
             if [ "$GAME_ID" -ne 0 ]; then
-                ((COUNT_MATCHED++))
+                COUNT_MATCHED=$((COUNT_MATCHED + 1))
                 
-                if [ "$FIRST_HASH" -eq 1 ]; then
-                    echo "  \"$HASH\": $GAME_ID" >> "$DEST_DIR/hashes.json"
-                    FIRST_HASH=0
-                else
-                    echo ", \"$HASH\": $GAME_ID" >> "$DEST_DIR/hashes.json"
+                # Append to our temp cache if new
+                if [ -z "$CACHED_ID" ]; then
+                    echo "$HASH:$GAME_ID" >> "$TEMP_HASHES"
                 fi
                 
                 # Fetch full game data or use cached JSON to identify assets
                 if [ -f "$DEST_DIR/games/${GAME_ID}.json" ]; then
                     JSON_OUT=$(cat "$DEST_DIR/games/${GAME_ID}.json")
-                    ((COUNT_SAVED++))
+                    COUNT_SAVED=$((COUNT_SAVED + 1))
                 else
                     JSON_OUT=$(curl -s "https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?z=${RA_USER}&y=${RA_API_KEY}&g=${GAME_ID}&u=${RA_USER}")
                 fi
@@ -496,7 +518,7 @@ while IFS= read -r ROM_FILE; do
                 if [ -n "$JSON_OUT" ] && [[ "$JSON_OUT" == *"{"* ]]; then
                     if [ ! -f "$DEST_DIR/games/${GAME_ID}.json" ]; then
                         echo "$JSON_OUT" > "$DEST_DIR/games/${GAME_ID}.json"
-                        ((COUNT_SAVED++))
+                        COUNT_SAVED=$((COUNT_SAVED + 1))
                     fi
                     
                     # Extract title/name of the game to show in the UI safely
@@ -548,17 +570,35 @@ while IFS= read -r ROM_FILE; do
                         ((TOTAL_ASSETS++))
                     fi
                     
-                    # Download files with progress
+                    # Download files in parallel
                     CURR_ASSET=0
                     draw_status
-                    for ((i=0; i<TOTAL_ASSETS; i++)); do
-                        if [ "$SKIP_CURRENT" -eq 1 ]; then
-                            break
+                    if [ $TOTAL_ASSETS -gt 0 ]; then
+                        CURL_ARGS=("-A" "RetroArch")
+                        if curl --help | grep -q -- "--parallel" 2>/dev/null; then
+                            CURL_ARGS+=("--parallel" "--parallel-max" "20")
                         fi
-                        curl -sL "${ASSET_URLS[$i]}" -o "${ASSET_PATHS[$i]}"
-                        ((CURR_ASSET++))
+                        for ((i=0; i<TOTAL_ASSETS; i++)); do
+                            CURL_ARGS+=("-o" "${ASSET_PATHS[$i]}" "${ASSET_URLS[$i]}")
+                        done
+                        curl -sL "${CURL_ARGS[@]}" &
+                        CURL_PID=$!
+                        
+                        while kill -0 $CURL_PID 2>/dev/null; do
+                            CURR_ASSET=0
+                            for path in "${ASSET_PATHS[@]}"; do
+                                if [ -f "$path" ]; then
+                                    CURR_ASSET=$((CURR_ASSET + 1))
+                                fi
+                            done
+                            draw_status
+                            sleep 0.1
+                        done
+                        wait $CURL_PID
+                        
+                        CURR_ASSET=$TOTAL_ASSETS
                         draw_status
-                    done
+                    fi
                     
                     # Small sleep to avoid rate limiting
                     sleep 0.2
@@ -569,26 +609,38 @@ while IFS= read -r ROM_FILE; do
                     draw_status
                 fi
             else
-                ((COUNT_NOMATCH++))
+                COUNT_NOMATCH=$((COUNT_NOMATCH + 1))
             fi
         else
-            ((COUNT_NOMATCH++))
+            COUNT_NOMATCH=$((COUNT_NOMATCH + 1))
         fi
     else
-        ((COUNT_FAILED++))
+        COUNT_FAILED=$((COUNT_FAILED + 1))
     fi
     
 done < <(find "$SCAN_PATH" -type f \( -iname \*.gba -o -iname \*.zip -o -iname \*.sfc -o -iname \*.nes -o -iname \*.md -o -iname \*.z64 -o -iname \*.cue -o -iname \*.chd \) \
     ! -name "._*" ! -iname "readme.md" 2>/dev/null)
 
-# Close JSON safely
-echo "}" >> "$DEST_DIR/hashes.json"
-HASHES_CLOSED=1
-
-# Clear progress bars and print final stats
-if [ "$FIRST_DRAW" -eq 0 ]; then
-    echo -ne "\033[3A\033[K\033[B\033[K\033[B\033[K\033[2A"
+# Close JSON safely by rebuilding it from the temp cache
+if [ "$HASHES_CLOSED" -eq 0 ]; then
+    echo "{" > "$DEST_DIR/hashes.json"
+    local first=1
+    while IFS=: read -r h id; do
+        if [ -n "$h" ] && [ -n "$id" ]; then
+            if [ "$first" -eq 1 ]; then
+                echo "  \"$h\": $id" >> "$DEST_DIR/hashes.json"
+                first=0
+            else
+                echo ", \"$h\": $id" >> "$DEST_DIR/hashes.json"
+            fi
+        fi
+    done < "$TEMP_HASHES"
+    echo "}" >> "$DEST_DIR/hashes.json"
+    rm -f "$TEMP_HASHES"
+    HASHES_CLOSED=1
 fi
+
+# Print final stats
 
 echo ""
 echo -e "${CYAN}====================================================${NC}"
