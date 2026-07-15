@@ -117,7 +117,7 @@ void GuiProfileSelect::update(int deltaTime)
 
 	if (mBypass)
 	{
-		std::string active = ProfileManager::getInstance()->getActiveProfile();
+		std::string active = ProfileManager::getInstance()->getActiveProfileName();
 		if (active.empty() && !mProfiles.empty()) active = mProfiles.front().name;
 		
 		if (!active.empty())
@@ -167,7 +167,7 @@ void GuiProfileSelect::deleteProfile(const Profile& profile)
 {
 	// Not implementing the backend deletion here, just the state fallback logic
 	// If active is deleted, fallback to first available
-	std::string active = ProfileManager::getInstance()->getActiveProfile();
+	std::string active = ProfileManager::getInstance()->getActiveProfileName();
 	if (active == profile.name) {
 		auto profiles = ProfileManager::getInstance()->getProfiles();
 		if (!profiles.empty()) {
