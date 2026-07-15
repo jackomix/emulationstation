@@ -39,6 +39,13 @@ Fixed overlapping text bug by initializing grid early, moving sizing to end of c
 - **Cards not vertically centered**: Fixed. Dynamically calculated `totalHeight` of card content and centered vertically by calculating `startY`.
 - **No title/header**: Fixed. Added a new `TextComponent` `mTitle` to `GuiProfileSelect` that renders "_("SELECT PROFILE")" directly above the grid.
 
+### 4. New Feedback / Future Visual Adjustments
+- **Center the Entire UI**: Currently, the grid is centered but the "SELECT PROFILE" title is pushed too high. The title and grid should be grouped and centered together as a single visual unit.
+- **Button/Card Spacing**: Add spacing between cards. Currently, they sit right next to each other and hug the screen edges.
+- **"CREATE NEW" Redesign**: Change it from a standard profile card to a simple floating plus icon. Implement an elegant selection effect (like the plus changing color or glowing) instead of a thick border box.
+- **Thinner Borders**: The white/grey selection borders are too thick. Make them much thinner to match the style of other settings menus.
+- **Text Box Width & Eliding**: For profile name labels, make the text component width smaller than the card width to prevent text from touching the edge. If a name is too long, truncate it with an ellipsis (`...`).
+
 ## Relevant Files
 - [GuiProfileSelect.h](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiProfileSelect.h)
 - [GuiProfileSelect.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiProfileSelect.cpp)
