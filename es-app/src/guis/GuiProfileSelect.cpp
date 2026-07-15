@@ -149,7 +149,7 @@ void GuiProfileSelect::onSizeChanged()
 		float gap    = Renderer::getScreenHeight() * 0.08f;
 		float gridH  = Renderer::getScreenHeight() * 0.30f;
 		float blockH = titleH + gap + gridH;
-		float startY = (mSize.y() - blockH) / 2.5f;
+		float startY = (mSize.y() - blockH) / 2.0f;
 
 		mTitle->setSize(mSize.x(), titleH);
 		mTitle->setPosition(0, startY);
@@ -184,11 +184,16 @@ void GuiProfileSelect::populateProfiles()
 	float cardW = (Renderer::getScreenWidth() * 0.90f / cols) * 0.85f;
 	float cardH = Renderer::getScreenHeight() * 0.28f;
 
+	std::string active = ProfileManager::getInstance()->getActiveProfileName();
+
 	for (size_t i = 0; i < mProfiles.size(); i++)
 	{
 		auto card = std::make_shared<ProfileCard>(mWindow, mProfiles[i]);
 		card->setSize(cardW, cardH);
 		mGrid->setEntry(card, Vector2i(i, 0), true, false);
+		
+		if (mProfiles[i].name == active)
+			mGrid->setCursorTo(card);
 	}
 
 	// Create New
