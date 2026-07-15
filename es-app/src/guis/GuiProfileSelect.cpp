@@ -13,6 +13,7 @@
 #include "components/WebImageComponent.h"
 #include "SystemData.h"
 #include "utils/FileSystemUtil.h"
+#include "renderers/Renderer.h"
 
 class ProfileCard : public GuiComponent
 {
@@ -78,6 +79,7 @@ private:
 GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& doneCallback)
 	: GuiComponent(window), mDoneCallback(doneCallback), mBackground(window), mBypass(false)
 {
+	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 	mProfiles = ProfileManager::getInstance()->getProfiles();
 
 	bool autoLogin = Settings::getInstance()->getBool("AutoLoginProfile"); // Assuming this is the key
@@ -131,6 +133,10 @@ void GuiProfileSelect::update(int deltaTime)
 void GuiProfileSelect::populateProfiles()
 {
 	if (!mGrid) return;
+
+	float colW = 1.0f / (mProfiles.size() + 1);
+	for (size_t i = 0; i <= mProfiles.size(); i++)
+		mGrid->setColWidthPerc(i, colW);
 
 	for (size_t i = 0; i < mProfiles.size(); i++)
 	{
