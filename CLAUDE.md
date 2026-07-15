@@ -38,3 +38,9 @@ When required to build and deploy changes to the R36S device, use the following 
 5. **Restart**: The user can restart EmulationStation via the UI menu, or you can trigger a restart remotely by killing the process:
    `ssh -i ~/.ssh/id_ed25519_antigravity -o StrictHostKeyChecking=no ark@192.168.18.20 "killall emulationstation"`
 
+## 10. Smart Session & Context Management (Keep Agent Smart)
+- **Limit Scope**: Limit sessions to 3–10 files. Avoid editing files > 500 lines if possible.
+- **Plan First**: Output file scope and plan before execution.
+- **Context Target**: Keep context usage under 10–20%. Monitor via `/context` in Antigravity CLI.
+- **Handoff Workflow**: After small cluster of work, write progress to [HANDOFF.md](file:///Users/jacko/Documents/MyEmulationStation/HANDOFF.md) and stop. Next agent session resumes from there.
+

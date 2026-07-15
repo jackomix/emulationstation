@@ -142,6 +142,15 @@ void AchievementServer::start()
 							rapidjson::Value achArray(rapidjson::kArrayType);
 							achArray.CopyFrom(pd["Achievements"], allocator);
 							
+							for (rapidjson::SizeType i = 0; i < achArray.Size(); i++) {
+								if (achArray[i].HasMember("BadgeName") && achArray[i]["BadgeName"].IsString()) {
+									std::string badgeName = achArray[i]["BadgeName"].GetString();
+									std::string badgeUrl = "http://127.0.0.1:9191/Badge/" + badgeName + ".png";
+									std::string badgeLockedUrl = "http://127.0.0.1:9191/Badge/" + badgeName + "_lock.png";
+									achArray[i].AddMember("BadgeURL", rapidjson::Value(badgeUrl.c_str(), allocator), allocator);
+									achArray[i].AddMember("BadgeLockedURL", rapidjson::Value(badgeLockedUrl.c_str(), allocator), allocator);
+								}
+							}
 
 							setObj.AddMember("Achievements", achArray, allocator);
 						} else {
