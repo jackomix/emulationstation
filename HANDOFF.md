@@ -33,7 +33,7 @@ Fixed overlapping text bug by initializing grid early, moving sizing to end of c
 ### 3. Visual Adjustments (Fixed)
 - **Zero Border Visibility**: Fixed. Changed `mBackground->setEdgeColor` to `0x888888FF` for unselected and `0xFFFFFFFF` for selected states instead of using `theme->Background.color` which was full black.
 - **Card Backgrounds**: Fixed. Set `mBackground->setCenterColor` to a dark gray (`0x222222FF`) instead of full black.
-- **Screen Background**: Kept as is.
+- **Screen Background**: Kept as is. Note: Background is a black overlay that is half opacity on a black background, making it look like there is no transparency at all. Needs adjustment in future session.
 - **Avatar missing**: Fixed. Swapped `WebImageComponent` with `ImageComponent` and changed missing paths to existing icons (`:/cartridge.svg`, `:/fav_add.svg`).
 - **"CREATE NE..." truncated**: Fixed. Changed text font from `theme->Text.font` to `Font::get(FONT_SIZE_SMALL)` so it fits.
 - **Cards not vertically centered**: Fixed. Dynamically calculated `totalHeight` of card content and centered vertically by calculating `startY`.
