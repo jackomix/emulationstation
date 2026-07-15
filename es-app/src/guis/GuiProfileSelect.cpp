@@ -23,20 +23,24 @@ public:
 	{
 		auto theme = ThemeData::getMenuTheme();
 
-		mBackground = std::make_shared<NinePatchComponent>(window);
-		mBackground->setImagePath(":/frame.png");
-		mBackground->setCenterColor(0x222222FF);
-		mBackground->setEdgeColor(0x888888FF);
-		addChild(mBackground.get());
+		if (!isCreate) {
+			mBackground = std::make_shared<NinePatchComponent>(window);
+			mBackground->setImagePath(":/frame.png");
+			mBackground->setCornerSize(6, 6);
+			mBackground->setCenterColor(0x222222FF);
+			mBackground->setEdgeColor(0x888888FF);
+			addChild(mBackground.get());
+		}
 
 		mAvatar = std::make_shared<ImageComponent>(window);
 		if (isCreate) {
 			mAvatar->setImage(":/fav_add.svg");
+			mAvatar->setColorShift(0x888888FF);
 		} else {
 			mAvatar->setImage(":/cartridge.svg"); 
 		}
 		
-		float avatarSize = Renderer::getScreenWidth() * 0.1f;
+		float avatarSize = isCreate ? (Renderer::getScreenWidth() * 0.13f) : (Renderer::getScreenWidth() * 0.1f);
 		mAvatar->setResize(avatarSize, avatarSize);
 		addChild(mAvatar.get());
 
@@ -47,27 +51,39 @@ public:
 
 	void onSizeChanged() override
 	{
-		mBackground->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
-		mBackground->setPosition(0, 0);
+		if (!mIsCreate) {
+			mBackground->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
+			mBackground->setPosition(0, 0);
+		}
 
-		float avatarSize = Renderer::getScreenWidth() * 0.1f;
+		float avatarSize = mIsCreate ? (Renderer::getScreenWidth() * 0.13f) : (Renderer::getScreenWidth() * 0.1f);
 		float textHeight = mName->getFont()->getLetterHeight();
 		float totalHeight = avatarSize + 10 + textHeight;
 		float startY = (mSize.y() - totalHeight) / 2;
 
 		mAvatar->setPosition((mSize.x() - avatarSize) / 2, startY);
-		mName->setPosition(0, startY + avatarSize + 10);
-		mName->setSize(mSize.x(), textHeight);
+		
+		float pad = mSize.x() * 0.10f;
+		mName->setSize(mSize.x() - pad * 2, textHeight);
+		mName->setPosition(pad, startY + avatarSize + 10);
 	}
 
 	void onFocusGained() override
 	{
-		mBackground->setEdgeColor(0xFFFFFFFF);
+		if (mIsCreate) {
+			mAvatar->setColorShift(0xFFFFFFFF);
+		} else {
+			mBackground->setEdgeColor(0xFFFFFFFF);
+		}
 	}
 
 	void onFocusLost() override
 	{
-		mBackground->setEdgeColor(0x888888FF);
+		if (mIsCreate) {
+			mAvatar->setColorShift(0x888888FF);
+		} else {
+			mBackground->setEdgeColor(0x888888FF);
+		}
 	}
 
 	Profile getProfile() const { return mProfile; }
@@ -104,9 +120,9 @@ GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& 
 
 	auto theme = ThemeData::getMenuTheme();
 
-	mBackground.setImagePath(theme->Background.path.empty() ? ":/frame.png" : theme->Background.path);
-	mBackground.setCenterColor(theme->Background.color);
-	mBackground.setEdgeColor(theme->Background.color);
+	mBackground.setImagePath("");
+	mBackground.setCenterColor(0x000000CC);
+	mBackground.setEdgeColor(0x000000CC);
 
 	mGrid = std::make_shared<ComponentGrid>(window, Vector2i((int)mProfiles.size() + 1, 1));
 	
@@ -130,17 +146,19 @@ void GuiProfileSelect::onSizeChanged()
 {
 	mBackground.fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
 	
-	if (mGrid)
+	if (mGrid && mTitle)
 	{
-		float gridH = Renderer::getScreenHeight() * 0.3f;
-		mGrid->setSize(mSize.x(), gridH);
-		mGrid->setPosition(0, (mSize.y() - gridH) / 2);
+		float titleH = mTitle->getFont()->getLetterHeight() + 8;
+		float gap    = Renderer::getScreenHeight() * 0.03f;
+		float gridH  = Renderer::getScreenHeight() * 0.30f;
+		float blockH = titleH + gap + gridH;
+		float startY = (mSize.y() - blockH) / 2.0f;
 
-		if (mTitle)
-		{
-			mTitle->setSize(mSize.x(), mTitle->getFont()->getLetterHeight());
-			mTitle->setPosition(0, mGrid->getPosition().y() - mTitle->getFont()->getLetterHeight() - 20);
-		}
+		mTitle->setSize(mSize.x(), titleH);
+		mTitle->setPosition(0, startY);
+
+		mGrid->setSize(mSize.x() * 0.85f, gridH);
+		mGrid->setPosition(mSize.x() * 0.075f, startY + titleH + gap);
 	}
 }
 
@@ -153,12 +171,13 @@ void GuiProfileSelect::populateProfiles()
 {
 	if (!mGrid) return;
 
-	float colW = 1.0f / (mProfiles.size() + 1);
+	int cols = (int)mProfiles.size() + 1;
+	float colW = 1.0f / cols;
 	for (size_t i = 0; i <= mProfiles.size(); i++)
 		mGrid->setColWidthPerc(i, colW);
 
-	float cardW = Renderer::getScreenWidth() * 0.2f;
-	float cardH = Renderer::getScreenHeight() * 0.3f;
+	float cardW = (Renderer::getScreenWidth() * 0.85f / cols) * 0.80f;
+	float cardH = Renderer::getScreenHeight() * 0.28f;
 
 	for (size_t i = 0; i < mProfiles.size(); i++)
 	{
