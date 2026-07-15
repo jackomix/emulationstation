@@ -31,9 +31,9 @@ public:
 
 		mAvatar = std::make_shared<ImageComponent>(window);
 		if (isCreate) {
-			mAvatar->setImage(":/help/plus.svg");
+			mAvatar->setImage(":/fav_add.svg");
 		} else {
-			mAvatar->setImage(":/avatar_default.svg"); 
+			mAvatar->setImage(":/cartridge.svg"); 
 		}
 		
 		float avatarSize = Renderer::getScreenWidth() * 0.1f;

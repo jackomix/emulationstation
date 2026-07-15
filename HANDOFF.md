@@ -34,7 +34,7 @@ Fixed overlapping text bug by initializing grid early, moving sizing to end of c
 - **Zero Border Visibility**: Fixed. Changed `mBackground->setEdgeColor` to `0x888888FF` for unselected and `0xFFFFFFFF` for selected states instead of using `theme->Background.color` which was full black.
 - **Card Backgrounds**: Fixed. Set `mBackground->setCenterColor` to a dark gray (`0x222222FF`) instead of full black.
 - **Screen Background**: Kept as is.
-- **Avatar missing**: Fixed. Swapped `WebImageComponent` with `ImageComponent` so local `.svg` files (`:/avatar_default.svg`, `:/help/plus.svg`) load properly.
+- **Avatar missing**: Fixed. Swapped `WebImageComponent` with `ImageComponent` and changed missing paths to existing icons (`:/cartridge.svg`, `:/fav_add.svg`).
 - **"CREATE NE..." truncated**: Fixed. Changed text font from `theme->Text.font` to `Font::get(FONT_SIZE_SMALL)` so it fits.
 - **Cards not vertically centered**: Fixed. Dynamically calculated `totalHeight` of card content and centered vertically by calculating `startY`.
 - **No title/header**: Fixed. Added a new `TextComponent` `mTitle` to `GuiProfileSelect` that renders "_("SELECT PROFILE")" directly above the grid.
