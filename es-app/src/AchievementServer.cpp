@@ -122,6 +122,7 @@ void AchievementServer::start()
 						} else {
 							imageIconValue.SetString("", allocator);
 						}
+						if (v2Doc.HasMember("ImageIconUrl")) v2Doc.RemoveMember("ImageIconUrl");
 						v2Doc.AddMember("ImageIconUrl", imageIconValue, allocator);
 						
 						if (pd.HasMember("ID")) v2Doc.AddMember("RichPresenceGameId", rapidjson::Value(pd["ID"], allocator), allocator);
@@ -136,6 +137,7 @@ void AchievementServer::start()
 						
 						rapidjson::Value setIconValue;
 						setIconValue.CopyFrom(v2Doc["ImageIconUrl"], allocator);
+						if (setObj.HasMember("ImageIconUrl")) setObj.RemoveMember("ImageIconUrl");
 						setObj.AddMember("ImageIconUrl", setIconValue, allocator);
 						
 						if (pd.HasMember("Achievements")) {
@@ -147,7 +149,9 @@ void AchievementServer::start()
 									std::string badgeName = achArray[i]["BadgeName"].GetString();
 									std::string badgeUrl = "http://127.0.0.1:9191/Badge/" + badgeName + ".png";
 									std::string badgeLockedUrl = "http://127.0.0.1:9191/Badge/" + badgeName + "_lock.png";
+									if (achArray[i].HasMember("BadgeURL")) achArray[i].RemoveMember("BadgeURL");
 									achArray[i].AddMember("BadgeURL", rapidjson::Value(badgeUrl.c_str(), allocator), allocator);
+									if (achArray[i].HasMember("BadgeLockedURL")) achArray[i].RemoveMember("BadgeLockedURL");
 									achArray[i].AddMember("BadgeLockedURL", rapidjson::Value(badgeLockedUrl.c_str(), allocator), allocator);
 								}
 							}
