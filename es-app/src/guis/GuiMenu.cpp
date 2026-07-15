@@ -1,5 +1,5 @@
 #include "guis/GuiMenu.h"
-#include "guis/GuiProfileSettings.h"
+#include "guis/GuiProfileSelect.h"
 #include "components/OptionListComponent.h"
 #include "components/SliderComponent.h"
 #include "components/SwitchComponent.h"
@@ -301,7 +301,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 		addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
 
-		addEntry(_("PROFILES").c_str(), true, [this, window] { window->pushGui(new GuiProfileSettings(window)); }, "iconSystem");
+		addEntry(_("PROFILES").c_str(), true, [this, window] { window->pushGui(new GuiProfileSelect(window, nullptr)); }, "iconSystem");
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BATOCERASTORE) || ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEMESDOWNLOADER) ||
 			(ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEBEZELPROJECT) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS)) ||
