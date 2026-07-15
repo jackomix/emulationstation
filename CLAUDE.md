@@ -34,7 +34,7 @@ When creating or modifying `GuiComponent` subclasses, you must adhere to these r
 - **Constructor Lifecycle**: Always initialize and instantiate all child components (grids, components, backgrounds) BEFORE calling `setSize()`. Calling `setSize()` triggers `onSizeChanged()`, which will fail or compute size `(0, 0)` if the child objects are still null.
 - **Centering & Positioning**: Custom menus or popups do not center automatically. Calculate center offsets and call `setPosition()` at the end of the constructor using `Renderer::getScreenWidth()` and `Renderer::getScreenHeight()`.
 - **Theme Integration**: Integrate with the active theme. Fetch `ThemeData::getMenuTheme()` and use its styles (e.g., `theme->Background.color`, `theme->Text.color`, theme fonts) instead of hardcoding raw color hex values or font levels.
-- **Resolution Independence**: Never use absolute pixel bounds for items (e.g., card size `140x180`). Calculate dimensions relative to the screen dimensions (e.g., `Renderer::getScreenWidth() * 0.2f`).
+- **Resolution Independence**: Never use absolute pixel bounds for items (e.g., card size `140x180`). Calculate dimensions relative to the screen dimensions (e.g., `Renderer::getScreenWidth() * 0.2f`). Remember that testing is run on the R36S device which uses a low-resolution 480p screen (640x480), so layout elements must scale down elegantly without text clipping or overlaps.
 - **Safe Deletion**: Never call `delete this` directly inside the `update()` loop. For deferred or automatic GUI closures (like menu bypasses), wrap the deletion inside UI thread dispatching: `mWindow->postToUiThread([this]() { ... delete this; });`.
 
 ## 10. Deployment & R36S Device Sync Workflow
