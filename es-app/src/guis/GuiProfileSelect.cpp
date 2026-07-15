@@ -21,10 +21,12 @@ public:
 	ProfileCard(Window* window, const Profile& profile, bool isCreate = false) 
 		: GuiComponent(window), mProfile(profile), mIsCreate(isCreate)
 	{
+		auto theme = ThemeData::getMenuTheme();
+
 		mBackground = std::make_shared<NinePatchComponent>(window);
-		mBackground->setImagePath(":/frame.png");
-		mBackground->setCenterColor(0x333333FF);
-		mBackground->setEdgeColor(0x333333FF);
+		mBackground->setImagePath(theme->Background.path.empty() ? ":/frame.png" : theme->Background.path);
+		mBackground->setCenterColor(theme->Background.color);
+		mBackground->setEdgeColor(theme->Background.color);
 		addChild(mBackground.get());
 
 		mAvatar = std::make_shared<WebImageComponent>(window, 0);
@@ -33,11 +35,13 @@ public:
 		} else {
 			mAvatar->setImage(":/avatar_default.svg"); // Could use profile.avatarUrl if existed
 		}
-		mAvatar->setResize(100, 100);
+		
+		float avatarSize = Renderer::getScreenWidth() * 0.1f;
+		mAvatar->setResize(avatarSize, avatarSize);
 		addChild(mAvatar.get());
 
 		std::string text = isCreate ? _("CREATE NEW") : profile.name;
-		mName = std::make_shared<TextComponent>(window, text, Font::get(FONT_SIZE_SMALL), 0xFFFFFFFF, ALIGN_CENTER);
+		mName = std::make_shared<TextComponent>(window, text, theme->Text.font, theme->Text.color, ALIGN_CENTER);
 		addChild(mName.get());
 	}
 
@@ -46,23 +50,22 @@ public:
 		mBackground->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
 		mBackground->setPosition(0, 0);
 
-		mAvatar->setPosition((mSize.x() - 100) / 2, 20);
-		mName->setPosition(0, 130);
-		mName->setSize(mSize.x(), 24);
+		float avatarSize = Renderer::getScreenWidth() * 0.1f;
+		mAvatar->setPosition((mSize.x() - avatarSize) / 2, 20);
+		mName->setPosition(0, 20 + avatarSize + 10);
+		mName->setSize(mSize.x(), mName->getFont()->getLetterHeight());
 	}
 
 	void onFocusGained() override
 	{
-		mBackground->setCenterColor(0x555555FF);
-		mBackground->setEdgeColor(0x0000FFFF);
-		mName->setColor(0xFFFF00FF);
+		auto theme = ThemeData::getMenuTheme();
+		mBackground->setEdgeColor(theme->Text.color);
 	}
 
 	void onFocusLost() override
 	{
-		mBackground->setCenterColor(0x333333FF);
-		mBackground->setEdgeColor(0x333333FF);
-		mName->setColor(0xFFFFFFFF);
+		auto theme = ThemeData::getMenuTheme();
+		mBackground->setEdgeColor(theme->Background.color);
 	}
 
 	Profile getProfile() const { return mProfile; }
@@ -79,23 +82,39 @@ private:
 GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& doneCallback)
 	: GuiComponent(window), mDoneCallback(doneCallback), mBackground(window), mBypass(false)
 {
-	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 	mProfiles = ProfileManager::getInstance()->getProfiles();
 
 	bool autoLogin = Settings::getInstance()->getBool("AutoLoginProfile"); // Assuming this is the key
 	if (mProfiles.size() <= 1 || autoLogin)
 	{
 		mBypass = true;
+		mWindow->postToUiThread([this]() {
+			std::string active = ProfileManager::getInstance()->getActiveProfileName();
+			if (active.empty() && !mProfiles.empty()) active = mProfiles.front().name;
+			
+			if (!active.empty()) selectProfile(Profile{active});
+
+			if (mDoneCallback) mDoneCallback();
+			delete this;
+		});
 		return;
 	}
 
-	addChild(&mBackground);
-	mBackground.setImagePath(":/frame.png");
+	auto theme = ThemeData::getMenuTheme();
+
+	mBackground.setImagePath(theme->Background.path.empty() ? ":/frame.png" : theme->Background.path);
+	mBackground.setCenterColor(theme->Background.color);
+	mBackground.setEdgeColor(theme->Background.color);
 
 	mGrid = std::make_shared<ComponentGrid>(window, Vector2i((int)mProfiles.size() + 1, 1));
-	addChild(mGrid.get());
-
+	
 	populateProfiles();
+
+	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
+	setPosition(0, 0);
+
+	addChild(&mBackground);
+	addChild(mGrid.get());
 }
 
 GuiProfileSelect::~GuiProfileSelect()
@@ -108,26 +127,15 @@ void GuiProfileSelect::onSizeChanged()
 	
 	if (mGrid)
 	{
-		mGrid->setSize(mSize.x(), 180);
-		mGrid->setPosition(0, (mSize.y() - 180) / 2);
+		float gridH = Renderer::getScreenHeight() * 0.3f;
+		mGrid->setSize(mSize.x(), gridH);
+		mGrid->setPosition(0, (mSize.y() - gridH) / 2);
 	}
 }
 
 void GuiProfileSelect::update(int deltaTime)
 {
 	GuiComponent::update(deltaTime);
-
-	if (mBypass)
-	{
-		std::string active = ProfileManager::getInstance()->getActiveProfileName();
-		if (active.empty() && !mProfiles.empty()) active = mProfiles.front().name;
-		
-		if (!active.empty())
-			selectProfile(Profile{active}); // Fallback wrapper
-
-		if (mDoneCallback) mDoneCallback();
-		delete this;
-	}
 }
 
 void GuiProfileSelect::populateProfiles()
@@ -138,16 +146,19 @@ void GuiProfileSelect::populateProfiles()
 	for (size_t i = 0; i <= mProfiles.size(); i++)
 		mGrid->setColWidthPerc(i, colW);
 
+	float cardW = Renderer::getScreenWidth() * 0.2f;
+	float cardH = Renderer::getScreenHeight() * 0.3f;
+
 	for (size_t i = 0; i < mProfiles.size(); i++)
 	{
 		auto card = std::make_shared<ProfileCard>(mWindow, mProfiles[i]);
-		card->setSize(140, 180);
+		card->setSize(cardW, cardH);
 		mGrid->setEntry(card, Vector2i(i, 0), true, true);
 	}
 
 	// Create New
 	auto createCard = std::make_shared<ProfileCard>(mWindow, Profile{}, true);
-	createCard->setSize(140, 180);
+	createCard->setSize(cardW, cardH);
 	mGrid->setEntry(createCard, Vector2i(mProfiles.size(), 0), true, true);
 }
 
@@ -162,8 +173,6 @@ void GuiProfileSelect::selectProfile(const Profile& profile)
 
 void GuiProfileSelect::showProfileOptions(const Profile& profile)
 {
-	// Provide Rename or Delete options
-	// (Implementation abbreviated to match instructions, could use GuiMenu)
 	mWindow->pushGui(new GuiMsgBox(mWindow, _("DELETE PROFILE?"), _("YES"), [this, profile]() {
 		deleteProfile(profile);
 	}, _("NO"), nullptr));
@@ -171,8 +180,6 @@ void GuiProfileSelect::showProfileOptions(const Profile& profile)
 
 void GuiProfileSelect::deleteProfile(const Profile& profile)
 {
-	// Not implementing the backend deletion here, just the state fallback logic
-	// If active is deleted, fallback to first available
 	std::string active = ProfileManager::getInstance()->getActiveProfileName();
 	if (active == profile.name) {
 		auto profiles = ProfileManager::getInstance()->getProfiles();
@@ -181,7 +188,6 @@ void GuiProfileSelect::deleteProfile(const Profile& profile)
 		}
 	}
 	
-	// Reload the UI
 	mProfiles = ProfileManager::getInstance()->getProfiles();
 	if (mGrid) mGrid->removeEntry(mGrid->getSelectedComponent());
 }
