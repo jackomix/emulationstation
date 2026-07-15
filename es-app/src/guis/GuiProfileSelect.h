@@ -6,6 +6,7 @@
 #include "ProfileManager.h"
 #include "components/ComponentGrid.h"
 #include "components/NinePatchComponent.h"
+#include "components/TextComponent.h"
 #include <vector>
 #include <memory>
 #include <functional>
@@ -27,6 +28,7 @@ private:
 
 	std::shared_ptr<ComponentGrid> mGrid;
 	NinePatchComponent mBackground;
+	std::shared_ptr<TextComponent> mTitle;
 
 	bool mBypass;
 

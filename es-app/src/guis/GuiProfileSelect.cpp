@@ -10,7 +10,7 @@
 #include "ThemeData.h"
 #include "views/ViewController.h"
 #include "components/TextComponent.h"
-#include "components/WebImageComponent.h"
+#include "components/ImageComponent.h"
 #include "SystemData.h"
 #include "utils/FileSystemUtil.h"
 #include "renderers/Renderer.h"
@@ -24,16 +24,16 @@ public:
 		auto theme = ThemeData::getMenuTheme();
 
 		mBackground = std::make_shared<NinePatchComponent>(window);
-		mBackground->setImagePath(theme->Background.path.empty() ? ":/frame.png" : theme->Background.path);
-		mBackground->setCenterColor(theme->Background.color);
-		mBackground->setEdgeColor(theme->Background.color);
+		mBackground->setImagePath(":/frame.png");
+		mBackground->setCenterColor(0x222222FF);
+		mBackground->setEdgeColor(0x888888FF);
 		addChild(mBackground.get());
 
-		mAvatar = std::make_shared<WebImageComponent>(window, 0);
+		mAvatar = std::make_shared<ImageComponent>(window);
 		if (isCreate) {
 			mAvatar->setImage(":/help/plus.svg");
 		} else {
-			mAvatar->setImage(":/avatar_default.svg"); // Could use profile.avatarUrl if existed
+			mAvatar->setImage(":/avatar_default.svg"); 
 		}
 		
 		float avatarSize = Renderer::getScreenWidth() * 0.1f;
@@ -41,7 +41,7 @@ public:
 		addChild(mAvatar.get());
 
 		std::string text = isCreate ? _("CREATE NEW") : profile.name;
-		mName = std::make_shared<TextComponent>(window, text, theme->Text.font, theme->Text.color, ALIGN_CENTER);
+		mName = std::make_shared<TextComponent>(window, text, Font::get(FONT_SIZE_SMALL), theme->Text.color, ALIGN_CENTER);
 		addChild(mName.get());
 	}
 
@@ -51,21 +51,23 @@ public:
 		mBackground->setPosition(0, 0);
 
 		float avatarSize = Renderer::getScreenWidth() * 0.1f;
-		mAvatar->setPosition((mSize.x() - avatarSize) / 2, 20);
-		mName->setPosition(0, 20 + avatarSize + 10);
-		mName->setSize(mSize.x(), mName->getFont()->getLetterHeight());
+		float textHeight = mName->getFont()->getLetterHeight();
+		float totalHeight = avatarSize + 10 + textHeight;
+		float startY = (mSize.y() - totalHeight) / 2;
+
+		mAvatar->setPosition((mSize.x() - avatarSize) / 2, startY);
+		mName->setPosition(0, startY + avatarSize + 10);
+		mName->setSize(mSize.x(), textHeight);
 	}
 
 	void onFocusGained() override
 	{
-		auto theme = ThemeData::getMenuTheme();
-		mBackground->setEdgeColor(theme->Text.color);
+		mBackground->setEdgeColor(0xFFFFFFFF);
 	}
 
 	void onFocusLost() override
 	{
-		auto theme = ThemeData::getMenuTheme();
-		mBackground->setEdgeColor(theme->Background.color);
+		mBackground->setEdgeColor(0x888888FF);
 	}
 
 	Profile getProfile() const { return mProfile; }
@@ -75,7 +77,7 @@ private:
 	Profile mProfile;
 	bool mIsCreate;
 	std::shared_ptr<NinePatchComponent> mBackground;
-	std::shared_ptr<WebImageComponent> mAvatar;
+	std::shared_ptr<ImageComponent> mAvatar;
 	std::shared_ptr<TextComponent> mName;
 };
 
@@ -110,11 +112,14 @@ GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& 
 	
 	populateProfiles();
 
+	mTitle = std::make_shared<TextComponent>(window, _("SELECT PROFILE"), Font::get(FONT_SIZE_LARGE), theme->Text.color, ALIGN_CENTER);
+
 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 	setPosition(0, 0);
 
 	addChild(&mBackground);
 	addChild(mGrid.get());
+	addChild(mTitle.get());
 }
 
 GuiProfileSelect::~GuiProfileSelect()
@@ -130,6 +135,12 @@ void GuiProfileSelect::onSizeChanged()
 		float gridH = Renderer::getScreenHeight() * 0.3f;
 		mGrid->setSize(mSize.x(), gridH);
 		mGrid->setPosition(0, (mSize.y() - gridH) / 2);
+
+		if (mTitle)
+		{
+			mTitle->setSize(mSize.x(), mTitle->getFont()->getLetterHeight());
+			mTitle->setPosition(0, mGrid->getPosition().y() - mTitle->getFont()->getLetterHeight() - 20);
+		}
 	}
 }
 
