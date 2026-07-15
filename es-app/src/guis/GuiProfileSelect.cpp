@@ -54,13 +54,14 @@ public:
 	{
 		if (!mIsCreate) {
 			mBackground->fitTo(mSize, Vector3f::Zero(), Vector2f::Zero());
-			mBackground->setPosition(0, 0);
 		}
 
-		float avatarSize = mIsCreate ? (Renderer::getScreenWidth() * 0.13f) : (Renderer::getScreenWidth() * 0.1f);
-		float textHeight = mName ? mName->getFont()->getLetterHeight() : 0;
-		float totalHeight = avatarSize + (mName ? 10 + textHeight : 0);
-		float startY = (mSize.y() - totalHeight) / 2;
+		float standardAvatarSize = Renderer::getScreenWidth() * 0.1f;
+		float textHeight = Font::get(FONT_SIZE_SMALL)->getLetterHeight();
+		float standardTotalHeight = standardAvatarSize + 10 + textHeight;
+		
+		float avatarSize = mIsCreate ? (Renderer::getScreenWidth() * 0.13f) : standardAvatarSize;
+		float startY = mIsCreate ? (mSize.y() - standardTotalHeight) / 2 + (standardAvatarSize - avatarSize) / 2 : (mSize.y() - standardTotalHeight) / 2;
 
 		mAvatar->setPosition((mSize.x() - avatarSize) / 2, startY);
 		
@@ -148,7 +149,7 @@ void GuiProfileSelect::onSizeChanged()
 		float gap    = Renderer::getScreenHeight() * 0.08f;
 		float gridH  = Renderer::getScreenHeight() * 0.30f;
 		float blockH = titleH + gap + gridH;
-		float startY = (mSize.y() - blockH) / 2.0f;
+		float startY = (mSize.y() - blockH) / 2.5f;
 
 		mTitle->setSize(mSize.x(), titleH);
 		mTitle->setPosition(0, startY);
@@ -167,7 +168,7 @@ void GuiProfileSelect::render(const Transform4x4f& parentTrans)
 {
 	Transform4x4f trans = parentTrans * getTransform();
 	Renderer::setMatrix(trans);
-	Renderer::drawRect(0.0f, 0.0f, mSize.x(), mSize.y(), 0x000000CC);
+	Renderer::drawRect(0.0f, 0.0f, mSize.x(), mSize.y(), 0x000000FF);
 	GuiComponent::render(parentTrans);
 }
 
@@ -187,13 +188,13 @@ void GuiProfileSelect::populateProfiles()
 	{
 		auto card = std::make_shared<ProfileCard>(mWindow, mProfiles[i]);
 		card->setSize(cardW, cardH);
-		mGrid->setEntry(card, Vector2i(i, 0), true, true);
+		mGrid->setEntry(card, Vector2i(i, 0), true, false);
 	}
 
 	// Create New
 	auto createCard = std::make_shared<ProfileCard>(mWindow, Profile{}, true);
 	createCard->setSize(cardW, cardH);
-	mGrid->setEntry(createCard, Vector2i(mProfiles.size(), 0), true, true);
+	mGrid->setEntry(createCard, Vector2i(mProfiles.size(), 0), true, false);
 }
 
 void GuiProfileSelect::selectProfile(const Profile& profile)
