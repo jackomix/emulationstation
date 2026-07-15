@@ -18,6 +18,7 @@ public:
 	~GuiProfileSelect();
 
 	void onSizeChanged() override;
+	void render(const Transform4x4f& parentTrans) override;
 	bool input(InputConfig* config, Input input) override;
 	void update(int deltaTime) override;
 	std::vector<HelpPrompt> getHelpPrompts() override;
@@ -27,7 +28,6 @@ private:
 	std::vector<Profile> mProfiles;
 
 	std::shared_ptr<ComponentGrid> mGrid;
-	NinePatchComponent mBackground;
 	std::shared_ptr<TextComponent> mTitle;
 
 	bool mBypass;

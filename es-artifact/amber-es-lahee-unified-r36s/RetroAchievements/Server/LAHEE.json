@@ -1,0 +1,51 @@
+﻿{
+  "LAHEE": {
+    "WebPort": 8000,
+    "AutoSessionOnSingleUser": true,
+    "LoadAsSingleSet": false,
+    "DisableLeaderboards": false,
+    "BadgeDirectory": "Badge",
+    "DataDirectory": "Data",
+    "UserDirectory": "User",
+    "PresenceHistoryLimit": -1,
+    "AutoOpenBrowser": false,
+    "RAFetch": {
+      "Url": "https://retroachievements.org",
+      "WebApiKey": "",
+      "Username": "",
+      "Password": "",
+      "AutoUpdateCodeNotes": false,
+      "CheckSetRevisions": false,
+      "SetRevisionCheckCacheDays": 14,
+      "SetRevisionCheckIncludeUnofficial": true,
+      "SetRevisionCheckIgnoreGameIds": [
+        3885
+      ]
+    },
+    "OBSWebsocketUrl": "ws://localhost:4455",
+    "ImageResourceHost": "http://127.0.0.1:8000",
+    "LoadUnofficialAsOfficial": false,
+    "Capture": [
+      {
+        "Trigger": "Screenshot",
+        "Parameter": "Desktop",
+        "Delay": 500
+      },
+      {
+        "Trigger": "Screenshot",
+        "Parameter": "Desktop",
+        "Delay": 2000
+      },
+      {
+        "Trigger": "OBSWebsocket",
+        "Parameter": "SaveReplayBuffer",
+        "Delay": 15000
+      }
+    ]
+  },
+  "Watson": {
+    "DebugResponses": false,
+    "DebugRequests": false,
+    "DebugRouting": false
+  }
+}

@@ -44,28 +44,31 @@ public:
 		mAvatar->setResize(avatarSize, avatarSize);
 		addChild(mAvatar.get());
 
-		std::string text = isCreate ? _("CREATE NEW") : profile.name;
-		mName = std::make_shared<TextComponent>(window, text, Font::get(FONT_SIZE_SMALL), theme->Text.color, ALIGN_CENTER);
-		addChild(mName.get());
+		if (!isCreate) {
+			mName = std::make_shared<TextComponent>(window, profile.name, Font::get(FONT_SIZE_SMALL), theme->Text.color, ALIGN_CENTER);
+			addChild(mName.get());
+		}
 	}
 
 	void onSizeChanged() override
 	{
 		if (!mIsCreate) {
-			mBackground->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
+			mBackground->fitTo(mSize, Vector3f::Zero(), Vector2f::Zero());
 			mBackground->setPosition(0, 0);
 		}
 
 		float avatarSize = mIsCreate ? (Renderer::getScreenWidth() * 0.13f) : (Renderer::getScreenWidth() * 0.1f);
-		float textHeight = mName->getFont()->getLetterHeight();
-		float totalHeight = avatarSize + 10 + textHeight;
+		float textHeight = mName ? mName->getFont()->getLetterHeight() : 0;
+		float totalHeight = avatarSize + (mName ? 10 + textHeight : 0);
 		float startY = (mSize.y() - totalHeight) / 2;
 
 		mAvatar->setPosition((mSize.x() - avatarSize) / 2, startY);
 		
-		float pad = mSize.x() * 0.10f;
-		mName->setSize(mSize.x() - pad * 2, textHeight);
-		mName->setPosition(pad, startY + avatarSize + 10);
+		if (mName) {
+			float pad = mSize.x() * 0.10f;
+			mName->setSize(mSize.x() - pad * 2, textHeight);
+			mName->setPosition(pad, startY + avatarSize + 10);
+		}
 	}
 
 	void onFocusGained() override
@@ -98,7 +101,7 @@ private:
 };
 
 GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& doneCallback)
-	: GuiComponent(window), mDoneCallback(doneCallback), mBackground(window), mBypass(false)
+	: GuiComponent(window), mDoneCallback(doneCallback), mBypass(false)
 {
 	mProfiles = ProfileManager::getInstance()->getProfiles();
 
@@ -120,10 +123,6 @@ GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& 
 
 	auto theme = ThemeData::getMenuTheme();
 
-	mBackground.setImagePath("");
-	mBackground.setCenterColor(0x000000CC);
-	mBackground.setEdgeColor(0x000000CC);
-
 	mGrid = std::make_shared<ComponentGrid>(window, Vector2i((int)mProfiles.size() + 1, 1));
 	
 	populateProfiles();
@@ -133,7 +132,6 @@ GuiProfileSelect::GuiProfileSelect(Window* window, const std::function<void()>& 
 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 	setPosition(0, 0);
 
-	addChild(&mBackground);
 	addChild(mGrid.get());
 	addChild(mTitle.get());
 }
@@ -144,12 +142,10 @@ GuiProfileSelect::~GuiProfileSelect()
 
 void GuiProfileSelect::onSizeChanged()
 {
-	mBackground.fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
-	
 	if (mGrid && mTitle)
 	{
 		float titleH = mTitle->getFont()->getLetterHeight() + 8;
-		float gap    = Renderer::getScreenHeight() * 0.03f;
+		float gap    = Renderer::getScreenHeight() * 0.08f;
 		float gridH  = Renderer::getScreenHeight() * 0.30f;
 		float blockH = titleH + gap + gridH;
 		float startY = (mSize.y() - blockH) / 2.0f;
@@ -157,14 +153,22 @@ void GuiProfileSelect::onSizeChanged()
 		mTitle->setSize(mSize.x(), titleH);
 		mTitle->setPosition(0, startY);
 
-		mGrid->setSize(mSize.x() * 0.85f, gridH);
-		mGrid->setPosition(mSize.x() * 0.075f, startY + titleH + gap);
+		mGrid->setSize(mSize.x() * 0.90f, gridH);
+		mGrid->setPosition(mSize.x() * 0.05f, startY + titleH + gap);
 	}
 }
 
 void GuiProfileSelect::update(int deltaTime)
 {
 	GuiComponent::update(deltaTime);
+}
+
+void GuiProfileSelect::render(const Transform4x4f& parentTrans)
+{
+	Transform4x4f trans = parentTrans * getTransform();
+	Renderer::setMatrix(trans);
+	Renderer::drawRect(0.0f, 0.0f, mSize.x(), mSize.y(), 0x000000CC);
+	GuiComponent::render(parentTrans);
 }
 
 void GuiProfileSelect::populateProfiles()
@@ -176,7 +180,7 @@ void GuiProfileSelect::populateProfiles()
 	for (size_t i = 0; i <= mProfiles.size(); i++)
 		mGrid->setColWidthPerc(i, colW);
 
-	float cardW = (Renderer::getScreenWidth() * 0.85f / cols) * 0.80f;
+	float cardW = (Renderer::getScreenWidth() * 0.90f / cols) * 0.85f;
 	float cardH = Renderer::getScreenHeight() * 0.28f;
 
 	for (size_t i = 0; i < mProfiles.size(); i++)
