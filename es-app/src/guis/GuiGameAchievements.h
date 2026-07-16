@@ -28,6 +28,7 @@ protected:
 
 	FileData* mFile;
 	std::shared_ptr<RetroAchievementProgress> mProgress;
+	std::shared_ptr<ComponentGrid> mTabGrid;
 	int mActiveTab = 0; // 0 = Achievements, 1 = Play History
 	std::vector<ComponentListRow> mAchievementRows;
 	std::string mAchievementSubtitle;

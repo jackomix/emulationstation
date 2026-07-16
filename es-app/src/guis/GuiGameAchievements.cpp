@@ -175,7 +175,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 		auto txt = _("Achievements (softcore)") + ": \t" + std::to_string(ra.NumAwardedToUser) + "/" + std::to_string(ra.NumAchievements);
 		txt += "\r\n" + _("Achievements (hardcore)") + ": \t" + std::to_string(ra.NumAwardedToUserHardcore) + "/" + std::to_string(ra.NumAchievements);
 		txt += "\r\n" + _("Points") + ": \t" + std::to_string(userPoints) + "/" + std::to_string(totalPoints);
-		txt += "\r\n ";
+		txt += "\r\n \r\n \r\n \r\n \r\n ";
 
 		mAchievementSubtitle = txt;
 	}
@@ -226,34 +226,33 @@ void GuiGameAchievements::updateTab()
 {
 	mMenu.clear();
 
-	if (mActiveTab == 0)
-		mMenu.setSubTitle(mAchievementSubtitle);
-	else
-		mMenu.setSubTitle("");
+	// Always set subtitle to reserve space for tab bar and progress bar
+	mMenu.setSubTitle(mAchievementSubtitle);
 
 	auto theme = ThemeData::getMenuTheme();
 
-	// Tab Bar UI
-	auto grid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 1));
+	// Tab Bar UI (rendered outside of the list)
+	if (!mTabGrid) {
+		mTabGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 1));
+	}
 	
 	auto leftTab = std::make_shared<TextComponent>(mWindow, _("ACHIEVEMENTS"), theme->Text.font, 
 		mActiveTab == 0 ? theme->Background.color : theme->Text.color, ALIGN_CENTER);
-	if (mActiveTab == 0) leftTab->setBackgroundColor(theme->Text.color);
+	leftTab->setRenderBackground(true);
+	leftTab->setBackgroundColor(mActiveTab == 0 ? theme->Text.color : theme->Background.color);
 
 	auto rightTab = std::make_shared<TextComponent>(mWindow, _("PLAY HISTORY"), theme->Text.font, 
 		mActiveTab == 1 ? theme->Background.color : theme->Text.color, ALIGN_CENTER);
-	if (mActiveTab == 1) rightTab->setBackgroundColor(theme->Text.color);
+	rightTab->setRenderBackground(true);
+	rightTab->setBackgroundColor(mActiveTab == 1 ? theme->Text.color : theme->Background.color);
 
-	grid->setEntry(leftTab, Vector2i(0, 0), false, true);
-	grid->setEntry(rightTab, Vector2i(1, 0), false, true);
+	mTabGrid->setEntry(leftTab, Vector2i(0, 0), false, true);
+	mTabGrid->setEntry(rightTab, Vector2i(1, 0), false, true);
+	mTabGrid->setColWidthPerc(0, 0.5f);
+	mTabGrid->setColWidthPerc(1, 0.5f);
 	
 	float h = leftTab->getSize().y() + Renderer::getScreenHeight() * 0.02f;
-	grid->setSize(WINDOW_WIDTH, h);
-
-	ComponentListRow tabRow;
-	tabRow.selectable = false;
-	tabRow.addElement(grid, false);
-	addRow(tabRow);
+	mTabGrid->setSize(WINDOW_WIDTH, h);
 
 	if (mActiveTab == 0) {
 		for (auto& row : mAchievementRows)
@@ -291,19 +290,26 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 
 	float statsX = mMenu.getSize().x() * 0.04f;
 
-	float progY = yBase + (theme->TextSmall.font->sizeText("A", 1.1f).y() * 3.3f);
-
-	if (mProgress != nullptr && mActiveTab == 0)
+	if (mTabGrid)
 	{
-		float h = theme->TextSmall.font->sizeText("A8O\rA8O", 1.1).y();
-		float width = (float)Math::min((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.90f));
-		float iw = mMenu.getTitleHeight() / width;
-		float xx = mMenu.getSize().x() - (mMenu.getSize().x() * iw);
+		float tabY = yBase - mTabGrid->getSize().y() - (Renderer::getScreenHeight() * 0.005f);
+		mTabGrid->setPosition(0, tabY);
+		mTabGrid->render(trans);
 
-		mProgress->setPosition(statsX, progY);
-		mProgress->setSize(xx * 0.45f, h);
+		if (mProgress != nullptr && mActiveTab == 0)
+		{
+			float h = theme->TextSmall.font->sizeText("A8O\rA8O", 1.1).y();
+			float width = (float)Math::min((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.90f));
+			float iw = mMenu.getTitleHeight() / width;
+			float xx = mMenu.getSize().x() - (mMenu.getSize().x() * iw);
 
-		mProgress->render(trans);
+			float progY = tabY - h - (Renderer::getScreenHeight() * 0.01f);
+
+			mProgress->setPosition(statsX, progY);
+			mProgress->setSize(xx * 0.45f, h);
+
+			mProgress->render(trans);
+		}
 	}
 }
 
