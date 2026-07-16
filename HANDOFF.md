@@ -14,7 +14,7 @@ The current simulation attempts have failed to match the target screenshots beca
 
 ## Next Steps for the Next Agent
 - **Stop guessing simulation coordinates.** The primary goal is to figure out how text rendering works internally once and for all.
-- Modify the C++ source code (`GuiGameAchievements.cpp`, etc.) to inject `LOG(LogInfo)` debug prints that output the `.getSize()` and `.getPosition()` of every UI element in the achievements screen.
+- Modify the C++ source code (`GuiGameAchievements.cpp`, etc.) to inject standard `printf()` or `std::cout` statements that output the `.getSize()` and `.getPosition()` of every UI element directly to the terminal (bypassing the internal ES logger).
 - Cross-compile and deploy EmulationStation to the R36S console (see `CLAUDE.md` for deployment instructions).
 - Instruct the user to navigate to the achievements screen to trigger the C++ logs, capture the log file from the console, and take a new screenshot.
 - Use a script to parse the exact true C++ coordinates from the logs and draw bounding boxes on the new screenshot to visually prove the engine's internal math exactly matches the screen.
