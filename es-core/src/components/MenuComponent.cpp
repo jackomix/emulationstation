@@ -2,6 +2,7 @@
 #include "components/ButtonComponent.h"
 #include "components/MultiLineMenuEntry.h"
 #include "TextToSpeech.h"
+#include <fstream>
 
 #define BUTTON_GRID_VERT_PADDING  (Renderer::getScreenHeight()*0.0296296)
 #define BUTTON_GRID_HORIZ_PADDING (Renderer::getScreenWidth()*0.0052083333)
@@ -395,7 +396,6 @@ void MenuComponent::onSizeChanged()
 		mTitleImage->setMaxSize(mSize.x() * 0.85f, TITLE_HEIGHT);
 	}
 
-#include <fstream>
 	std::ofstream log("/tmp/sim_coords_header.txt", std::ios::app);
 	if (log.is_open()) {
 		log << "MenuComponent Size: " << mSize.x() << "," << mSize.y() << "\n";
