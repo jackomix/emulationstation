@@ -2,6 +2,7 @@
 #include "components/ButtonComponent.h"
 #include "components/MultiLineMenuEntry.h"
 #include "TextToSpeech.h"
+#include <fstream>
 
 #define BUTTON_GRID_VERT_PADDING  (Renderer::getScreenHeight()*0.0296296)
 #define BUTTON_GRID_HORIZ_PADDING (Renderer::getScreenWidth()*0.0052083333)
@@ -393,6 +394,15 @@ void MenuComponent::onSizeChanged()
 		mTitleImage->setOrigin(0.5f, 0.5f);
 		mTitleImage->setPosition(getPosition().x() + mSize.x() / 2.0f, getPosition().y() + TITLE_HEIGHT / 2.0f);
 		mTitleImage->setMaxSize(mSize.x() * 0.85f, TITLE_HEIGHT);
+	}
+
+	std::ofstream log("/tmp/sim_coords_header.txt", std::ios::app);
+	if (log.is_open()) {
+		log << "MenuComponent Size: " << mSize.x() << "," << mSize.y() << "\n";
+		if (mTitle) log << "mTitle Pos: " << mTitle->getPosition().x() << "," << mTitle->getPosition().y() << " Size: " << mTitle->getSize().x() << "," << mTitle->getSize().y() << "\n";
+		if (mSubtitle) log << "mSubtitle Pos: " << mSubtitle->getPosition().x() << "," << mSubtitle->getPosition().y() << " Size: " << mSubtitle->getSize().x() << "," << mSubtitle->getSize().y() << "\n";
+		if (mTitleImage) log << "mTitleImage Pos: " << mTitleImage->getPosition().x() << "," << mTitleImage->getPosition().y() << " Size: " << mTitleImage->getSize().x() << "," << mTitleImage->getSize().y() << "\n";
+		log.close();
 	}
 }
 
