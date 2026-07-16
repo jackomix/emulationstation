@@ -36,12 +36,14 @@ When creating or modifying `GuiComponent` subclasses, you must adhere to these r
 - **Theme Integration**: Integrate with the active theme. Fetch `ThemeData::getMenuTheme()` and use its styles (e.g., `theme->Background.color`, `theme->Text.color`, theme fonts) instead of hardcoding raw color hex values or font levels.
 - **Resolution Independence**: Never use absolute pixel bounds for items (e.g., card size `140x180`). Calculate dimensions relative to the screen dimensions (e.g., `Renderer::getScreenWidth() * 0.2f`). Remember that testing is run on the R36S device which uses a low-resolution 480p screen (640x480), so layout elements must scale down elegantly without text clipping or overlaps.
 - **Safe Deletion**: Never call `delete this` directly inside the `update()` loop. For deferred or automatic GUI closures (like menu bypasses), wrap the deletion inside UI thread dispatching: `mWindow->postToUiThread([this]() { ... delete this; });`.
+- **ComponentListRow Spacing**: `ComponentListRow` does not automatically inject horizontal margins or spacing between elements. Always insert an empty spacer component (e.g. `GuiComponent` with size `Renderer::getScreenWidth() * 0.015f` to `0.02f`) between adjacent elements in a row.
+- **Avatar & Icon Sizing**: Default menu icons scale to `theme->Text.font->getLetterHeight() * 1.25f`. For prominent visual components (e.g., profile avatars in headers), scale up to `2.5f` times the letter height.
 
 ## 10. Deployment & R36S Device Sync Workflow
 When required to build and deploy changes to the R36S device, use the following lock-free sequence to upload the binary without encountering "Text file busy" errors:
 1. **Push**: Commit and push changes to the active branch (e.g. `attempt2`) to trigger the GitHub Actions (GHA) build.
 2. **Build**: Monitor the GHA build (`gh run list --branch <branch>`). Average build duration is **211 seconds (~3.5 minutes)**. When waiting for builds, schedule a single timer for 210 seconds. If build not done yet, wait 20 seconds more. Once complete, download the artifact locally: 
-   `gh run download <run_id> --name emulationstation-r36s --dir /tmp/es-artifact`
+   `rm -rf /tmp/es-artifact && gh run download <run_id> --name emulationstation-r36s --dir /tmp/es-artifact`
 3. **Upload**: Upload the new binary to the `/tmp` directory on the device via SCP (which avoids lock issues since `/tmp/emulationstation` is not running):
    `scp -i ~/.ssh/id_ed25519_antigravity -o StrictHostKeyChecking=no /tmp/es-artifact/EmulationStation/emulationstation ark@192.168.18.20:/tmp/emulationstation`
 4. **Deploy**: Move the binary to its destination on the ROMs partition (which unlinks the running file safely) and make it executable:
@@ -57,6 +59,7 @@ When required to build and deploy changes to the R36S device, use the following 
 
 ## 12. Capturing Device Screenshots
 When visual verification is required on the R36S device, capture the framebuffer directly over SSH:
+- **Policy**: Do not capture screenshots automatically after every restart or deploy unless layout debugging is needed or explicitly requested. EmulationStation restarts often return to default screens (e.g., Profile Selection), so automatic screenshots may miss target menus. Use screenshots intentionally when the system is in the correct state.
 1. **Capture and Download**: Run the following command sequence to record 1 frame from `/dev/fb0` and copy it to the local system:
    `ssh -i ~/.ssh/id_ed25519_antigravity -o StrictHostKeyChecking=no ark@192.168.18.20 "sudo ffmpeg -y -f fbdev -i /dev/fb0 -vframes 1 /tmp/screenshot.png" && scp -i ~/.ssh/id_ed25519_antigravity -o StrictHostKeyChecking=no ark@192.168.18.20:/tmp/screenshot.png /tmp/screen.png`
 2. **Inspect**: Use the `view_file` tool on `/tmp/screen.png` to review the rendered screen layout.
