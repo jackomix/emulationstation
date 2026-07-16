@@ -33,6 +33,11 @@
 #include <SDL_events.h>
 #include <algorithm>
 #include "utils/Platform.h"
+#include "ProfileManager.h"
+#include "AchievementCache.h"
+#include "components/ImageComponent.h"
+#include "components/MultiLineMenuEntry.h"
+#include <rapidjson/document.h>
 
 
 #include "SystemConf.h"
@@ -244,6 +249,42 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 	if (isFullUI)
 	{
+		ComponentListRow profileRow;
+
+		auto avatar = std::make_shared<ImageComponent>(mWindow);
+		avatar->setImage(":/cartridge.svg");
+		auto theme = ThemeData::getMenuTheme();
+		avatar->setColorShift(theme->Text.color);
+		avatar->setResize(0, theme->Text.font->getLetterHeight() * 1.5f);
+		profileRow.addElement(avatar, false);
+
+		std::string profileName = ProfileManager::getInstance()->getActiveProfileName();
+		if (profileName.empty()) profileName = "Player";
+
+		std::string points = "0";
+		std::string cachedJson;
+		if (AchievementCache::loadUserSummary(cachedJson)) {
+			rapidjson::Document doc;
+			doc.Parse(cachedJson.c_str());
+			if (!doc.HasParseError() && doc.HasMember("TotalPoints")) {
+				if (doc["TotalPoints"].IsString()) {
+					points = doc["TotalPoints"].GetString();
+				} else if (doc["TotalPoints"].IsInt()) {
+					points = std::to_string(doc["TotalPoints"].GetInt());
+				}
+			}
+		}
+
+		auto text = std::make_shared<MultiLineMenuEntry>(mWindow, Utils::String::toUpper(profileName), points + " Points");
+		profileRow.addElement(text, true);
+
+		auto bracket = makeArrow(mWindow);
+		if (EsLocale::isRTL()) bracket->setFlipX(true);
+		profileRow.addElement(bracket, false);
+
+		profileRow.makeAcceptInputHandler([this] { GuiRetroAchievements::show(mWindow); });
+		mMenu.addRow(profileRow);
+
 #if BATOCERA
 		addEntry(_("GAME SETTINGS").c_str(), true, [this] { openGamesSettings(); }, "iconGames");
 		addEntry(GuiControllersSettings::getControllersSettingsLabel(), true, [window] { GuiControllersSettings::openControllersSettings(window); }, "iconControllers");
@@ -301,12 +342,12 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 		addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
 
-		addEntry(_("PROFILES").c_str(), true, [this, window] { window->pushGui(new GuiProfileSelect(window, nullptr)); }, "iconSystem");
-
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BATOCERASTORE) || ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEMESDOWNLOADER) ||
 			(ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEBEZELPROJECT) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS)) ||
 			ApiSystem::getInstance()->isScriptingSupported(ApiSystem::UPGRADE))
 			addEntry(_("UPDATES & DOWNLOADS"), true, [this] { openUpdatesSettings(); }, "iconUpdates");
+
+		addEntry(_("SWITCH PROFILE").c_str(), true, [this, window] { window->pushGui(new GuiProfileSelect(window, nullptr)); }, "iconSystem");
 	}
 	else
 	{
