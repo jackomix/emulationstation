@@ -45,6 +45,14 @@ RetroAchievementProgress::RetroAchievementProgress(Window* window, int valueSoft
 	mText->setHorizontalAlignment(Alignment::ALIGN_CENTER);
 }
 
+void RetroAchievementProgress::setValues(int valueSoftcore, int valueHardcore, int max, const std::string& label)
+{
+    mValueSoftCore = valueSoftcore;
+    mValueHardCore = valueHardcore;
+    mMax = max;
+    mText->setText(label);
+}
+
 void RetroAchievementProgress::onSizeChanged()
 {
 	GuiComponent::onSizeChanged();
@@ -94,7 +102,7 @@ GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo 
     : GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(2, 1)), mRaInfo(ra)
 {
     auto theme = ThemeData::getMenuTheme();
-    mBackground.setImagePath(theme->Background.path);
+    mBackground.setImagePath(theme->Background.path.empty() ? ":/frame.png" : theme->Background.path);
     mBackground.setEdgeColor(theme->Background.color);
     mBackground.setCenterColor(theme->Background.color);
 
@@ -109,7 +117,7 @@ GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo 
     mPlayCount = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, Alignment::ALIGN_CENTER);
     mLastPlayed = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, Alignment::ALIGN_CENTER);
     mSortFilterLabel = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, Alignment::ALIGN_CENTER);
-    mProgress = std::make_shared<RetroAchievementProgress>(mWindow, 0, 0, 0, ""); // Dummy
+    mProgress = std::make_shared<RetroAchievementProgress>(mWindow, 0, 0, 0, ""); 
 
     mRightPanel = std::make_shared<ComponentGrid>(mWindow, Vector2i(1, 8));
     mRightPanel->setEntry(mBoxArt, Vector2i(0, 0), false, true);
@@ -185,19 +193,10 @@ void GuiRetroAchievements::populateGameList()
         }
     }
 
-    cycleFilter(); 
+    applyFilterAndSort();
 }
 
-void GuiRetroAchievements::cycleFilter()
-{
-    if (mFilterMode == FilterMode::All) mFilterMode = FilterMode::WithAchievements;
-    else if (mFilterMode == FilterMode::WithAchievements) mFilterMode = FilterMode::Completed;
-    else mFilterMode = FilterMode::All;
-    
-    cycleSort();
-}
-
-void GuiRetroAchievements::cycleSort()
+void GuiRetroAchievements::applyFilterAndSort()
 {
     mFilteredGames.clear();
     for (auto& game : mAllGames)
@@ -234,25 +233,61 @@ void GuiRetroAchievements::cycleSort()
         mList->addRow(row, false, true);
     }
 
-    updateDetailPanel();
+    if (!mFilteredGames.empty()) updateDetailPanel();
+}
+
+void GuiRetroAchievements::cycleFilter()
+{
+    if (mFilterMode == FilterMode::All) mFilterMode = FilterMode::WithAchievements;
+    else if (mFilterMode == FilterMode::WithAchievements) mFilterMode = FilterMode::Completed;
+    else mFilterMode = FilterMode::All;
+    
+    applyFilterAndSort();
+}
+
+void GuiRetroAchievements::cycleSort()
+{
+    if (mSortMode == SortMode::MostPlayed) mSortMode = SortMode::LastPlayed;
+    else if (mSortMode == SortMode::LastPlayed) mSortMode = SortMode::Title;
+    else mSortMode = SortMode::MostPlayed;
+    
+    applyFilterAndSort();
 }
 
 void GuiRetroAchievements::updateDetailPanel()
 {
     if (mFilteredGames.empty()) return;
     int idx = mList->getCursorId();
-    if (idx < 0 || idx >= mFilteredGames.size()) return;
+    if (idx < 0 || idx >= (int)mFilteredGames.size()) return;
     
     auto* game = mFilteredGames[idx];
     
-    if (game->fileData) mBoxArt->setImage(game->fileData->getImagePath());
-    else mBoxArt->setImage("");
+    if (game->fileData) {
+        mBoxArt->setImage(game->fileData->getImagePath());
+        mRightPanel->setRowHeightPerc(0, 0.35f);
+        mRightPanel->setRowHeightPerc(1, 0.0f);
+        mBoxArt->setVisible(true);
+        mBadge->setVisible(false);
+    } else {
+        mBoxArt->setImage("");
+        mRightPanel->setRowHeightPerc(0, 0.0f);
+        mRightPanel->setRowHeightPerc(1, 0.35f);
+        mBoxArt->setVisible(false);
+        mBadge->setVisible(true);
+        
+        if (game->hasRaGame && !game->raGame.badge.empty())
+            mBadge->setImage(game->raGame.badge);
+        else
+            mBadge->setImage("");
+    }
     
-    if (!game->fileData && game->hasRaGame && !game->raGame.badge.empty())
-        mBadge->setImage(game->raGame.badge);
-    else
-        mBadge->setImage("");
-    
+    mRightPanel->setRowHeightPerc(2, 0.12f);
+    mRightPanel->setRowHeightPerc(3, 0.10f);
+    mRightPanel->setRowHeightPerc(4, 0.10f);
+    mRightPanel->setRowHeightPerc(5, 0.10f);
+    mRightPanel->setRowHeightPerc(6, 0.13f);
+    mRightPanel->setRowHeightPerc(7, 0.10f);
+
     mGameTitle->setText(game->name);
     mPlayTime->setText(_("Play Time") + ": " + Utils::Time::secondsToString(game->gameTimeSeconds));
     mPlayCount->setText(_("Play Count") + ": " + std::to_string(game->playCount));
@@ -262,13 +297,16 @@ void GuiRetroAchievements::updateDetailPanel()
     std::string sortStr = (mSortMode == SortMode::MostPlayed) ? _("Most Played") : (mSortMode == SortMode::LastPlayed ? _("Last Played") : _("Title"));
     mSortFilterLabel->setText(_("Filter") + ": " + filterStr + " | " + _("Sort") + ": " + sortStr);
     
-    mRightPanel->removeEntry(mProgress);
     if (game->hasRaGame)
     {
+        mProgress->setVisible(true);
         int percent = game->raGame.totalAchievements == 0 ? 0 : Math::round(game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements);
         std::string progStr = std::to_string(percent) + "% (" + std::to_string(game->raGame.wonAchievementsSoftcore) + " of " + std::to_string(game->raGame.totalAchievements) + ")";
-        mProgress = std::make_shared<RetroAchievementProgress>(mWindow, game->raGame.wonAchievementsSoftcore, game->raGame.wonAchievementsHardcore, game->raGame.totalAchievements, progStr);
-        mRightPanel->setEntry(mProgress, Vector2i(0, 6), false, true);
+        mProgress->setValues(game->raGame.wonAchievementsSoftcore, game->raGame.wonAchievementsHardcore, game->raGame.totalAchievements, progStr);
+    }
+    else
+    {
+        mProgress->setVisible(false);
     }
 }
 
@@ -276,6 +314,9 @@ void GuiRetroAchievements::centerWindow()
 {
     float width = (float)Math::min((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.90f));
     
+    mGrid.setColWidthPerc(0, 0.45f);
+    mGrid.setColWidthPerc(1, 0.55f);
+
     if (Renderer::ScreenSettings::fullScreenMenus())
         setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
     else
@@ -283,8 +324,6 @@ void GuiRetroAchievements::centerWindow()
         
     mBackground.setSize(mSize);
     mGrid.setSize(mSize);
-    mGrid.setColWidthPerc(0, 0.45f);
-    mGrid.setColWidthPerc(1, 0.55f);
     
     setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
 }
@@ -313,7 +352,7 @@ bool GuiRetroAchievements::input(InputConfig* config, Input input)
         }
         else if (config->isMappedTo(BUTTON_OK, input))
         {
-            if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < mFilteredGames.size())
+            if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < (int)mFilteredGames.size())
             {
                 auto game = mFilteredGames[mList->getCursorId()];
                 if (game->hasRaGame)
@@ -325,7 +364,7 @@ bool GuiRetroAchievements::input(InputConfig* config, Input input)
         }
         else if (config->isMappedTo("x", input))
         {
-            if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < mFilteredGames.size())
+            if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < (int)mFilteredGames.size())
             {
                 auto game = mFilteredGames[mList->getCursorId()];
                 if (game->fileData)
@@ -346,10 +385,6 @@ bool GuiRetroAchievements::input(InputConfig* config, Input input)
         }
         else if (config->isMappedTo("l2", input) || config->isMappedTo("r2", input))
         {
-            if (mSortMode == SortMode::MostPlayed) mSortMode = SortMode::LastPlayed;
-            else if (mSortMode == SortMode::LastPlayed) mSortMode = SortMode::Title;
-            else mSortMode = SortMode::MostPlayed;
-            
             cycleSort();
             return true;
         }
@@ -364,7 +399,7 @@ std::vector<HelpPrompt> GuiRetroAchievements::getHelpPrompts()
     prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
     prompts.push_back(HelpPrompt(BUTTON_OK, _("VIEW DETAILS")));
     
-    if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < mFilteredGames.size())
+    if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < (int)mFilteredGames.size())
     {
         auto game = mFilteredGames[mList->getCursorId()];
         if (game->fileData)

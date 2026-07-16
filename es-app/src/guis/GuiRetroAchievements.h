@@ -22,6 +22,7 @@ public:
 	void onSizeChanged() override;
 	void render(const Transform4x4f& parentTrans) override;
 	void setColor(unsigned int color) override;
+	void setValues(int valueSoftcore, int valueHardcore, int max, const std::string& label);
 
 private:
 	int mValueSoftCore;
@@ -50,6 +51,7 @@ private:
     void updateDetailPanel();
     void cycleSort();
     void cycleFilter();
+    void applyFilterAndSort();
 
     NinePatchComponent mBackground;
     ComponentGrid mGrid;
