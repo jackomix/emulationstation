@@ -3,21 +3,18 @@
 Use this document to pass state to the next agent session. Keeps context small, resets token accumulation.
 
 ## Current Status
-- **Goal**: Phase 3 Achievements & Stats Redesign - Session 1 (Unified Game Stats Screen)
-- **Status**: Implemented `GuiRetroAchievements` split-pane UI (Phase 3 task 1). Local + RA data fetch works. Pushed to `attempt2` branch. Waiting on GitHub Actions build.
-- **Next Task**: Verify GitHub Actions build. Deploy to R36S. Test split-pane dashboard. If good, start GuiGameAchievements redesign.
+- **Goal**: Phase 3 Achievements & Stats Redesign
+- **Status**: Milestone 3.1 completed. `GuiGameAchievements` updated with tab layout container and opens for games without achievements.
+- **Next Task**: Start **Milestone 3.2** on the Per-Game Page (`GuiGameAchievements`).
 
-## Phase 3 Implementation Plan
-Rewrite `GuiRetroAchievements` to be split-pane dashboard. Left: game list (45%). Right: details (55%). Add sort (Playtime, Last Played, Title) and filter (All, Achievements, Completed).
-
-### CLAUDE.md Compliance
-- **Constructor Lifecycle**: Init child elements BEFORE `setSize()`.
-- **Centering**: Use `setPosition()` at constructor end, support `fullScreenMenus()`.
-- **Theme**: Use `ThemeData::getMenuTheme()`.
-- **Resolution**: Use relative dims, test on R36S 640x480.
-- **UPDATE_ALWAYS**: Required on `ComponentList` for `WebImageComponent`.
+## Next Step Details: Milestone 3.2
+1. Fetch play history (start times and durations) for the selected game.
+2. Populate the Play History Tab in `GuiGameAchievements` with a clean vertical list of past sessions.
+3. Handle empty state if no history exists.
 
 ## Relevant Files
-- [GuiRetroAchievements.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.cpp)
+- [phase_2_3_implementation_plan.md](file:///Users/jacko/Documents/MyEmulationStation/docs/phase_2_3_implementation_plan.md)
+- [GuiGameAchievements.h](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiGameAchievements.h)
+- [GuiGameAchievements.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiGameAchievements.cpp)
 - [GuiRetroAchievements.h](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.h)
-- [phase3_stats_plan.md](file:///Users/jacko/.gemini/antigravity-cli/brain/45917e97-afea-436f-aca3-8c79154cce3c/phase3_stats_plan.md)
+- [GuiRetroAchievements.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.cpp)

@@ -111,33 +111,30 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 			});
 		}
 
-		if (hasCheevos)
+		if (!game->isFeatureSupported(EmulatorFeatures::cheevos) && game->hasCheevos())
 		{
-			if (!game->isFeatureSupported(EmulatorFeatures::cheevos))
+			std::string coreList = game->getSourceFileData()->getSystem()->getCompatibleCoreNames(EmulatorFeatures::cheevos);
+			std::string msg = _U("\uF06A  ");
+			msg += _("CURRENT CORE IS NOT COMPATIBLE") + ": " + Utils::String::toUpper(game->getCore(true).empty()? game->getEmulator(true): game->getCore(true));
+			if (!coreList.empty())
 			{
-				std::string coreList = game->getSourceFileData()->getSystem()->getCompatibleCoreNames(EmulatorFeatures::cheevos);
-				std::string msg = _U("\uF06A  ");
-				msg += _("CURRENT CORE IS NOT COMPATIBLE") + ": " + Utils::String::toUpper(game->getCore(true).empty()? game->getEmulator(true): game->getCore(true));
-				if (!coreList.empty())
-				{
-					msg += _U("\r\n\uF05A  ");
-					msg += _("COMPATIBLE CORE(S)") + ": " + Utils::String::toUpper(coreList);
-				}
+				msg += _U("\r\n\uF05A  ");
+				msg += _("COMPATIBLE CORE(S)") + ": " + Utils::String::toUpper(coreList);
+			}
 
-				mMenu.addWithDescription(_("VIEW THIS GAME'S ACHIEVEMENTS"), msg, nullptr, [window, game, this]
-				{
-					GuiGameAchievements::show(window, Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId)));
-					close();
-				}, "", false, true);
-			}
-			else
+			mMenu.addWithDescription(_("VIEW THIS GAME'S ACHIEVEMENTS"), msg, nullptr, [window, game, this]
 			{
-				mMenu.addEntry(_("VIEW THIS GAME'S ACHIEVEMENTS"), false, [window, game, this]
-				{
-					GuiGameAchievements::show(window, Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId)));
-					close();
-				});
-			}
+				GuiGameAchievements::show(window, game);
+				close();
+			}, "", false, true);
+		}
+		else
+		{
+			mMenu.addEntry(_("VIEW THIS GAME'S ACHIEVEMENTS"), false, [window, game, this]
+			{
+				GuiGameAchievements::show(window, game);
+				close();
+			});
 		}
 	}
 

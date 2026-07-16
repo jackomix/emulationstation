@@ -29,25 +29,46 @@ Integrate active profile info directly into the Start Menu.
 
 ## Phase 3: Achievements & Stats Redesign
 
-### 3. Unified "Game Stats" Screen (`GuiRetroAchievements`)
-A centralized dashboard representing all games played by the active profile.
-- **Split-Pane Layout**: A 45% left (game list) / 55% right (details panel) split.
-- **Left Pane**: List of games played by the active profile (`PlayCount > 0` or has achievements).
-- **Right Pane**: Details card showing selected game's box art, total playtime, play count, and achievement completion progress.
-- **Sorting & Filtering**:
-  - Sort by "Most Played" (playtime, default), "Last Played", or "Title".
-  - Filter by "All Played Games", "Only Games with Achievements", or "Completed (100%)".
+### 3. Per-Game Page (`GuiGameAchievements`) - Build First
+Small edit to existing achievement screen. Screen is now accessible even if the game has no achievements.
+- **Header**: Keep existing header as-is (game icon, name — no changes).
+- **Tab System**: Switched via L1/R1.
+  - **Achievements Tab**: Existing icon/name/description list, unchanged. If the game has no achievements (unsupported by RA, or just none defined), the list is empty with faded centered text like "No achievements".
+  - **Play History Tab**: Plain list showing date/time played + duration.
 
-### 4. Unified Game Details Screen (`GuiGameAchievements`)
-Clicking a game in the Stats list opens its detailed stats and achievements page.
-- **Stats Block (Top)**: Displays Playtime, Play Count, and Last Played.
-- **Achievements List (Bottom)**: Displays achievements if supported.
-  - Unlocked: Vibrant color badge, unlock date, and hardcore status.
-  - Locked: Grayscale badge (asset suffix `_lock.png` loaded from scraper) with a lock icon overlay.
-- **Shoulder Shortcuts**:
-  - **L1/R1** (`pageup`/`pagedown` inputs): Cycle achievement filters ("All" / "Unlocked" / "Locked").
-  - **L2/R2**: Cycle sorting options ("Default Order" / "Points" / "Unlock Date").
-  - Filter/sort choices display dynamically in the screen subtitle.
+### 4. Profile Details Screen (`GuiRetroAchievements`) - Build Second
+Completely replace/rewrite current profile details screen design. Copy per-game page's tab structure, then adapt.
+- **Tab System**: Switched via L1/R1.
+  - **Played Games Tab**: Scrollable list of games. Game icon/box art on the left, game title with "14h 32m · 23/47 achievements" underneath in smaller text. For games with no RA support/no achievements, just show playtime, omit achievement mention entirely. Pressing A on a game row goes to that game's per-game page.
+  - **Profile Stats Tab**: Aggregate info — total playtime, total points, games played, etc.
+- **Filtering/Sorting**: Handled in a separate submenu/window, not inline. Includes a minimum playtime filter with discrete steps (default 15 minutes, settable to 0 for all games).
+
+### Phase 3 Milestones
+
+#### Milestone 3.1: Per-Game Page Infrastructure & Achievements Tab
+- Allow opening `GuiGameAchievements` even if the game has no achievements.
+- Implement the tab layout container with both tabs present (L1/R1 toggles active view).
+- Implement the Achievements Tab: default behavior when achievements exist, display "No achievements" centered faded text when empty.
+- Play History Tab is created but remains empty/placeholder.
+
+#### Milestone 3.2: Per-Game Page Play History Tab
+- Fetch play history (start times and durations) for the selected game.
+- Populate the Play History Tab with a clean vertical list of past sessions.
+
+#### Milestone 3.3: Profile Details Screen & Played Games Tab
+- Set up the tab layout container in `GuiRetroAchievements`.
+- Implement the Played Games Tab: list of played games matching the profile, displaying icon, title, playtime, and achievement count.
+- Handle fallback layout (playtime only) for games without achievement support.
+- Map the "A" button action on a game row to push `GuiGameAchievements` for that game.
+
+#### Milestone 3.4: Profile Details Screen Stats Tab & Filters Submenu
+- Implement the Profile Stats Tab showing aggregates: total playtime, total points, and games played.
+- Create the sorting/filtering submenu overlay (triggered by option buttons).
+- Implement the minimum playtime filter with discrete steps (default 15 mins, min 0 mins).
+
+### Emerging Conventions
+- **L1/R1**: Tab switching wherever a screen has tabs.
+- **Filters/Sort**: Always pushed to a dedicated submenu.
 
 ---
 

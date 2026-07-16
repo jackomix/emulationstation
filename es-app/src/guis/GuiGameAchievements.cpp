@@ -13,10 +13,26 @@
 #include "components/MultiLineMenuEntry.h"
 #include "GuiGameAchievements.h"
 #include "views/ViewController.h"
+#include "FileData.h"
 
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
 #define IMAGESPACER (Renderer::getScreenHeight() * (10.0 / 720.0))
+
+void GuiGameAchievements::show(Window* window, FileData* game)
+{
+	int gameId = Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId));
+	window->pushGui(new GuiLoading<GameInfoAndUserProgress>(window, _("PLEASE WAIT"),
+		[gameId](auto gui)
+	{
+		if (gameId == 0) return GameInfoAndUserProgress();
+		return RetroAchievements::getGameInfoAndUserProgress(gameId);
+	},
+		[window, game](GameInfoAndUserProgress ra)
+	{
+		window->pushGui(new GuiGameAchievements(window, ra, game));
+	}));
+}
 
 void GuiGameAchievements::show(Window* window, int gameId)
 {
@@ -109,9 +125,9 @@ private:
 };
 
 
-GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra) : 
-	GuiSettings(window, _("ACHIEVEMENTS"), ([&ra]() {
-		std::string title = ra.Title;
+GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
+	GuiSettings(window, _("ACHIEVEMENTS"), ([&ra, game]() {
+		std::string title = game != nullptr ? game->getName() : ra.Title;
 		if (ra.isOfflineData) {
 			title += " (\U0001F4E6 Offline Data)";
 		}
@@ -121,11 +137,11 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	// Required for WebImageComponent
 	setUpdateType(ComponentListFlags::UPDATE_ALWAYS);
 
-	setTitle(ra.Title);
+	setTitle(game != nullptr ? game->getName() : ra.Title);
 
 	mMenu.clearButtons();
 
-	mFile = GuiRetroAchievements::getFileData(std::to_string(ra.ID));
+	mFile = game != nullptr ? game : GuiRetroAchievements::getFileData(std::to_string(ra.ID));
 	if (mFile != nullptr)
 	{
 		auto file = mFile;
@@ -153,18 +169,21 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	}
 
 	if (ra.Achievements.size() == 0)
-		setSubTitle(_("THIS GAME HAS NO ACHIEVEMENTS YET"));
+		mAchievementSubtitle = _("THIS GAME HAS NO ACHIEVEMENTS YET");
 	else
 	{
 		auto txt = _("Achievements (softcore)") + ": \t" + std::to_string(ra.NumAwardedToUser) + "/" + std::to_string(ra.NumAchievements);
 		txt += "\r\n" + _("Achievements (hardcore)") + ": \t" + std::to_string(ra.NumAwardedToUserHardcore) + "/" + std::to_string(ra.NumAchievements);
 		txt += "\r\n" + _("Points") + ": \t" + std::to_string(userPoints) + "/" + std::to_string(totalPoints);
 
-		setSubTitle(txt);
+		mAchievementSubtitle = txt;
 	}
 
 	auto image = std::make_shared<WebImageComponent>(mWindow);
-	image->setImage(ra.getImageUrl());
+	if (ra.ID != 0)
+		image->setImage(ra.getImageUrl());
+	else if (game != nullptr)
+		image->setImage(game->getImagePath());
 	setTitleImage(image);
 
 	if (ra.Achievements.size() > 0)
@@ -176,17 +195,45 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 		mProgress = std::make_shared<RetroAchievementProgress>(mWindow, ra.NumAwardedToUser, ra.NumAwardedToUserHardcore, ra.Achievements.size(), Utils::String::trim(trstring));
 	}
 
-	for (auto game : ra.Achievements)
+	auto theme = ThemeData::getMenuTheme();
+
+	if (ra.Achievements.size() == 0)
 	{
+		auto text = std::make_shared<TextComponent>(mWindow, _("No achievements"), theme->Text.font, theme->Text.color);
+		text->setOpacity(128);
+		text->setHorizontalAlignment(ALIGN_CENTER);
 		ComponentListRow row;
-
-		auto itstring = std::make_shared<GameAchievementEntry>(mWindow, game);
-		row.addElement(itstring, true);
-
-		addRow(row);
+		row.addElement(text, false);
+		mAchievementRows.push_back(row);
+	}
+	else
+	{
+		for (auto achievement : ra.Achievements)
+		{
+			ComponentListRow row;
+			auto itstring = std::make_shared<GameAchievementEntry>(mWindow, achievement);
+			row.addElement(itstring, true);
+			mAchievementRows.push_back(row);
+		}
 	}
 
+	updateTab();
 	centerWindow();	
+}
+
+void GuiGameAchievements::updateTab()
+{
+	mMenu.clear();
+	std::string tabIndicator = (mActiveTab == 0) ? _U("\uF053  ") + _("[ ACHIEVEMENTS ]  \u2022  PLAY HISTORY") + _U("  \uF054") : _U("\uF053  ") + _("ACHIEVEMENTS  \u2022  [ PLAY HISTORY ]") + _U("  \uF054");
+
+	if (mActiveTab == 0) {
+		setSubTitle(tabIndicator + "\r\n" + mAchievementSubtitle);
+		for (auto& row : mAchievementRows)
+			addRow(row);
+	} else {
+		setSubTitle(tabIndicator);
+		// Empty placeholder for now
+	}
 }
 
 void GuiGameAchievements::centerWindow()
@@ -205,7 +252,7 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 {
 	GuiSettings::render(parentTrans);
 
-	if (mProgress != nullptr)
+	if (mProgress != nullptr && mActiveTab == 0)
 	{
 		auto theme = ThemeData::getMenuTheme();
 
@@ -227,6 +274,13 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 
 bool GuiGameAchievements::input(InputConfig* config, Input input)
 {
+	if (input.value != 0 && (config->isMappedTo("pageup", input) || config->isMappedTo("pagedown", input) || config->isMappedTo("l1", input) || config->isMappedTo("r1", input)))
+	{
+		mActiveTab = (mActiveTab == 0) ? 1 : 0;
+		updateTab();
+		return true;
+	}
+
 	if (config->isMappedTo("x", input) && input.value != 0)
 	{
 		if (mFile != nullptr)

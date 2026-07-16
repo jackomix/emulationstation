@@ -838,9 +838,7 @@ bool ISimpleGameListView::onAction(const std::string& action)
 		FileData* game = getCursor();
 		if (game != nullptr)
 		{
-			auto path = Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId));
-			if (path != 0)
-				GuiGameAchievements::show(mWindow, path);
+			GuiGameAchievements::show(mWindow, game);
 		}
 
 		return true;
