@@ -394,6 +394,16 @@ void MenuComponent::onSizeChanged()
 		mTitleImage->setPosition(getPosition().x() + mSize.x() / 2.0f, getPosition().y() + TITLE_HEIGHT / 2.0f);
 		mTitleImage->setMaxSize(mSize.x() * 0.85f, TITLE_HEIGHT);
 	}
+
+#include <fstream>
+	std::ofstream log("/tmp/sim_coords_header.txt", std::ios::app);
+	if (log.is_open()) {
+		log << "MenuComponent Size: " << mSize.x() << "," << mSize.y() << "\n";
+		if (mTitle) log << "mTitle Pos: " << mTitle->getPosition().x() << "," << mTitle->getPosition().y() << " Size: " << mTitle->getSize().x() << "," << mTitle->getSize().y() << "\n";
+		if (mSubtitle) log << "mSubtitle Pos: " << mSubtitle->getPosition().x() << "," << mSubtitle->getPosition().y() << " Size: " << mSubtitle->getSize().x() << "," << mSubtitle->getSize().y() << "\n";
+		if (mTitleImage) log << "mTitleImage Pos: " << mTitleImage->getPosition().x() << "," << mTitleImage->getPosition().y() << " Size: " << mTitleImage->getSize().x() << "," << mTitleImage->getSize().y() << "\n";
+		log.close();
+	}
 }
 
 void MenuComponent::clearButtons()
