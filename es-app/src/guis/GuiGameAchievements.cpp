@@ -4,6 +4,7 @@
 
 #include "Window.h"
 #include <iostream>
+#include <fstream>
 #include <string>
 #include "Log.h"
 #include "Settings.h"
@@ -121,11 +122,12 @@ public:
 		ComponentGrid::render(parentTrans);
 		static int frameLog = 0;
 		if (frameLog++ % 60 == 0) {
-			std::cout << "[SIM-LOG] GameAchievementEntry pos: " << getPosition().x() << "," << getPosition().y() 
+			std::ofstream out("/tmp/sim_coords.txt", std::ios_base::app);
+			out << "[SIM-LOG] GameAchievementEntry pos: " << getPosition().x() << "," << getPosition().y() 
 					  << " size: " << getSize().x() << "," << getSize().y() << std::endl;
-			std::cout << "[SIM-LOG]   Text pos: " << mText->getPosition().x() << "," << mText->getPosition().y()
+			out << "[SIM-LOG]   Text pos: " << mText->getPosition().x() << "," << mText->getPosition().y()
 					  << " size: " << mText->getSize().x() << "," << mText->getSize().y() << std::endl;
-			std::cout << "[SIM-LOG]   Substring pos: " << mSubstring->getPosition().x() << "," << mSubstring->getPosition().y()
+			out << "[SIM-LOG]   Substring pos: " << mSubstring->getPosition().x() << "," << mSubstring->getPosition().y()
 					  << " size: " << mSubstring->getSize().x() << "," << mSubstring->getSize().y() << std::endl;
 		}
 	}
@@ -300,15 +302,16 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 
 	static int frameLog = 0;
 	if (frameLog++ % 60 == 0) {
-		std::cout << "\n--- [SIM-LOG] MAIN GUI DUMP ---" << std::endl;
-		std::cout << "[SIM-LOG] mMenu pos: " << mMenu.getPosition().x() << "," << mMenu.getPosition().y() 
+		std::ofstream out("/tmp/sim_coords.txt", std::ios_base::app);
+		out << "\n--- [SIM-LOG] MAIN GUI DUMP ---" << std::endl;
+		out << "[SIM-LOG] mMenu pos: " << mMenu.getPosition().x() << "," << mMenu.getPosition().y() 
 				  << " size: " << mMenu.getSize().x() << "," << mMenu.getSize().y() << std::endl;
 		if (mTabGrid) {
-			std::cout << "[SIM-LOG] TabGrid pos: " << mTabGrid->getPosition().x() << "," << mTabGrid->getPosition().y() 
+			out << "[SIM-LOG] TabGrid pos: " << mTabGrid->getPosition().x() << "," << mTabGrid->getPosition().y() 
 					  << " size: " << mTabGrid->getSize().x() << "," << mTabGrid->getSize().y() << std::endl;
 		}
 		if (mProgress) {
-			std::cout << "[SIM-LOG] Progress pos: " << mProgress->getPosition().x() << "," << mProgress->getPosition().y() 
+			out << "[SIM-LOG] Progress pos: " << mProgress->getPosition().x() << "," << mProgress->getPosition().y() 
 					  << " size: " << mProgress->getSize().x() << "," << mProgress->getSize().y() << std::endl;
 		}
 	}
