@@ -197,6 +197,9 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	auto theme = ThemeData::getMenuTheme();
 
+	mTabIndicator = std::make_shared<TextComponent>(mWindow, "", theme->Text.font, theme->Text.color, ALIGN_CENTER);
+	mStatsText = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
+
 	if (ra.Achievements.size() == 0)
 	{
 		auto text = std::make_shared<TextComponent>(mWindow, _("No achievements"), theme->Text.font, theme->Text.color);
@@ -226,13 +229,22 @@ void GuiGameAchievements::updateTab()
 	mMenu.clear();
 	std::string tabIndicator = (mActiveTab == 0) ? _U("\uF053  ") + _("[ ACHIEVEMENTS ]  \u2022  PLAY HISTORY") + _U("  \uF054") : _U("\uF053  ") + _("ACHIEVEMENTS  \u2022  [ PLAY HISTORY ]") + _U("  \uF054");
 
+	mTabIndicator->setText(tabIndicator);
+
 	if (mActiveTab == 0) {
-		setSubTitle(tabIndicator + "\r\n" + mAchievementSubtitle);
+		mStatsText->setText(mAchievementSubtitle);
+		mMenu.setSubTitle("\r\n\r\n\r\n\r\n");
 		for (auto& row : mAchievementRows)
 			addRow(row);
 	} else {
-		setSubTitle(tabIndicator);
-		// Empty placeholder for now
+		mMenu.setSubTitle("\r\n\r\n\r\n\r\n");
+		auto theme = ThemeData::getMenuTheme();
+		auto text = std::make_shared<TextComponent>(mWindow, _("No play history found"), theme->Text.font, theme->Text.color);
+		text->setOpacity(128);
+		text->setHorizontalAlignment(ALIGN_CENTER);
+		ComponentListRow row;
+		row.addElement(text, false);
+		addRow(row);
 	}
 }
 
@@ -252,29 +264,41 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 {
 	GuiSettings::render(parentTrans);
 
+	auto theme = ThemeData::getMenuTheme();
+	float yBase = mMenu.getTitleHeight() + Renderer::getScreenHeight() * 0.015f;
+	
+	Transform4x4f trans = parentTrans * mMenu.getTransform();
+
+	float statsX = mMenu.getSize().x() * 0.04f;
+	mStatsText->setPosition(statsX, yBase);
+	
+	if (mActiveTab == 0)
+		mStatsText->render(trans);
+
+	float progY = yBase + (theme->TextSmall.font->sizeText("A", 1.1f).y() * 3.1f);
+
 	if (mProgress != nullptr && mActiveTab == 0)
 	{
-		auto theme = ThemeData::getMenuTheme();
-
 		float h = theme->TextSmall.font->sizeText("A8O\rA8O", 1.1).y();
-		float sz = mMenu.getHeaderGridHeight() + Renderer::getScreenHeight() * 0.005;
-
 		float width = (float)Math::min((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.90f));
 		float iw = mMenu.getTitleHeight() / width;
-
 		float xx = mMenu.getSize().x() - (mMenu.getSize().x() * iw);
 
-		mProgress->setPosition(xx * 0.55f, sz);
-		mProgress->setSize(xx * 0.36f, h);
+		mProgress->setPosition(statsX, progY);
+		mProgress->setSize(xx * 0.45f, h);
 
-		Transform4x4f trans = parentTrans * mMenu.getTransform();
 		mProgress->render(trans);
 	}
+
+	float tabY = progY + theme->TextSmall.font->sizeText("A", 1.1f).y() * 1.5f;
+	mTabIndicator->setPosition(0, tabY);
+	mTabIndicator->setSize(mMenu.getSize().x(), 0);
+	mTabIndicator->render(trans);
 }
 
 bool GuiGameAchievements::input(InputConfig* config, Input input)
 {
-	if (input.value != 0 && (config->isMappedTo("pageup", input) || config->isMappedTo("pagedown", input) || config->isMappedTo("l1", input) || config->isMappedTo("r1", input)))
+	if (input.value != 0 && (config->isMappedTo("pageup", input) || config->isMappedTo("pagedown", input) || config->isMappedTo("l1", input) || config->isMappedTo("r1", input) || config->isMappedTo("leftshoulder", input) || config->isMappedTo("rightshoulder", input)))
 	{
 		mActiveTab = (mActiveTab == 0) ? 1 : 0;
 		updateTab();
