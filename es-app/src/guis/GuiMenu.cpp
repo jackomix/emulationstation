@@ -255,8 +255,12 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		avatar->setImage(":/cartridge.svg");
 		auto theme = ThemeData::getMenuTheme();
 		avatar->setColorShift(theme->Text.color);
-		avatar->setResize(0, theme->Text.font->getLetterHeight() * 1.5f);
+		avatar->setResize(0, theme->Text.font->getLetterHeight() * 2.5f);
 		profileRow.addElement(avatar, false);
+
+		auto spacer = std::make_shared<GuiComponent>(mWindow);
+		spacer->setSize(Renderer::getScreenWidth() * 0.02f, 0);
+		profileRow.addElement(spacer, false);
 
 		std::string profileName = ProfileManager::getInstance()->getActiveProfileName();
 		if (profileName.empty()) profileName = "Player";
