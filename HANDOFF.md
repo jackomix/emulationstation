@@ -3,22 +3,24 @@
 Use this document to pass state to the next agent session. Keeps context small, resets token accumulation.
 
 ## Current Status
-- **Goal**: Phase 3 Achievements & Stats Redesign
-- **Status**: Milestone 3.1 layout overlap fixed and Tab Bar UI component implemented in `GuiGameAchievements`.
-- **Next Task**: Milestone 3.2 - Fetch play history and populate the Play History Tab for the per-game page.
+- **Goal**: Isolate and fix the UI layout bugs in `GuiGameAchievements` (Milestone 3.1) by creating a simulation.
+- **Status**: 
+  - Reset repository to commit `c5e35069d` (which reverts the broken `ComponentGrid` refactoring, returning to the old achievements screen, and places the profile select simulations in `simulations/profile_select/`).
+  - Captured three layout screenshots from the R36S console to visually document the bug:
+    - [achievements.png](file:///Users/jacko/.gemini/antigravity-cli/brain/bb358d42-7408-4534-a7f6-4663fd1d2d36/achievements.png) (Initial visit - layout looks fine).
+    - [history.png](file:///Users/jacko/.gemini/antigravity-cli/brain/bb358d42-7408-4534-a7f6-4663fd1d2d36/history.png) (Tab switched to Play History).
+    - [achievements_back.png](file:///Users/jacko/.gemini/antigravity-cli/brain/bb358d42-7408-4534-a7f6-4663fd1d2d36/achievements_back.png) (Returned to Achievements - the game icon has collapsed/stays at size `0x0`).
+  - Screen viewer artifact created: [captured_screenshots.md](file:///Users/jacko/.gemini/antigravity-cli/brain/bb358d42-7408-4534-a7f6-4663fd1d2d36/captured_screenshots.md)
 
-## Next Step Details (Play History Implementation)
-1. **Fetch Play History:**
-   - Retrieve the play history data (start times and durations) for the selected game.
-2. **Populate Tab:**
-   - Instead of the "No play history found" placeholder in `updateTab()` when `mActiveTab == 1`, create a clean vertical list (rows) of past sessions.
-3. **Testing:**
-   - Ensure it renders correctly within the new layout and tab switching works smoothly.
+## Next Task: Build the UI Simulation
+1. **Design a Mock Simulation:**
+   - Next session should create a layout simulation script (e.g. in Python or C++) to simulate the `GuiGameAchievements` lifecycle and tab-switching resizing sequence.
+   - We must model the `setSize()`, `onSizeChanged()`, and `WebImageComponent::resize()` lifecycle interactions to figure out why the game icon size stays collapsed (`0x0`) upon returning to the Achievements tab.
+2. **Rules for Simulation:**
+   - Do NOT read the previous `profile_select` UI code to avoid spoilers.
+   - Keep the simulation files organized inside the `simulations/` directory.
 
 ## Relevant Files
-- [phase_2_3_implementation_plan.md](file:///Users/jacko/Documents/MyEmulationStation/docs/phase_2_3_implementation_plan.md)
 - [GuiGameAchievements.h](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiGameAchievements.h)
 - [GuiGameAchievements.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiGameAchievements.cpp)
-- [GuiRetroAchievements.h](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.h)
-- [GuiRetroAchievements.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.cpp)
-
+- [WebImageComponent.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-core/src/components/WebImageComponent.cpp)
