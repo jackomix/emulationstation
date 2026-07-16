@@ -3,18 +3,21 @@
 Use this document to pass state to the next agent session. Keeps context small, resets token accumulation.
 
 ## Current Status
-- **Goal**: Phase 2 Core UX Architecture - Session 3 (Start Menu Profile Integration)
-- **Status**: Milestone 1 & 2 fully implemented and deployed. Decluttered Main Menu Profile Header added, Switch Profile entry moved. Pending user verification on device.
-- **Next Task**: Wait for user verification. If issues found, fix bugs. If verified, proceed to next milestone (if any) or conclude session.
+- **Goal**: Phase 3 Achievements & Stats Redesign - Session 1 (Unified Game Stats Screen)
+- **Status**: Phase 2 (Consolidated Profile Selector Grid and Decluttered Main Menu Profile Header) is fully completed, deployed, and verified.
+- **Next Task**: Implement Phase 3: Unified "Game Stats" Screen (`GuiRetroAchievements`).
 
-## Milestone 2 Tasks (Completed)
-1. **Interactive Profile Header**:
-   - Inserted as the first row in `GuiMenu` (Start Menu).
-   - Display active profile avatar (using `:/cartridge.svg` path), username, and total points.
-   - Pressing **A** on this header must open `GuiRetroAchievements` (Game Stats screen).
-2. **"SWITCH PROFILE" Entry**:
-   - Positioned directly above "QUIT" at the bottom of the list.
-   - Pressing **A** on this entry opens `GuiProfileSelect`.
+## Phase 3 Tasks
+1. **Unified "Game Stats" Screen (`GuiRetroAchievements`)**:
+   - Centralized dashboard representing all games played by the active profile.
+   - **Split-Pane Layout**: A 45% left (game list) / 55% right (details panel) split.
+   - **Left Pane**: List of games played by the active profile (`PlayCount > 0` or has achievements).
+   - **Right Pane**: Details card showing selected game's box art, total playtime, play count, and achievement completion progress.
+   - **Sorting & Filtering**:
+     - Sort by "Most Played" (playtime, default), "Last Played", or "Title".
+     - Filter by "All Played Games", "Only Games with Achievements", or "Completed (100%)".
 
 ## Relevant Files
-- [GuiMenu.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiMenu.cpp)
+- [GuiRetroAchievements.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.cpp)
+- [GuiRetroAchievements.h](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.h)
+- [phase_2_3_implementation_plan.md](file:///Users/jacko/Documents/MyEmulationStation/docs/phase_2_3_implementation_plan.md)
