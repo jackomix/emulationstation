@@ -4,20 +4,20 @@ Use this document to pass state to the next agent session. Keeps context small, 
 
 ## Current Status
 - **Goal**: Phase 3 Achievements & Stats Redesign - Session 1 (Unified Game Stats Screen)
-- **Status**: Phase 2 (Consolidated Profile Selector Grid and Decluttered Main Menu Profile Header) is fully completed, deployed, and verified.
-- **Next Task**: Implement Phase 3: Unified "Game Stats" Screen (`GuiRetroAchievements`).
+- **Status**: Implemented `GuiRetroAchievements` split-pane UI (Phase 3 task 1). Local + RA data fetch works. Pushed to `attempt2` branch. Waiting on GitHub Actions build.
+- **Next Task**: Verify GitHub Actions build. Deploy to R36S. Test split-pane dashboard. If good, start GuiGameAchievements redesign.
 
-## Phase 3 Tasks
-1. **Unified "Game Stats" Screen (`GuiRetroAchievements`)**:
-   - Centralized dashboard representing all games played by the active profile.
-   - **Split-Pane Layout**: A 45% left (game list) / 55% right (details panel) split.
-   - **Left Pane**: List of games played by the active profile (`PlayCount > 0` or has achievements).
-   - **Right Pane**: Details card showing selected game's box art, total playtime, play count, and achievement completion progress.
-   - **Sorting & Filtering**:
-     - Sort by "Most Played" (playtime, default), "Last Played", or "Title".
-     - Filter by "All Played Games", "Only Games with Achievements", or "Completed (100%)".
+## Phase 3 Implementation Plan
+Rewrite `GuiRetroAchievements` to be split-pane dashboard. Left: game list (45%). Right: details (55%). Add sort (Playtime, Last Played, Title) and filter (All, Achievements, Completed).
+
+### CLAUDE.md Compliance
+- **Constructor Lifecycle**: Init child elements BEFORE `setSize()`.
+- **Centering**: Use `setPosition()` at constructor end, support `fullScreenMenus()`.
+- **Theme**: Use `ThemeData::getMenuTheme()`.
+- **Resolution**: Use relative dims, test on R36S 640x480.
+- **UPDATE_ALWAYS**: Required on `ComponentList` for `WebImageComponent`.
 
 ## Relevant Files
 - [GuiRetroAchievements.cpp](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.cpp)
 - [GuiRetroAchievements.h](file:///Users/jacko/Documents/MyEmulationStation/es-app/src/guis/GuiRetroAchievements.h)
-- [phase_2_3_implementation_plan.md](file:///Users/jacko/Documents/MyEmulationStation/docs/phase_2_3_implementation_plan.md)
+- [phase3_stats_plan.md](file:///Users/jacko/.gemini/antigravity-cli/brain/45917e97-afea-436f-aca3-8c79154cce3c/phase3_stats_plan.md)
