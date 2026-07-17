@@ -16,8 +16,14 @@ The C++ coordinates have been successfully extracted from the engine during runt
   - **Text Title**: size 544.222 x 36, offset X 75.7778, offset Y 0
   - **Substring Desc**: size 544.222 x 30, offset X 75.7778, offset Y 36
 
-## Next Steps for the Next Agent
-- **Missing Header Coordinates**: Note that the game icon, game title, and subtitle text (softcore/hardcore points) are managed by `MenuComponent` (`mMenu`) and were not logged in the first pass. You will need to inject logging into `es-app/src/components/MenuComponent.cpp` to get their exact bounds.
-- Analyze the font engine (`TextComponent.cpp` and `Font.cpp`) and theme overrides (`es-theme-switch`) to understand exactly why Title height is `36` and Substring height is `30`.
-- Update `simulations/game_achievements/sim.py` to use these precise coordinates instead of guesses.
-- Remove the temporary logging code from `GuiGameAchievements.cpp` once the math is fully understood and simulated.
+## EmulationStation Achievement UI Layout - Status
+
+## Current State
+1. We successfully identified how the font sizing works for EmulationStation. `fontSize` is specified in `es-theme-switch` as a proportion of `Math::min(getScreenHeight(), getScreenWidth())`.
+2. EmulationStation uses `1.5f` as the default `mLineSpacing` for `TextComponent`. This maps perfectly to the 36 and 30 pixel heights we observed for font heights of 24 and 20 respectively.
+3. We updated `simulations/game_achievements/sim.py` to use these precise coordinates based on the theme definitions and padding variables in `MenuComponent.cpp`.
+4. We successfully removed the temporary debugging code (the `sim_coords` dumps) from `GuiGameAchievements.cpp` and `MenuComponent.cpp`.
+
+## Next Steps
+- Implement the tab bar in C++ that was mocked in the UI sim.
+- Review and refine the list component visual layout in EmulationStation.

@@ -1,0 +1,892 @@
+Undefined symbols for architecture arm64:
+  "_BUTTON_BACK", referenced from:
+      GuiGameAchievements::getHelpPrompts() in GuiGameAchievements.o
+      GuiSettings::input(InputConfig*, Input) in GuiSettings.o
+      GuiSettings::getHelpPrompts() in GuiSettings.o
+      OptionListComponent<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::OptionListPopup::input(InputConfig*, Input) in GuiSettings.o
+      OptionListComponent<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::OptionListPopup::getHelpPrompts() in GuiSettings.o
+  "_BUTTON_OK", referenced from:
+      ComponentListRow::makeAcceptInputHandler(std::__1::function<void ()> const&, bool)::'lambda'(InputConfig*, Input)::operator()(InputConfig*, Input) const in MenuComponent.o
+      ImageComponent::getHelpPrompts() in ImageComponent.o
+      ButtonComponent::input(InputConfig*, Input) in ButtonComponent.o
+      ButtonComponent::getHelpPrompts() in ButtonComponent.o
+      RatingComponent::input(InputConfig*, Input) in RatingComponent.o
+      RatingComponent::getHelpPrompts() in RatingComponent.o
+      SwitchComponent::input(InputConfig*, Input) in SwitchComponent.o
+      ...
+  "PowerSaver::mPauseCounter", referenced from:
+      PowerSaver::lock(bool) in MenuComponent.o
+  "PowerSaver::setState(bool)", referenced from:
+      PowerSaver::lock(bool) in MenuComponent.o
+      PowerSaver::lock(bool) in MenuComponent.o
+  "SystemConf::getInstance()", referenced from:
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      GuiSettings::save() in GuiSettings.o
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&) in GuiSettings.o
+      GuiSettings::addFileBrowser(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, GuiFileBrowser::FileTypes, bool) in GuiSettings.o
+      GuiSettings::addSwitch(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&) in GuiSettings.o
+      GuiSettings::addOptionList(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::vector<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&) in GuiSettings.o
+      ...
+  "SystemConf::saveSystemConf()", referenced from:
+      GuiSettings::save() in GuiSettings.o
+  "SystemConf::get(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&) in GuiSettings.o
+      GuiSettings::addFileBrowser(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, GuiFileBrowser::FileTypes, bool) in GuiSettings.o
+      GuiSettings::addOptionList(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::vector<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&) in GuiSettings.o
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&)::$_1::operator()() const in GuiSettings.o
+  "SystemConf::set(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&)::$_0::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) const in GuiSettings.o
+      GuiSettings::addFileBrowser(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, GuiFileBrowser::FileTypes, bool)::$_0::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) const in GuiSettings.o
+      GuiSettings::addOptionList(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::vector<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&)::$_0::operator()() const in GuiSettings.o
+  "SystemConf::getBool(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      GuiSettings::addSwitch(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&) in GuiSettings.o
+  "SystemConf::setBool(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      GuiSettings::addSwitch(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&)::$_0::operator()() const in GuiSettings.o
+  "Achievement::getBadgeUrl()", referenced from:
+      GameAchievementEntry::GameAchievementEntry(Window*, Achievement&) in GuiGameAchievements.o
+  "InputConfig::isMappedTo(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, Input, bool)", referenced from:
+      ComponentListRow::makeAcceptInputHandler(std::__1::function<void ()> const&, bool)::'lambda'(InputConfig*, Input)::operator()(InputConfig*, Input) const in MenuComponent.o
+      ComponentList::input(InputConfig*, Input) in ComponentList.o
+      ComponentList::input(InputConfig*, Input) in ComponentList.o
+      ButtonComponent::input(InputConfig*, Input) in ButtonComponent.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      ...
+  "InputConfig::isMappedLike(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, Input)", referenced from:
+      MenuComponent::MenuComponent(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::shared_ptr<Font> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)::$_0::operator()(InputConfig*, Input) const in MenuComponent.o
+      MenuComponent::MenuComponent(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::shared_ptr<Font> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)::$_0::operator()(InputConfig*, Input) const in MenuComponent.o
+      ComponentGrid::input(InputConfig*, Input) in ComponentGrid.o
+      ComponentGrid::input(InputConfig*, Input) in ComponentGrid.o
+      ComponentGrid::input(InputConfig*, Input) in ComponentGrid.o
+      ComponentGrid::input(InputConfig*, Input) in ComponentGrid.o
+      ComponentList::input(InputConfig*, Input) in ComponentList.o
+      ComponentList::input(InputConfig*, Input) in ComponentList.o
+      ...
+  "MaxSizeInfo::Empty", referenced from:
+      MenuComponent::addMenuIcon(Window*, ComponentListRow&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      makeArrow(Window*) in MenuComponent.o
+      IList<ComponentListRow, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::IList(Window*, ScrollTierList const&, ListLoopType const&) in ComponentList.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setPlaylist(std::__1::shared_ptr<IPlaylist>) in ImageComponent.o
+      ImageComponent::setPlaylist(std::__1::shared_ptr<IPlaylist>) in ImageComponent.o
+      ImageComponent::getMaxSizeInfo() in ImageComponent.o
+      ImageComponent::getMaxSizeInfo() in ImageComponent.o
+      ...
+  "AudioManager::getInstance()", referenced from:
+      ComponentListRow::makeAcceptInputHandler(std::__1::function<void ()> const&, bool)::'lambda'(InputConfig*, Input)::operator()(InputConfig*, Input) const in MenuComponent.o
+      IList<ComponentListRow, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::scroll(int) in MenuComponent.o
+      IList<ComponentListRow, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::scroll(int) in MenuComponent.o
+      ComponentGrid::onCursorMoved(Vector2i, Vector2i) in ComponentGrid.o
+      ComponentList::onCursorChanged(CursorState const&) in ComponentList.o
+      ButtonComponent::input(InputConfig*, Input) in ButtonComponent.o
+      ButtonComponent::onMouseClick(int, bool, int, int) in ButtonComponent.o
+      ...
+  "AudioManager::playThematicSound(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ComponentListRow::makeAcceptInputHandler(std::__1::function<void ()> const&, bool)::'lambda'(InputConfig*, Input)::operator()(InputConfig*, Input) const in MenuComponent.o
+      IList<ComponentListRow, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::scroll(int) in MenuComponent.o
+      ComponentGrid::onCursorMoved(Vector2i, Vector2i) in ComponentGrid.o
+      ComponentList::onCursorChanged(CursorState const&) in ComponentList.o
+      ButtonComponent::input(InputConfig*, Input) in ButtonComponent.o
+      ButtonComponent::onMouseClick(int, bool, int, int) in ButtonComponent.o
+      SwitchComponent::input(InputConfig*, Input) in SwitchComponent.o
+      ...
+  "InputManager::getInstance()", referenced from:
+      ComponentList::onMouseClick(int, bool, int, int) in ComponentList.o
+  "InputManager::sendMouseClick(Window*, int)", referenced from:
+      ComponentList::onMouseClick(int, bool, int, int) in ComponentList.o
+  "TextToSpeech::getInstance()", referenced from:
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ButtonComponent::onFocusGained() in ButtonComponent.o
+  "TextToSpeech::say(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)", referenced from:
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ComponentList::saySelectedLine() in ComponentList.o
+      ButtonComponent::onFocusGained() in ButtonComponent.o
+  "BusyComponent::render(Transform4x4f const&)", referenced from:
+      GuiLoading<GameInfoAndUserProgress>::render(Transform4x4f const&) in GuiGameAchievements.o
+  "BusyComponent::update(int)", referenced from:
+      GuiLoading<GameInfoAndUserProgress>::update(int) in GuiGameAchievements.o
+  "BusyComponent::setText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)", referenced from:
+      GuiLoading<GameInfoAndUserProgress>::GuiLoading(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<GameInfoAndUserProgress (IGuiLoadingHandler*)> const&, std::__1::function<void (GameInfoAndUserProgress)> const&) in GuiGameAchievements.o
+      GuiLoading<GameInfoAndUserProgress>::updateText() in GuiGameAchievements.o
+  "BusyComponent::BusyComponent(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiLoading<GameInfoAndUserProgress>::GuiLoading(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<GameInfoAndUserProgress (IGuiLoadingHandler*)> const&, std::__1::function<void (GameInfoAndUserProgress)> const&) in GuiGameAchievements.o
+  "BusyComponent::~BusyComponent()", referenced from:
+      GuiLoading<GameInfoAndUserProgress>::GuiLoading(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<GameInfoAndUserProgress (IGuiLoadingHandler*)> const&, std::__1::function<void (GameInfoAndUserProgress)> const&) in GuiGameAchievements.o
+      GuiLoading<GameInfoAndUserProgress>::~GuiLoading() in GuiGameAchievements.o
+  "BindingManager::updateBindings(GuiComponent*, IBindable*, bool)", referenced from:
+      GuiComponent::updateBindings(IBindable*) in GuiComponent.o
+  "ClockComponent::ClockComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "GuiFileBrowser::GuiFileBrowser(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, GuiFileBrowser::FileTypes, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiSettings::addFileBrowser(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, GuiFileBrowser::FileTypes, bool)::$_1::operator()() const in GuiSettings.o
+  "ViewController::get()", referenced from:
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*)::$_0::operator()() const in GuiGameAchievements.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*)::$_0::operator()() const in GuiGameAchievements.o
+      GuiSettings::input(InputConfig*, Input) in GuiSettings.o
+      GuiSettings::getHelpStyle() in GuiSettings.o
+      GuiSettings::getHelpStyle() in GuiSettings.o
+      ...
+  "ViewController::launch(FileData*, LaunchGameOptions, Vector3f, bool)", referenced from:
+      ViewController::launch(FileData*, Vector3f) in GuiGameAchievements.o
+  "ResourceManager::getInstance()", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ...
+  "TextureResource::cancelAsync(std::__1::shared_ptr<TextureResource>)", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::onHide() in ImageComponent.o
+      ImageComponent::onHide() in ImageComponent.o
+  "TextureResource::rasterizeAt(unsigned long, unsigned long)", referenced from:
+      ImageComponent::resize() in ImageComponent.o
+      RatingComponent::onSizeChanged() in RatingComponent.o
+      RatingComponent::onSizeChanged() in RatingComponent.o
+  "TextureResource::initFromMemory(char const*, unsigned long)", referenced from:
+      ImageComponent::setImage(char const*, unsigned long, bool) in ImageComponent.o
+  "TextureResource::get(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, bool, bool, bool, MaxSizeInfo const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(char const*, unsigned long, bool) in ImageComponent.o
+      NinePatchComponent::setImagePath(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in NinePatchComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+      RatingComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in RatingComponent.o
+      RatingComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in RatingComponent.o
+      ...
+  "TextureResource::bind()", referenced from:
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+  "ThemeStoryboard::fromXmlNode(pugi::xml_node const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ElementPropertyType, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, ThemeData::ElementPropertyType>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeVariables const&)", referenced from:
+      ThemeData::parseElement(pugi::xml_node const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ElementPropertyType, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, ThemeData::ElementPropertyType>>> const&, ThemeData::ThemeElement&, ThemeData::ThemeView&, bool) in ThemeData.o
+  "ThemeStoryboard::ThemeStoryboard(ThemeStoryboard const&)", referenced from:
+      ThemeData::parseElement(pugi::xml_node const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ElementPropertyType, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, ThemeData::ElementPropertyType>>> const&, ThemeData::ThemeElement&, ThemeData::ThemeView&, bool) in ThemeData.o
+      ThemeData::ThemeElement::ThemeElement(ThemeData::ThemeElement const&) in ThemeData.o
+  "ThemeStoryboard::~ThemeStoryboard()", referenced from:
+      ThemeData::parseElement(pugi::xml_node const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ElementPropertyType, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, ThemeData::ElementPropertyType>>> const&, ThemeData::ThemeElement&, ThemeData::ThemeView&, bool) in ThemeData.o
+      ThemeData::parseElement(pugi::xml_node const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ElementPropertyType, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, ThemeData::ElementPropertyType>>> const&, ThemeData::ThemeElement&, ThemeData::ThemeView&, bool) in ThemeData.o
+      ThemeData::parseElement(pugi::xml_node const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ElementPropertyType, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, ThemeData::ElementPropertyType>>> const&, ThemeData::ThemeElement&, ThemeData::ThemeView&, bool) in ThemeData.o
+      ThemeData::parseElement(pugi::xml_node const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ElementPropertyType, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, ThemeData::ElementPropertyType>>> const&, ThemeData::ThemeElement&, ThemeData::ThemeView&, bool) in ThemeData.o
+      ThemeData::ThemeElement::~ThemeElement() in ThemeData.o
+  "GuiTextEditPopup::GuiTextEditPopup(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)> const&, bool, char const*)", referenced from:
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&)::$_1::operator()() const in GuiSettings.o
+  "RetroAchievements::getGameInfoAndUserProgress(int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      __ZZN19GuiGameAchievements4showEP6WindowP8FileDataENK3$_0clIP18IGuiLoadingHandlerEEDaT_ in GuiGameAchievements.o
+      __ZZN19GuiGameAchievements4showEP6WindowiENK3$_0clIP18IGuiLoadingHandlerEEDaT_ in GuiGameAchievements.o
+  "VideoVlcComponent::VideoVlcComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "WebImageComponent::WebImageComponent(Window*, double)", referenced from:
+      void std::__1::allocator<WebImageComponent>::construct[abi:nqe210106]<WebImageComponent, Window*&>(WebImageComponent*, Window*&) in GuiGameAchievements.o
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "MultiLineMenuEntry::MultiLineMenuEntry(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      void std::__1::allocator<MultiLineMenuEntry>::construct[abi:nqe210106]<MultiLineMenuEntry, Window*&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool&>(MultiLineMenuEntry*, Window*&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool&) in MenuComponent.o
+      void std::__1::allocator<MultiLineMenuEntry>::construct[abi:nqe210106]<MultiLineMenuEntry, Window*&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&>(MultiLineMenuEntry*, Window*&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&) in GuiSettings.o
+  "RectangleComponent::RectangleComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "ScrollbarComponent::onCursorChanged()", referenced from:
+      ComponentList::onCursorChanged(CursorState const&) in ComponentList.o
+  "ScrollbarComponent::loadFromMenuTheme()", referenced from:
+      ComponentList::ComponentList(Window*) in ComponentList.o
+  "ScrollbarComponent::setScrollPosition(float)", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+  "ScrollbarComponent::setContainerBounds(Vector3f, Vector2f, bool)", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+  "ScrollbarComponent::render(Transform4x4f const&)", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+  "ScrollbarComponent::update(int)", referenced from:
+      ComponentList::update(int) in ComponentList.o
+  "ScrollbarComponent::ScrollbarComponent(Window*)", referenced from:
+      ComponentList::ComponentList(Window*) in ComponentList.o
+  "StoryboardAnimator::enableProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      GuiComponent::enableStoryboardProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in GuiComponent.o
+  "StoryboardAnimator::clearInitialProperties()", referenced from:
+      GuiComponent::deselectStoryboard(bool) in GuiComponent.o
+  "StoryboardAnimator::stop()", referenced from:
+      GuiComponent::stopStoryboard() in GuiComponent.o
+      GuiComponent::deselectStoryboard(bool) in GuiComponent.o
+  "StoryboardAnimator::pause()", referenced from:
+      GuiComponent::pauseStoryboard() in GuiComponent.o
+      GuiComponent::onHide() in GuiComponent.o
+  "StoryboardAnimator::reset(int, bool)", referenced from:
+      GuiComponent::selectStoryboard(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in GuiComponent.o
+      GuiComponent::applyStoryboard(ThemeData::ThemeElement const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in GuiComponent.o
+      GuiComponent::startStoryboard() in GuiComponent.o
+      GuiComponent::deselectStoryboard(bool) in GuiComponent.o
+      GuiComponent::onShow() in GuiComponent.o
+  "StoryboardAnimator::update(int)", referenced from:
+      GuiComponent::updateSelf(int) in GuiComponent.o
+  "StoryboardAnimator::getName()", referenced from:
+      GuiComponent::hasStoryBoard(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in GuiComponent.o
+      GuiComponent::currentStoryBoardHasProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in GuiComponent.o
+      GuiComponent::isStoryBoardRunning(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in GuiComponent.o
+      GuiComponent::selectStoryboard(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in GuiComponent.o
+  "StoryboardAnimator::StoryboardAnimator(GuiComponent*, ThemeStoryboard*)", referenced from:
+      GuiComponent::selectStoryboard(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in GuiComponent.o
+  "StoryboardAnimator::~StoryboardAnimator()", referenced from:
+      GuiComponent::~GuiComponent() in GuiComponent.o
+      GuiComponent::selectStoryboard(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in GuiComponent.o
+      GuiComponent::applyStoryboard(ThemeData::ThemeElement const*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in GuiComponent.o
+      GuiComponent::deselectStoryboard(bool) in GuiComponent.o
+  "AnimationController::update(int)", referenced from:
+      GuiComponent::advanceAnimation(unsigned char, unsigned int) in GuiComponent.o
+      GuiComponent::finishAnimation(unsigned char) in GuiComponent.o
+  "AnimationController::AnimationController(Animation*, int, std::__1::function<void ()>, bool)", referenced from:
+      GuiComponent::setAnimation(Animation*, int, std::__1::function<void ()>, bool, unsigned char) in GuiComponent.o
+  "StackPanelComponent::StackPanelComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "BatteryIconComponent::BatteryIconComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "BatteryTextComponent::BatteryTextComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "GuiRetroAchievements::getFileData(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*) in GuiGameAchievements.o
+  "NetworkIconComponent::NetworkIconComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "GameInfoAndUserProgress::getImageUrl(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*) in GuiGameAchievements.o
+  "GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)> const&, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)", referenced from:
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&)::$_1::operator()() const in GuiSettings.o
+  "RetroAchievementProgress::RetroAchievementProgress(Window*, int, int, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      void std::__1::allocator<RetroAchievementProgress>::construct[abi:nqe210106]<RetroAchievementProgress, Window*&, int&, int&, unsigned long, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>(RetroAchievementProgress*, Window*&, int&, int&, unsigned long&&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&&) in GuiGameAchievements.o
+  "PostProcessShaderComponent::PostProcessShaderComponent(Window*)", referenced from:
+      ThemeData::createExtraComponent(Window*, ThemeData::ThemeElement const&, bool) in ThemeData.o
+  "Log::mReportingLevel", referenced from:
+      Log::getReportingLevel() in TextComponent.o
+  "Log::get(LogLevel)", referenced from:
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      NinePatchComponent::buildVertices() in NinePatchComponent.o
+      GuiComponent::removeChild(GuiComponent*) in GuiComponent.o
+      GuiComponent::input(InputConfig*, Input) in GuiComponent.o
+      GuiComponent::input(InputConfig*, Input) in GuiComponent.o
+      GuiComponent::updateChildren(int) in GuiComponent.o
+      GuiComponent::updateChildren(int) in GuiComponent.o
+      ...
+  "Log::flush()", referenced from:
+      GuiComponent::input(InputConfig*, Input) in GuiComponent.o
+      GuiComponent::input(InputConfig*, Input) in GuiComponent.o
+      GuiComponent::updateChildren(int) in GuiComponent.o
+      GuiComponent::updateChildren(int) in GuiComponent.o
+      GuiComponent::renderChildren(Transform4x4f const&) const in GuiComponent.o
+      GuiComponent::renderChildren(Transform4x4f const&) const in GuiComponent.o
+  "Log::mFile", referenced from:
+      Log::enabled() in TextComponent.o
+  "Log::~Log()", referenced from:
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      NinePatchComponent::buildVertices() in NinePatchComponent.o
+      NinePatchComponent::buildVertices() in NinePatchComponent.o
+      GuiComponent::removeChild(GuiComponent*) in GuiComponent.o
+      GuiComponent::removeChild(GuiComponent*) in GuiComponent.o
+      ...
+  "Font::getFromTheme(ThemeData::ThemeElement const*, unsigned int, std::__1::shared_ptr<Font> const&, bool)", referenced from:
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+  "Font::buildTextCache(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, Vector2f, unsigned int, float, Alignment, float)", referenced from:
+      TextComponent::buildTextCache() in TextComponent.o
+      TextComponent::buildTextCache() in TextComponent.o
+  "Font::buildTextCache(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, float, float, unsigned int)", referenced from:
+      ButtonComponent::setText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ButtonComponent.o
+      SliderComponent::onValueChanged() in SliderComponent.o
+  "Font::getLetterHeight()", referenced from:
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::addMenuIcon(Window*, ComponentListRow&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      makeArrow(Window*) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      ...
+  "Font::renderTextCache(TextCache*, bool)", referenced from:
+      ButtonComponent::render(Transform4x4f const&) in ButtonComponent.o
+      SliderComponent::render(Transform4x4f const&) in SliderComponent.o
+  "Font::sizeWrappedText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, float, float)", referenced from:
+      TextComponent::onTextChanged() in TextComponent.o
+      TextComponent::update(int) in TextComponent.o
+  "Font::renderTextCacheEx(TextCache*, Transform4x4f const&, unsigned int, unsigned int, Vector2f&, unsigned char)", referenced from:
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+  "Font::renderGradientTextCache(TextCache*, unsigned int, unsigned int, bool)", referenced from:
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+  "Font::get(int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      IList<ComponentListRow, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::IList(Window*, ScrollTierList const&, ListLoopType const&) in ComponentList.o
+      TextComponent::TextComponent(Window*) in TextComponent.o
+      TextComponent::setFont(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, int) in TextComponent.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ...
+  "Font::sizeText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, float)", referenced from:
+      TextComponent::buildTextCache() in TextComponent.o
+      TextComponent::buildTextCache() in TextComponent.o
+      TextComponent::buildTextCache() in TextComponent.o
+      TextComponent::onTextChanged() in TextComponent.o
+      TextComponent::update(int) in TextComponent.o
+      TextComponent::update(int) in TextComponent.o
+      ButtonComponent::setText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ButtonComponent.o
+      ...
+  "Font::wrapText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, float)", referenced from:
+      TextComponent::buildTextCache() in TextComponent.o
+  "Math::easeOutCubic(float)", referenced from:
+      GuiLoading<GameInfoAndUserProgress>::GuiLoading(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<GameInfoAndUserProgress (IGuiLoadingHandler*)> const&, std::__1::function<void (GameInfoAndUserProgress)> const&)::'lambda'(float)::operator()(float) const in GuiGameAchievements.o
+  "Math::max(float, float)", referenced from:
+      ImageComponent::updateRoundCorners() in ImageComponent.o
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      ButtonComponent::setText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ButtonComponent.o
+      GameAchievementEntry::GameAchievementEntry(Window*, Achievement&) in GuiGameAchievements.o
+      GameAchievementEntry::GameAchievementEntry(Window*, Achievement&) in GuiGameAchievements.o
+      GameAchievementEntry::GameAchievementEntry(Window*, Achievement&) in GuiGameAchievements.o
+      ...
+  "Math::max(int, int)", referenced from:
+      ButtonComponent::setText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ButtonComponent.o
+  "Math::min(float, float)", referenced from:
+      ImageComponent::resize() in ImageComponent.o
+      ImageComponent::resize() in ImageComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      GuiGameAchievements::updateTab() in GuiGameAchievements.o
+      GuiGameAchievements::centerWindow() in GuiGameAchievements.o
+      GameAchievementEntry::GameAchievementEntry(Window*, Achievement&) in GuiGameAchievements.o
+      GameAchievementEntry::GameAchievementEntry(Window*, Achievement&) in GuiGameAchievements.o
+      ...
+  "Math::min(int, int)", referenced from:
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::updateSize() in MenuComponent.o
+      IList<ComponentListRow, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::IList(Window*, ScrollTierList const&, ListLoopType const&) in ComponentList.o
+      TextComponent::TextComponent(Window*) in TextComponent.o
+      TextComponent::setFont(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, int) in TextComponent.o
+      TextComponent::getProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in TextComponent.o
+      TextComponent::setProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ThemeElement::Property const&) in TextComponent.o
+      ...
+  "Math::cosf(float)", referenced from:
+      Transform4x4f::rotate(float, Vector3f const&) in Transform4x4f.o
+      Transform4x4f::rotateX(float) in Transform4x4f.o
+      Transform4x4f::rotateY(float) in Transform4x4f.o
+      Transform4x4f::rotateZ(float) in Transform4x4f.o
+  "Math::lerp(float, float, float)", referenced from:
+      NinePatchComponent::fitTo(Vector2f, Vector3f, Vector2f) in NinePatchComponent.o
+      NinePatchComponent::fitTo(Vector2f, Vector3f, Vector2f) in NinePatchComponent.o
+      GuiComponent::animateTo(Vector2f, Vector2f, unsigned int, int)::$_0::operator()(float) const in GuiComponent.o
+  "Math::sinf(float)", referenced from:
+      Transform4x4f::rotate(float, Vector3f const&) in Transform4x4f.o
+      Transform4x4f::rotateX(float) in Transform4x4f.o
+      Transform4x4f::rotateY(float) in Transform4x4f.o
+      Transform4x4f::rotateZ(float) in Transform4x4f.o
+  "Math::clamp(float, float, float)", referenced from:
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      TextComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in TextComponent.o
+      ImageComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in ImageComponent.o
+      RatingComponent::setValue(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in RatingComponent.o
+      RatingComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in RatingComponent.o
+      RatingComponent::setProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ThemeElement::Property const&) in RatingComponent.o
+  "Math::round(float)", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ImageComponent::resize() in ImageComponent.o
+      ImageComponent::resize() in ImageComponent.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*) in GuiGameAchievements.o
+      RatingComponent::onSizeChanged() in RatingComponent.o
+      ...
+  "Math::Scroll::loop(float, float, float, float)", referenced from:
+      TextComponent::update(int) in TextComponent.o
+  "Paths::_instance", referenced from:
+      Paths::getInstance() in ThemeData.o
+      Paths::getInstance() in ThemeData.o
+      Paths::getInstance() in ThemeData.o
+  "Paths::Paths()", referenced from:
+      Paths::getInstance() in ThemeData.o
+  "Sound::get(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiComponent::setProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ThemeElement::Property const&) in GuiComponent.o
+  "Sound::play()", referenced from:
+      GuiComponent::setProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ThemeElement::Property const&) in GuiComponent.o
+  "Utils::FileSystem::getFileName(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      ThemeData::getThemeSets() in ThemeData.o
+  "Utils::FileSystem::isDirectory(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::getThemeSets() in ThemeData.o
+      ThemeData::getThemeSets() in ThemeData.o
+  "Utils::FileSystem::readAllText(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+  "Utils::FileSystem::getExtension(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+  "Utils::FileSystem::getDirContent(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool)", referenced from:
+      ThemeData::getThemeSets() in ThemeData.o
+  "Utils::FileSystem::getCanonicalPath(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+  "Utils::FileSystem::resolveRelativePath(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+  "Utils::FileSystem::exists(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ImageComponent::setProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ThemeElement::Property const&) in ImageComponent.o
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::resolveSystemVariable(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in ThemeData.o
+      ThemeData::getDefault() in ThemeData.o
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+  "Utils::FileSystem::getStem(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeSet::getName() const in ThemeData.o
+  "Utils::FileSystem::isImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+  "Utils::FileSystem::getParent(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::appendFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::appendFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::appendFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::appendFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ...
+  "Utils::String::nextCursor(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned long)", referenced from:
+      TextComponent::buildTextCache() in TextComponent.o
+  "Utils::String::startsWith(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ImageComponent::getProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in ImageComponent.o
+      ImageComponent::setProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, ThemeData::ThemeElement::Property const&) in ImageComponent.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::getThemeSets() in ThemeData.o
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+      ...
+  "Utils::String::extractStrings(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      visit(std::__1::vector<GuiComponent*, std::__1::allocator<GuiComponent*>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::vector<GuiComponent*, std::__1::allocator<GuiComponent*>>&, std::__1::unordered_map<GuiComponent*, bool, std::__1::hash<GuiComponent*>, std::__1::equal_to<GuiComponent*>, std::__1::allocator<std::__1::pair<GuiComponent* const, bool>>>&) in GuiComponent.o
+  "Utils::String::join(std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)", referenced from:
+      ComponentList::saySelectedLine() in ComponentList.o
+  "Utils::String::trim(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*) in GuiGameAchievements.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ...
+  "Utils::String::split(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, char, bool)", referenced from:
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseCustomView(pugi::xml_node const&, pugi::xml_node const&) in ThemeData.o
+  "Utils::String::replace(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in GuiComponent.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+  "Utils::String::toFloat(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ImageComponent::getProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in ImageComponent.o
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::parseView(pugi::xml_node const&, ThemeData::ThemeView&, bool) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      RatingComponent::setValue(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in RatingComponent.o
+  "Utils::String::toLower(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseRegion(pugi::xml_node const&) in ThemeData.o
+      ...
+  "Utils::String::toUpper(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      MenuComponent::setTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::shared_ptr<Font> const&) in MenuComponent.o
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::addWithLabel(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::shared_ptr<GuiComponent> const&, std::__1::function<void ()> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in MenuComponent.o
+      MenuComponent::addWithDescription(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::shared_ptr<GuiComponent> const&, std::__1::function<void ()> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in MenuComponent.o
+      MenuComponent::addWithDescription(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::shared_ptr<GuiComponent> const&, std::__1::function<void ()> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in MenuComponent.o
+      MenuComponent::addButton(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::function<void ()> const&) in MenuComponent.o
+      TextComponent::buildTextCache() in TextComponent.o
+      ...
+  "Utils::String::endsWith(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiComponent::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int) in GuiComponent.o
+  "Utils::String::splitAny(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      ThemeData::parseSubset(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      M3uPlaylist::M3uPlaylist(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in M3uPlaylist.o
+  "Utils::String::toBoolean(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+  "Utils::String::toInteger(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiGameAchievements::show(Window*, FileData*) in GuiGameAchievements.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*) in GuiGameAchievements.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*) in GuiGameAchievements.o
+  "Utils::MathExpr::Value::toNumber()", referenced from:
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseVariable(pugi::xml_node const&) in ThemeData.o
+  "Utils::MathExpr::Value::toString()", referenced from:
+      ThemeData::parseVariable(pugi::xml_node const&) in ThemeData.o
+  "Utils::MathExpr::evaluate(char const*, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, Utils::MathExpr::Value, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, Utils::MathExpr::Value>>>*)", referenced from:
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseVariable(pugi::xml_node const&) in ThemeData.o
+  "Utils::Platform::getArchString()", referenced from:
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+  "Utils::HtmlColor::applyColorOpacity(unsigned int, unsigned char)", referenced from:
+      ButtonComponent::getCurTextColor() const in ButtonComponent.o
+      ButtonComponent::getCurBackColor() const in ButtonComponent.o
+      SliderComponent::getCurColor() const in SliderComponent.o
+  "Utils::HtmlColor::parse(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+  "Window::setHelpPrompts(std::__1::vector<HelpPrompt, std::__1::allocator<HelpPrompt>> const&, HelpStyle const&)", referenced from:
+      GuiComponent::updateHelpPrompts() in GuiComponent.o
+  "Window::peekGui()", referenced from:
+      GuiComponent::updateHelpPrompts() in GuiComponent.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::input(InputConfig*, Input) in GuiGameAchievements.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*)::$_0::operator()() const in GuiGameAchievements.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*)::$_0::operator()() const in GuiGameAchievements.o
+      GuiGameAchievements::GuiGameAchievements(Window*, GameInfoAndUserProgress, FileData*)::$_0::operator()() const in GuiGameAchievements.o
+      ...
+  "Window::pushGui(GuiComponent*)", referenced from:
+      GuiGameAchievements::show(Window*, FileData*) in GuiGameAchievements.o
+      GuiGameAchievements::show(Window*, int) in GuiGameAchievements.o
+      GuiGameAchievements::show(Window*, FileData*)::$_1::operator()(GameInfoAndUserProgress) const in GuiGameAchievements.o
+      GuiGameAchievements::show(Window*, int)::$_1::operator()(GameInfoAndUserProgress) const in GuiGameAchievements.o
+      GuiGameAchievements::show(Window*, int)::$_1::operator()(GameInfoAndUserProgress) const in GuiGameAchievements.o
+      GuiGameAchievements::show(Window*, int)::$_1::operator()(GameInfoAndUserProgress) const in GuiGameAchievements.o
+      GuiSettings::checkNetwork() in GuiSettings.o
+      ...
+  "Window::removeGui(GuiComponent*)", referenced from:
+      GuiComponent::~GuiComponent() in GuiComponent.o
+  "ImageIO::loadImageSize(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, unsigned int*, unsigned int*)", referenced from:
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+  "ImageIO::adjustPictureSizeF(Vector2f, Vector2f, bool)", referenced from:
+      ImageComponent::getMaxSizeInfo() in ImageComponent.o
+      ImageComponent::getMaxSizeInfo() in ImageComponent.o
+  "ImageIO::getMultiBitmapInformation(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, int&, int&)", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+  "Renderer::setStencil(Renderer::Vertex const*, unsigned int)", referenced from:
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+  "Renderer::bindTexture(unsigned int)", referenced from:
+      ComponentGrid::render(Transform4x4f const&) in ComponentGrid.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+  "Renderer::popClipRect()", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      ScrollableContainer::render(Transform4x4f const&) in ScrollableContainer.o
+      GuiComponent::render(Transform4x4f const&) in GuiComponent.o
+      GuiComponent::render(Transform4x4f const&) in GuiComponent.o
+      GuiComponent::endCustomClipRect() in GuiComponent.o
+      ...
+  "Renderer::pushClipRect(Renderer::Rect)", referenced from:
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      ScrollableContainer::render(Transform4x4f const&) in ScrollableContainer.o
+      GuiComponent::render(Transform4x4f const&) in GuiComponent.o
+  "Renderer::pushClipRect(int, int, int, int)", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      GuiComponent::render(Transform4x4f const&) in GuiComponent.o
+      GuiComponent::beginCustomClipRect() in GuiComponent.o
+  "Renderer::drawRoundRect(float, float, float, float, float, unsigned int, Renderer::Blend::Factor, Renderer::Blend::Factor)", referenced from:
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+  "Renderer::getScreenRect(Transform4x4f const&, Vector2f const&, bool)", referenced from:
+      ComponentGrid::render(Transform4x4f const&) in ComponentGrid.o
+      ComponentList::hitTest(int, int, Transform4x4f&, std::__1::vector<GuiComponent*, std::__1::allocator<GuiComponent*>>*) in ComponentList.o
+      ComponentList::hitTest(int, int, Transform4x4f&, std::__1::vector<GuiComponent*, std::__1::allocator<GuiComponent*>>*) in ComponentList.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      ScrollableContainer::render(Transform4x4f const&) in ScrollableContainer.o
+      ...
+  "Renderer::isSmallScreen()", referenced from:
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      SliderComponent::SliderComponent(Window*, float, float, float, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in SliderComponent.o
+  "Renderer::ScreenSettings::fullScreenMenus()", referenced from:
+      MenuComponent::updateSize() in MenuComponent.o
+      GuiGameAchievements::centerWindow() in GuiGameAchievements.o
+      GuiSettings::GuiSettings(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (GuiSettings*)> const&, bool) in GuiSettings.o
+      GuiSettings::GuiSettings(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (GuiSettings*)> const&, bool) in GuiSettings.o
+      OptionListComponent<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::OptionListPopup::OptionListPopup(Window*, OptionListComponent<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>&, ComponentListRow&)>) in GuiSettings.o
+  "Renderer::destroyTexture(unsigned int)", referenced from:
+      NinePatchComponent::~NinePatchComponent() in NinePatchComponent.o
+      NinePatchComponent::updateColors() in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+  "Renderer::disableStencil()", referenced from:
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+  "Renderer::getScreenWidth()", referenced from:
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::updateSize() in MenuComponent.o
+      MenuComponent::updateSize() in MenuComponent.o
+      MenuComponent::updateSize() in MenuComponent.o
+      makeButtonGrid(Window*, std::__1::vector<std::__1::shared_ptr<ButtonComponent>, std::__1::allocator<std::__1::shared_ptr<ButtonComponent>>> const&) in MenuComponent.o
+      makeButtonGrid(Window*, std::__1::vector<std::__1::shared_ptr<ButtonComponent>, std::__1::allocator<std::__1::shared_ptr<ButtonComponent>>> const&) in MenuComponent.o
+      ...
+  "Renderer::createRoundRect(float, float, float, float, float, unsigned int)", referenced from:
+      ImageComponent::updateRoundCorners() in ImageComponent.o
+  "Renderer::getScreenHeight()", referenced from:
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setSubTitle(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      MenuComponent::setTitleImage(std::__1::shared_ptr<ImageComponent>, bool) in MenuComponent.o
+      ...
+  "Renderer::getScreenRotate()", referenced from:
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+  "Renderer::isVisibleOnScreen(float, float, float, float)", referenced from:
+      Renderer::isVisibleOnScreen(Renderer::Rect const&) in ComponentGrid.o
+  "Renderer::postProcessShader(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, float, float, float, float, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, unsigned int*)", referenced from:
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+  "Renderer::drawTriangleStrips(Renderer::Vertex const*, unsigned int, Renderer::Blend::Factor, Renderer::Blend::Factor, bool)", referenced from:
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+      RatingComponent::render(Transform4x4f const&) in RatingComponent.o
+      ...
+  "Renderer::shaderSupportsCornerSize(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ImageComponent::updateRoundCorners() in ImageComponent.o
+  "Renderer::drawRect(float, float, float, float, unsigned int, Renderer::Blend::Factor, Renderer::Blend::Factor)", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ButtonComponent::render(Transform4x4f const&) in ButtonComponent.o
+      SliderComponent::render(Transform4x4f const&) in SliderComponent.o
+  "Renderer::drawRect(float, float, float, float, unsigned int, unsigned int, bool, Renderer::Blend::Factor, Renderer::Blend::Factor)", referenced from:
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      ...
+  "Renderer::drawLines(Renderer::Vertex const*, unsigned int, Renderer::Blend::Factor, Renderer::Blend::Factor)", referenced from:
+      ComponentGrid::render(Transform4x4f const&) in ComponentGrid.o
+  "Renderer::mixColors(unsigned int, unsigned int, float)", referenced from:
+      NinePatchComponent::updateColors() in NinePatchComponent.o
+      NinePatchComponent::updateColors() in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+      NinePatchComponent::render(Transform4x4f const&) in NinePatchComponent.o
+  "Renderer::setMatrix(Transform4x4f const&)", referenced from:
+      ComponentGrid::render(Transform4x4f const&) in ComponentGrid.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      ComponentList::render(Transform4x4f const&) in ComponentList.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      ...
+  "Settings::_DebugGrid", referenced from:
+      Settings::DebugGrid() in ComponentGrid.o
+  "Settings::_DebugText", referenced from:
+      Settings::DebugText() in TextComponent.o
+  "Settings::_DebugImage", referenced from:
+      Settings::DebugImage() in ImageComponent.o
+  "Settings::_DebugMouse", referenced from:
+      Settings::DebugMouse() in ComponentList.o
+  "Settings::getInstance()", referenced from:
+      Settings::PowerSaverMode() in GuiComponent.o
+      Settings::TransitionStyle() in GuiComponent.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ...
+  "Settings::getSettingType(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+  "Settings::getSettingsNames()", referenced from:
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+  "Settings::_ScrollLoadMedias", referenced from:
+      Settings::ScrollLoadMedias() in MenuComponent.o
+  "Settings::getInt(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+  "Settings::getBool(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+      ThemeData::parseFilterAttributes(pugi::xml_node const&) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      GuiSettings::addSwitch(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&) in GuiSettings.o
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&)::$_1::operator()() const in GuiSettings.o
+  "Settings::setBool(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool)", referenced from:
+      GuiSettings::addSwitch(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&)::$_0::operator()() const in GuiSettings.o
+  "Settings::getFloat(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::loadFile(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::map<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::less<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool) in ThemeData.o
+  "Settings::saveFile()", referenced from:
+      GuiSettings::save() in GuiSettings.o
+  "Settings::getString(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      Settings::PowerSaverMode() in GuiComponent.o
+      Settings::TransitionStyle() in GuiComponent.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ThemeData::ThemeData(bool) in ThemeData.o
+      ...
+  "Settings::setString(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::getThemeFromCurrentSet(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) in ThemeData.o
+      GuiSettings::addInputTextRow(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool, std::__1::function<void (Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::function<void (std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)> const&)> const&)::$_0::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) const in GuiSettings.o
+      GuiSettings::addFileBrowser(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, GuiFileBrowser::FileTypes, bool)::$_0::operator()(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) const in GuiSettings.o
+      GuiSettings::addOptionList(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::vector<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>, std::__1::allocator<std::__1::pair<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, std::__1::function<void ()> const&)::$_0::operator()() const in GuiSettings.o
+  "Vector2f::parseString(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+  "Vector2f::round()", referenced from:
+      ImageComponent::updateVertices() in ImageComponent.o
+      RatingComponent::updateVertices() in RatingComponent.o
+  "Vector4f::parseString(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+  "ApiSystem::getInstance()", referenced from:
+      GuiSettings::checkNetwork() in GuiSettings.o
+  "GuiMsgBox::GuiMsgBox(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::function<void ()> const&, GuiMsgBoxIcon)", referenced from:
+      GuiGameAchievements::show(Window*, int)::$_1::operator()(GameInfoAndUserProgress) const in GuiGameAchievements.o
+      GuiGameAchievements::show(Window*, int)::$_1::operator()(GameInfoAndUserProgress) const in GuiGameAchievements.o
+      GuiSettings::checkNetwork() in GuiSettings.o
+  "HelpStyle::applyTheme(std::__1::shared_ptr<ThemeData> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&)", referenced from:
+      GuiComponent::getHelpStyle() in GuiComponent.o
+      GuiSettings::getHelpStyle() in GuiSettings.o
+  "HelpStyle::HelpStyle()", referenced from:
+      GuiComponent::getHelpStyle() in GuiComponent.o
+      GuiSettings::getHelpStyle() in GuiSettings.o
+  "TextCache::setColor(unsigned int)", referenced from:
+      TextComponent::onColorChanged() in TextComponent.o
+      ButtonComponent::onOpacityChanged() in ButtonComponent.o
+      ButtonComponent::render(Transform4x4f const&) in ButtonComponent.o
+      SliderComponent::onOpacityChanged() in SliderComponent.o
+  "TextCache::setColors(unsigned int, unsigned int)", referenced from:
+      TextComponent::onColorChanged() in TextComponent.o
+  "MetaDataList::get(MetaDataId, bool) const", referenced from:
+      FileData::getMetadata(MetaDataId) const in GuiGameAchievements.o
+  "ThemeVariables::resolvePlaceholders(char const*) const", referenced from:
+      ThemeData::resolvePlaceholders(char const*) in ThemeData.o
+  "ResourceManager::fileExists(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) const", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::parseInclude(pugi::xml_node const&) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::processElement(pugi::xml_node const&, ThemeData::ThemeElement&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, ThemeData::ElementPropertyType) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ThemeData::ThemeMenu::ThemeMenu(ThemeData*) in ThemeData.o
+      ...
+  "TextureResource::isScalable() const", referenced from:
+      ImageComponent::updateVertices() in ImageComponent.o
+  "TextureResource::setRequired(bool) const", referenced from:
+      ImageComponent::~ImageComponent() in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(char const*, unsigned long, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::shared_ptr<TextureResource> const&) in ImageComponent.o
+      ImageComponent::setImage(std::__1::shared_ptr<TextureResource> const&) in ImageComponent.o
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      ...
+  "TextureResource::getPhysicalSize() const", referenced from:
+      ImageComponent::resize() in ImageComponent.o
+  "TextureResource::getSize() const", referenced from:
+      ImageComponent::getTextureSize() const in ImageComponent.o
+      NinePatchComponent::buildVertices() in NinePatchComponent.o
+      NinePatchComponent::buildVertices() in NinePatchComponent.o
+      NinePatchComponent::buildVertices() in NinePatchComponent.o
+  "TextureResource::isTiled() const", referenced from:
+      ImageComponent::resize() in ImageComponent.o
+      ImageComponent::updateVertices() in ImageComponent.o
+      ImageComponent::updateVertices() in ImageComponent.o
+      ImageComponent::isTiled() in ImageComponent.o
+  "TextureResource::isLoaded() const", referenced from:
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::setImage(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, MaxSizeInfo const&, bool, bool) in ImageComponent.o
+      ImageComponent::render(Transform4x4f const&) in ImageComponent.o
+      ImageComponent::onHide() in ImageComponent.o
+      ImageComponent::onHide() in ImageComponent.o
+  "Font::getSize() const", referenced from:
+      TextComponent::setFont(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, int) in TextComponent.o
+      TextComponent::getProperty(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) in TextComponent.o
+  "Font::getHeight(float) const", referenced from:
+      MenuComponent::getButtonGridHeight() const in MenuComponent.o
+      TextComponent::render(Transform4x4f const&) in TextComponent.o
+      TextComponent::buildTextCache() in TextComponent.o
+      TextComponent::onTextChanged() in TextComponent.o
+      TextComponent::update(int) in TextComponent.o
+      SwitchComponent::SwitchComponent(Window*, bool, bool, bool) in SwitchComponent.o
+      OptionListComponent<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>::OptionListComponent(Window*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool) in GuiSettings.o
+      ...
+ld: symbol(s) not found for architecture arm64
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+make: *** [sim_app] Error 1
