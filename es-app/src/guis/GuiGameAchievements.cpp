@@ -3,8 +3,6 @@
 #include "components/WebImageComponent.h"
 
 #include "Window.h"
-#include <iostream>
-#include <fstream>
 #include <string>
 #include "Log.h"
 #include "Settings.h"
@@ -15,26 +13,10 @@
 #include "components/MultiLineMenuEntry.h"
 #include "GuiGameAchievements.h"
 #include "views/ViewController.h"
-#include "FileData.h"
 
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
 #define IMAGESPACER (Renderer::getScreenHeight() * (10.0 / 720.0))
-
-void GuiGameAchievements::show(Window* window, FileData* game)
-{
-	int gameId = Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId));
-	window->pushGui(new GuiLoading<GameInfoAndUserProgress>(window, _("PLEASE WAIT"),
-		[gameId](auto gui)
-	{
-		if (gameId == 0) return GameInfoAndUserProgress();
-		return RetroAchievements::getGameInfoAndUserProgress(gameId);
-	},
-		[window, game](GameInfoAndUserProgress ra)
-	{
-		window->pushGui(new GuiGameAchievements(window, ra, game));
-	}));
-}
 
 void GuiGameAchievements::show(Window* window, int gameId)
 {
@@ -117,21 +99,6 @@ public:
 		mSubstring->setColor(color);
 	}
 
-	virtual void render(const Transform4x4f& parentTrans) override
-	{
-		ComponentGrid::render(parentTrans);
-		static int frameLog = 0;
-		if (frameLog++ % 60 == 0) {
-			std::ofstream out("/tmp/sim_coords.txt", std::ios_base::app);
-			out << "[SIM-LOG] GameAchievementEntry pos: " << getPosition().x() << "," << getPosition().y() 
-					  << " size: " << getSize().x() << "," << getSize().y() << std::endl;
-			out << "[SIM-LOG]   Text pos: " << mText->getPosition().x() << "," << mText->getPosition().y()
-					  << " size: " << mText->getSize().x() << "," << mText->getSize().y() << std::endl;
-			out << "[SIM-LOG]   Substring pos: " << mSubstring->getPosition().x() << "," << mSubstring->getPosition().y()
-					  << " size: " << mSubstring->getSize().x() << "," << mSubstring->getSize().y() << std::endl;
-		}
-	}
-
 private:
 	std::shared_ptr<TextComponent> mText;
 	std::shared_ptr<TextComponent> mSubstring;
@@ -142,9 +109,9 @@ private:
 };
 
 
-GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
-	GuiSettings(window, _("ACHIEVEMENTS"), ([&ra, game]() {
-		std::string title = game != nullptr ? game->getName() : ra.Title;
+GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra) : 
+	GuiSettings(window, _("ACHIEVEMENTS"), ([&ra]() {
+		std::string title = ra.Title;
 		if (ra.isOfflineData) {
 			title += " (\U0001F4E6 Offline Data)";
 		}
@@ -154,11 +121,11 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	// Required for WebImageComponent
 	setUpdateType(ComponentListFlags::UPDATE_ALWAYS);
 
-	setTitle(game != nullptr ? game->getName() : ra.Title);
+	setTitle(ra.Title);
 
 	mMenu.clearButtons();
 
-	mFile = game != nullptr ? game : GuiRetroAchievements::getFileData(std::to_string(ra.ID));
+	mFile = GuiRetroAchievements::getFileData(std::to_string(ra.ID));
 	if (mFile != nullptr)
 	{
 		auto file = mFile;
@@ -186,22 +153,18 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	}
 
 	if (ra.Achievements.size() == 0)
-		mAchievementSubtitle = _("THIS GAME HAS NO ACHIEVEMENTS YET");
+		setSubTitle(_("THIS GAME HAS NO ACHIEVEMENTS YET"));
 	else
 	{
 		auto txt = _("Achievements (softcore)") + ": \t" + std::to_string(ra.NumAwardedToUser) + "/" + std::to_string(ra.NumAchievements);
 		txt += "\r\n" + _("Achievements (hardcore)") + ": \t" + std::to_string(ra.NumAwardedToUserHardcore) + "/" + std::to_string(ra.NumAchievements);
 		txt += "\r\n" + _("Points") + ": \t" + std::to_string(userPoints) + "/" + std::to_string(totalPoints);
-		txt += "\r\n \r\n \r\n \r\n \r\n ";
 
-		mAchievementSubtitle = txt;
+		setSubTitle(txt);
 	}
 
 	auto image = std::make_shared<WebImageComponent>(mWindow);
-	if (ra.ID != 0)
-		image->setImage(ra.getImageUrl());
-	else if (game != nullptr)
-		image->setImage(game->getImagePath());
+	image->setImage(ra.getImageUrl());
 	setTitleImage(image);
 
 	if (ra.Achievements.size() > 0)
@@ -213,75 +176,17 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 		mProgress = std::make_shared<RetroAchievementProgress>(mWindow, ra.NumAwardedToUser, ra.NumAwardedToUserHardcore, ra.Achievements.size(), Utils::String::trim(trstring));
 	}
 
-	auto theme = ThemeData::getMenuTheme();
-
-	if (ra.Achievements.size() == 0)
+	for (auto game : ra.Achievements)
 	{
-		auto text = std::make_shared<TextComponent>(mWindow, _("No achievements"), theme->Text.font, theme->Text.color);
-		text->setOpacity(128);
-		text->setHorizontalAlignment(ALIGN_CENTER);
 		ComponentListRow row;
-		row.addElement(text, false);
-		mAchievementRows.push_back(row);
-	}
-	else
-	{
-		for (auto achievement : ra.Achievements)
-		{
-			ComponentListRow row;
-			auto itstring = std::make_shared<GameAchievementEntry>(mWindow, achievement);
-			row.addElement(itstring, true);
-			mAchievementRows.push_back(row);
-		}
-	}
 
-	updateTab();
-	centerWindow();	
-}
+		auto itstring = std::make_shared<GameAchievementEntry>(mWindow, game);
+		row.addElement(itstring, true);
 
-void GuiGameAchievements::updateTab()
-{
-	mMenu.clear();
-
-	// Always set subtitle to reserve space for tab bar and progress bar
-	mMenu.setSubTitle(mAchievementSubtitle);
-
-	auto theme = ThemeData::getMenuTheme();
-
-	// Tab Bar UI (rendered outside of the list)
-	if (!mTabGrid) {
-		mTabGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 1));
-	}
-	
-	auto leftTab = std::make_shared<TextComponent>(mWindow, _("ACHIEVEMENTS"), theme->Text.font, 
-		mActiveTab == 0 ? theme->Background.color : theme->Text.color, ALIGN_CENTER);
-	leftTab->setRenderBackground(true);
-	leftTab->setBackgroundColor(mActiveTab == 0 ? theme->Text.color : theme->Background.color);
-
-	auto rightTab = std::make_shared<TextComponent>(mWindow, _("PLAY HISTORY"), theme->Text.font, 
-		mActiveTab == 1 ? theme->Background.color : theme->Text.color, ALIGN_CENTER);
-	rightTab->setRenderBackground(true);
-	rightTab->setBackgroundColor(mActiveTab == 1 ? theme->Text.color : theme->Background.color);
-
-	mTabGrid->setEntry(leftTab, Vector2i(0, 0), false, true);
-	mTabGrid->setEntry(rightTab, Vector2i(1, 0), false, true);
-	mTabGrid->setColWidthPerc(0, 0.5f);
-	mTabGrid->setColWidthPerc(1, 0.5f);
-	
-	float h = leftTab->getSize().y() + Renderer::getScreenHeight() * 0.02f;
-	mTabGrid->setSize(WINDOW_WIDTH, h);
-
-	if (mActiveTab == 0) {
-		for (auto& row : mAchievementRows)
-			addRow(row);
-	} else {
-		auto text = std::make_shared<TextComponent>(mWindow, _("No play history found"), theme->Text.font, theme->Text.color);
-		text->setOpacity(128);
-		text->setHorizontalAlignment(ALIGN_CENTER);
-		ComponentListRow row;
-		row.addElement(text, false);
 		addRow(row);
 	}
+
+	centerWindow();	
 }
 
 void GuiGameAchievements::centerWindow()
@@ -300,61 +205,28 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 {
 	GuiSettings::render(parentTrans);
 
-	static int frameLog = 0;
-	if (frameLog++ % 60 == 0) {
-		std::ofstream out("/tmp/sim_coords.txt", std::ios_base::app);
-		out << "\n--- [SIM-LOG] MAIN GUI DUMP ---" << std::endl;
-		out << "[SIM-LOG] mMenu pos: " << mMenu.getPosition().x() << "," << mMenu.getPosition().y() 
-				  << " size: " << mMenu.getSize().x() << "," << mMenu.getSize().y() << std::endl;
-		if (mTabGrid) {
-			out << "[SIM-LOG] TabGrid pos: " << mTabGrid->getPosition().x() << "," << mTabGrid->getPosition().y() 
-					  << " size: " << mTabGrid->getSize().x() << "," << mTabGrid->getSize().y() << std::endl;
-		}
-		if (mProgress) {
-			out << "[SIM-LOG] Progress pos: " << mProgress->getPosition().x() << "," << mProgress->getPosition().y() 
-					  << " size: " << mProgress->getSize().x() << "," << mProgress->getSize().y() << std::endl;
-		}
-	}
-
-	auto theme = ThemeData::getMenuTheme();
-	float yBase = mMenu.getTitleHeight();
-	
-	Transform4x4f trans = parentTrans * mMenu.getTransform();
-
-	float statsX = mMenu.getSize().x() * 0.04f;
-
-	if (mTabGrid)
+	if (mProgress != nullptr)
 	{
-		float tabY = yBase - mTabGrid->getSize().y() - (Renderer::getScreenHeight() * 0.005f);
-		mTabGrid->setPosition(0, tabY);
-		mTabGrid->render(trans);
+		auto theme = ThemeData::getMenuTheme();
 
-		if (mProgress != nullptr && mActiveTab == 0)
-		{
-			float h = theme->TextSmall.font->sizeText("A8O\rA8O", 1.1).y();
-			float width = (float)Math::min((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.90f));
-			float iw = mMenu.getTitleHeight() / width;
-			float xx = mMenu.getSize().x() - (mMenu.getSize().x() * iw);
+		float h = theme->TextSmall.font->sizeText("A8O\rA8O", 1.1).y();
+		float sz = mMenu.getHeaderGridHeight() + Renderer::getScreenHeight() * 0.005;
 
-			float progY = tabY - h - (Renderer::getScreenHeight() * 0.01f);
+		float width = (float)Math::min((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.90f));
+		float iw = mMenu.getTitleHeight() / width;
 
-			mProgress->setPosition(statsX, progY);
-			mProgress->setSize(xx * 0.45f, h);
+		float xx = mMenu.getSize().x() - (mMenu.getSize().x() * iw);
 
-			mProgress->render(trans);
-		}
+		mProgress->setPosition(xx * 0.55f, sz);
+		mProgress->setSize(xx * 0.36f, h);
+
+		Transform4x4f trans = parentTrans * mMenu.getTransform();
+		mProgress->render(trans);
 	}
 }
 
 bool GuiGameAchievements::input(InputConfig* config, Input input)
 {
-	if (input.value != 0 && (config->isMappedTo("pageup", input) || config->isMappedTo("pagedown", input) || config->isMappedTo("l1", input) || config->isMappedTo("r1", input) || config->isMappedTo("leftshoulder", input) || config->isMappedTo("rightshoulder", input)))
-	{
-		mActiveTab = (mActiveTab == 0) ? 1 : 0;
-		updateTab();
-		return true;
-	}
-
 	if (config->isMappedTo("x", input) && input.value != 0)
 	{
 		if (mFile != nullptr)
