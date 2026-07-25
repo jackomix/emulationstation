@@ -141,9 +141,6 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mHeaderGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 2));
 
 	std::string titleText = ra.Title;
-	if (ra.isOfflineData) {
-		titleText += " (\U0001F4E6 Offline Data)";
-	}
 	
 	mTitle = std::make_shared<TextComponent>(mWindow, titleText, theme->Title.font, theme->Title.color, ALIGN_LEFT);
 	mSubtitle = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
@@ -220,7 +217,9 @@ void GuiGameAchievements::onSizeChanged()
 	mGrid.setSize(mSize);
 
 	const float titleHeight = mTitle->getFont()->getLetterHeight();
-	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight() * 3.5f;
+	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight() * 4.5f;
+
+	mTabs->setSize(mSize.x(), Renderer::getScreenHeight() * 0.06f);
 
 	if (mHeaderGrid)
 	{
@@ -385,14 +384,14 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 
 	if (input.value != 0)
 	{
-		if (config->isMappedTo("leftshoulder", input) || config->isMappedTo("pageup", input))
+		if (config->isMappedTo("leftshoulder", input) || config->isMappedTo("pageup", input) || config->isMappedTo("l1", input))
 		{
 			int currentTab = mTabs->getCursorIndex();
 			if (currentTab > 0)
 				mTabs->setCursorIndex(currentTab - 1);
 			return true;
 		}
-		else if (config->isMappedTo("rightshoulder", input) || config->isMappedTo("pagedown", input))
+		else if (config->isMappedTo("rightshoulder", input) || config->isMappedTo("pagedown", input) || config->isMappedTo("r1", input))
 		{
 			int currentTab = mTabs->getCursorIndex();
 			if (currentTab < mTabs->size() - 1)
