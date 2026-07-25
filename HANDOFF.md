@@ -8,5 +8,7 @@
 
 ## Next Steps
 - Implement the dual-tab interface (`ACHIEVEMENTS` and `PLAY HISTORY` tabs) directly in `GuiGameAchievements.cpp` using standard EmulationStation `ComponentGrid` layout principles.
-- Add L1/R1 bumper navigation input handlers.
+- Add dual-navigation support for tab switching:
+  1. **Bumpers**: L1/R1 bumper inputs directly switch active tabs.
+  2. **D-pad Accessibility**: Pressing **UP** from the top row of the list moves focus into the Tab Bar, allowing D-pad **LEFT/RIGHT** to select and switch tabs (for devices/controllers without shoulder bumpers).
 - Test directly on the device/build to ensure clean layout scaling.
