@@ -3,6 +3,7 @@
 #include "GuiComponent.h"
 #include "components/MenuComponent.h"
 #include "components/BusyComponent.h"
+#include "components/ComponentTab.h"
 #include "GuiSettings.h"
 #include "RetroAchievements.h"
 #include "GuiRetroAchievements.h"
@@ -24,6 +25,14 @@ protected:
 
 	void	centerWindow();
 
+	void	populateTabContent();
+	void	populateAchievementsTab();
+	void	populatePlayHistoryTab();
+
 	FileData* mFile;
 	std::shared_ptr<RetroAchievementProgress> mProgress;
+	std::shared_ptr<ComponentTab> mTabs;
+	int mActiveTab;
+	bool mTabsHasFocus;
+	GameInfoAndUserProgress mRaInfo;
 };

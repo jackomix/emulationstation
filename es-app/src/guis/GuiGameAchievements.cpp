@@ -13,6 +13,9 @@
 #include "components/MultiLineMenuEntry.h"
 #include "GuiGameAchievements.h"
 #include "views/ViewController.h"
+#include "FileData.h"
+#include "SystemData.h"
+#include "components/ComponentTab.h"
 
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
@@ -141,27 +144,20 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
 
-	int totalPoints = 0;
-	int userPoints = 0;
+	mActiveTab = 0;
+	mTabsHasFocus = false;
+	mRaInfo = ra;
 
-	for (auto game : ra.Achievements)
-	{
-		if (!game.DateEarned.empty() || !game.DateEarnedHardcore.empty())
-			userPoints += Utils::String::toInteger(game.Points);
+	mTabs = std::make_shared<ComponentTab>(mWindow);
+	mTabs->addTab(_("ACHIEVEMENTS"));
+	mTabs->addTab(_("PLAY HISTORY"));
 
-		totalPoints += Utils::String::toInteger(game.Points);
-	}
-
-	if (ra.Achievements.size() == 0)
-		setSubTitle(_("THIS GAME HAS NO ACHIEVEMENTS YET"));
-	else
-	{
-		auto txt = _("Achievements (softcore)") + ": \t" + std::to_string(ra.NumAwardedToUser) + "/" + std::to_string(ra.NumAchievements);
-		txt += "\r\n" + _("Achievements (hardcore)") + ": \t" + std::to_string(ra.NumAwardedToUserHardcore) + "/" + std::to_string(ra.NumAchievements);
-		txt += "\r\n" + _("Points") + ": \t" + std::to_string(userPoints) + "/" + std::to_string(totalPoints);
-
-		setSubTitle(txt);
-	}
+	mTabs->setCursorChangedCallback([this](const CursorState& state) {
+		if (mActiveTab != mTabs->getCursorIndex()) {
+			mActiveTab = mTabs->getCursorIndex();
+			populateTabContent();
+		}
+	});
 
 	auto image = std::make_shared<WebImageComponent>(mWindow);
 	image->setImage(ra.getImageUrl());
@@ -176,17 +172,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 		mProgress = std::make_shared<RetroAchievementProgress>(mWindow, ra.NumAwardedToUser, ra.NumAwardedToUserHardcore, ra.Achievements.size(), Utils::String::trim(trstring));
 	}
 
-	for (auto game : ra.Achievements)
-	{
-		ComponentListRow row;
-
-		auto itstring = std::make_shared<GameAchievementEntry>(mWindow, game);
-		row.addElement(itstring, true);
-
-		addRow(row);
-	}
-
-	centerWindow();	
+	populateTabContent();
 }
 
 void GuiGameAchievements::centerWindow()
@@ -199,13 +185,132 @@ void GuiGameAchievements::centerWindow()
 		mMenu.setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.901f);
 
 	mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
+
+	if (mTabs)
+	{
+		float tabHeight = Renderer::getScreenHeight() * 0.06f;
+		mTabs->setSize(mMenu.getSize().x(), tabHeight);
+		mTabs->setPosition(mMenu.getPosition().x(), mMenu.getPosition().y() + mMenu.getHeaderGridHeight());
+	}
+}
+
+void GuiGameAchievements::populateTabContent()
+{
+	mMenu.clear();
+
+	if (mActiveTab == 0)
+		populateAchievementsTab();
+	else
+		populatePlayHistoryTab();
+
+	mMenu.updateSize();
+	centerWindow();
+}
+
+void GuiGameAchievements::populateAchievementsTab()
+{
+	int totalPoints = 0;
+	int userPoints = 0;
+
+	for (auto game : mRaInfo.Achievements)
+	{
+		if (!game.DateEarned.empty() || !game.DateEarnedHardcore.empty())
+			userPoints += Utils::String::toInteger(game.Points);
+
+		totalPoints += Utils::String::toInteger(game.Points);
+	}
+
+	if (mRaInfo.Achievements.size() == 0)
+		setSubTitle(_("THIS GAME HAS NO ACHIEVEMENTS YET") + "\n\n\n");
+	else
+	{
+		auto txt = _("Achievements (softcore)") + ": \t" + std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements);
+		txt += "\r\n" + _("Achievements (hardcore)") + ": \t" + std::to_string(mRaInfo.NumAwardedToUserHardcore) + "/" + std::to_string(mRaInfo.NumAchievements);
+		txt += "\r\n" + _("Points") + ": \t" + std::to_string(userPoints) + "/" + std::to_string(totalPoints);
+		txt += "\n\n";
+
+		setSubTitle(txt);
+	}
+
+	if (mProgress) mProgress->setVisible(true);
+
+	for (auto game : mRaInfo.Achievements)
+	{
+		ComponentListRow row;
+		auto itstring = std::make_shared<GameAchievementEntry>(mWindow, game);
+		row.addElement(itstring, true);
+		addRow(row);
+	}
+}
+
+void GuiGameAchievements::populatePlayHistoryTab()
+{
+	if (mFile == nullptr)
+	{
+		setSubTitle(_("NO GAME METADATA AVAILABLE") + "\n\n\n");
+		if (mProgress) mProgress->setVisible(false);
+		return;
+	}
+	
+	std::string consoleName = mFile->getSourceFileData()->getSystem()->getFullName();
+	std::string developer = mFile->getMetadata(MetaDataId::Developer);
+	std::string genre = mFile->getMetadata(MetaDataId::Genre);
+	
+	std::string txt = consoleName;
+	if (!developer.empty()) txt += "\r\n" + developer;
+	if (!genre.empty()) txt += "\r\n" + genre;
+	txt += "\n\n";
+	setSubTitle(txt);
+	
+	if (mProgress) mProgress->setVisible(true);
+	
+	auto theme = ThemeData::getMenuTheme();
+	
+	// Play Time
+	ComponentListRow rowTime;
+	auto lblTime = std::make_shared<TextComponent>(mWindow, _("PLAY TIME"), theme->Text.font, theme->Text.color);
+	auto valTime = std::make_shared<TextComponent>(mWindow, Utils::Time::secondsToString(Utils::String::toInteger(mFile->getMetadata(MetaDataId::GameTime))), theme->Text.font, theme->Text.color);
+	valTime->setHorizontalAlignment(ALIGN_RIGHT);
+	rowTime.addElement(lblTime, true);
+	rowTime.addElement(valTime, false);
+	addRow(rowTime);
+	
+	// Play Count
+	ComponentListRow rowCount;
+	auto lblCount = std::make_shared<TextComponent>(mWindow, _("PLAY COUNT"), theme->Text.font, theme->Text.color);
+	auto valCount = std::make_shared<TextComponent>(mWindow, mFile->getMetadata(MetaDataId::PlayCount), theme->Text.font, theme->Text.color);
+	valCount->setHorizontalAlignment(ALIGN_RIGHT);
+	rowCount.addElement(lblCount, true);
+	rowCount.addElement(valCount, false);
+	addRow(rowCount);
+	
+	// Last Played
+	ComponentListRow rowLast;
+	auto lblLast = std::make_shared<TextComponent>(mWindow, _("LAST PLAYED"), theme->Text.font, theme->Text.color);
+	auto valLast = std::make_shared<TextComponent>(mWindow, mFile->getMetadata(MetaDataId::LastPlayed), theme->Text.font, theme->Text.color);
+	valLast->setHorizontalAlignment(ALIGN_RIGHT);
+	rowLast.addElement(lblLast, true);
+	rowLast.addElement(valLast, false);
+	addRow(rowLast);
+	
+	// Description
+	ComponentListRow rowDesc;
+	auto lblDesc = std::make_shared<TextComponent>(mWindow, mFile->getMetadata(MetaDataId::Desc), theme->TextSmall.font, theme->Text.color);
+	rowDesc.addElement(lblDesc, true);
+	addRow(rowDesc);
 }
 
 void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 {
 	GuiSettings::render(parentTrans);
 
-	if (mProgress != nullptr)
+	if (mTabs)
+	{
+		Transform4x4f trans = parentTrans * mMenu.getTransform();
+		mTabs->render(parentTrans);
+	}
+
+	if (mProgress != nullptr && mProgress->isVisible())
 	{
 		auto theme = ThemeData::getMenuTheme();
 
@@ -227,6 +332,43 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 
 bool GuiGameAchievements::input(InputConfig* config, Input input)
 {
+	if (input.value != 0)
+	{
+		if (config->isMappedTo("leftshoulder", input) || config->isMappedTo("pageup", input))
+		{
+			int currentTab = mTabs->getCursorIndex();
+			if (currentTab > 0)
+				mTabs->setCursorIndex(currentTab - 1);
+			return true;
+		}
+		else if (config->isMappedTo("rightshoulder", input) || config->isMappedTo("pagedown", input))
+		{
+			int currentTab = mTabs->getCursorIndex();
+			if (currentTab < mTabs->size() - 1)
+				mTabs->setCursorIndex(currentTab + 1);
+			return true;
+		}
+	}
+
+	if (config->isMappedTo("up", input) && input.value != 0 && mMenu.getCursorIndex() == 0 && !mTabsHasFocus)
+	{
+		mTabsHasFocus = true;
+		// Wait, visually, how to show focus? We might need to call mTabs->input?
+		// Actually, let's just intercept left/right when focused.
+		return true;
+	}
+
+	if (mTabsHasFocus)
+	{
+		if (config->isMappedTo("down", input) && input.value != 0)
+		{
+			mTabsHasFocus = false;
+			return true;
+		}
+		if (mTabs->input(config, input))
+			return true;
+	}
+
 	if (config->isMappedTo("x", input) && input.value != 0)
 	{
 		if (mFile != nullptr)
@@ -250,6 +392,7 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 std::vector<HelpPrompt> GuiGameAchievements::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
+	prompts.push_back(HelpPrompt("l/r", _("TAB")));
 	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
 
 	if (mFile != nullptr)
