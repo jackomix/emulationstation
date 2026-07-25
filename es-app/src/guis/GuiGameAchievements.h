@@ -40,6 +40,7 @@ protected:
 
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;
+	std::shared_ptr<ComponentGrid> mHeaderGrid;
 
 	std::shared_ptr<TextComponent> mTitle;
 	std::shared_ptr<TextComponent> mSubtitle;

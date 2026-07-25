@@ -138,7 +138,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mBackground.setPostProcessShader(theme->Background.menuShader);
 
 	// Row 0: Header Grid (2x2)
-	auto headerGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 2));
+	mHeaderGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 2));
 
 	std::string titleText = ra.Title;
 	if (ra.isOfflineData) {
@@ -148,14 +148,14 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mTitle = std::make_shared<TextComponent>(mWindow, titleText, theme->Title.font, theme->Title.color, ALIGN_LEFT);
 	mSubtitle = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
 	
-	headerGrid->setEntry(mTitle, Vector2i(0, 0), false, true, Vector2i(1, 1));
-	headerGrid->setEntry(mSubtitle, Vector2i(0, 1), false, true, Vector2i(1, 1));
+	mHeaderGrid->setEntry(mTitle, Vector2i(0, 0), false, true, Vector2i(1, 1));
+	mHeaderGrid->setEntry(mSubtitle, Vector2i(0, 1), false, true, Vector2i(1, 1));
 
 	mTitleImage = std::make_shared<WebImageComponent>(mWindow);
 	mTitleImage->setImage(ra.getImageUrl());
-	headerGrid->setEntry(mTitleImage, Vector2i(1, 0), false, false, Vector2i(1, 2));
+	mHeaderGrid->setEntry(mTitleImage, Vector2i(1, 0), false, false, Vector2i(1, 2));
 
-	mGrid.setEntry(headerGrid, Vector2i(0, 0), false, true);
+	mGrid.setEntry(mHeaderGrid, Vector2i(0, 0), false, true);
 
 	// Row 1: Tabs
 	mTabs = std::make_shared<ComponentTab>(mWindow);
@@ -222,18 +222,17 @@ void GuiGameAchievements::onSizeChanged()
 	const float titleHeight = mTitle->getFont()->getLetterHeight();
 	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight() * 3.5f;
 
-	auto headerGrid = std::static_pointer_cast<ComponentGrid>(mGrid.getEntry(Vector2i(0, 0)));
-	if (headerGrid)
+	if (mHeaderGrid)
 	{
-		headerGrid->setRowHeight(0, titleHeight);
-		headerGrid->setRowHeight(1, subtitleHeight);
+		mHeaderGrid->setRowHeight(0, titleHeight);
+		mHeaderGrid->setRowHeight(1, subtitleHeight);
 		
 		float imageWidth = Renderer::getScreenHeight() * 0.15f;
 		float headerWidth = mSize.x();
 		float textWidth = headerWidth - imageWidth;
 
-		headerGrid->setColWidth(0, textWidth);
-		headerGrid->setColWidth(1, imageWidth);
+		mHeaderGrid->setColWidth(0, textWidth);
+		mHeaderGrid->setColWidth(1, imageWidth);
 		
 		if (mTitleImage) mTitleImage->setMaxSize(imageWidth, titleHeight + subtitleHeight);
 	}
@@ -359,8 +358,7 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 		auto theme = ThemeData::getMenuTheme();
 		float h = theme->TextSmall.font->sizeText("A8O\rA8O", 1.1).y();
 		
-		auto headerGrid = std::static_pointer_cast<ComponentGrid>(mGrid.getEntry(Vector2i(0, 0)));
-		float titleHeight = headerGrid ? headerGrid->getRowHeight(0) : 0;
+		float titleHeight = mHeaderGrid ? mHeaderGrid->getRowHeight(0) : 0;
 		float sz = titleHeight + Renderer::getScreenHeight() * 0.005;
 
 		float width = mSize.x();
