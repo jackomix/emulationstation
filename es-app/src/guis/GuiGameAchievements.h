@@ -14,6 +14,7 @@ class GuiGameAchievements : public GuiSettings
 {
 public:
 	static void show(Window* window, int gameId);
+	static void show(Window* window, FileData* game);
 
 	void	render(const Transform4x4f& parentTrans) override;
 	bool	input(InputConfig* config, Input input) override;
@@ -21,7 +22,7 @@ public:
 	std::vector<HelpPrompt> getHelpPrompts() override;
 
 protected:
-	GuiGameAchievements(Window *window, GameInfoAndUserProgress ra);
+	GuiGameAchievements(Window *window, GameInfoAndUserProgress ra, FileData* game = nullptr);
 
 	void	centerWindow();
 

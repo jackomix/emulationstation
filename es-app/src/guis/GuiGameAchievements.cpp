@@ -21,6 +21,21 @@
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
 #define IMAGESPACER (Renderer::getScreenHeight() * (10.0 / 720.0))
 
+void GuiGameAchievements::show(Window* window, FileData* game)
+{
+	int gameId = Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId));
+	window->pushGui(new GuiLoading<GameInfoAndUserProgress>(window, _("PLEASE WAIT"),
+		[gameId](auto gui)
+	{
+		if (gameId == 0) return GameInfoAndUserProgress();
+		return RetroAchievements::getGameInfoAndUserProgress(gameId);
+	},
+		[window, game](GameInfoAndUserProgress ra)
+	{
+		window->pushGui(new GuiGameAchievements(window, ra, game));
+	}));
+}
+
 void GuiGameAchievements::show(Window* window, int gameId)
 {
 	window->pushGui(new GuiLoading<GameInfoAndUserProgress>(window, _("PLEASE WAIT"),
@@ -112,7 +127,7 @@ private:
 };
 
 
-GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra) : 
+GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
 	GuiSettings(window, _("ACHIEVEMENTS"), ([&ra]() {
 		std::string title = ra.Title;
 		if (ra.isOfflineData) {
@@ -128,7 +143,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mMenu.clearButtons();
 
-	mFile = GuiRetroAchievements::getFileData(std::to_string(ra.ID));
+	mFile = game != nullptr ? game : GuiRetroAchievements::getFileData(std::to_string(ra.ID));
 	if (mFile != nullptr)
 	{
 		auto file = mFile;
