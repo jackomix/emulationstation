@@ -1,16 +1,19 @@
 #pragma once
 
 #include "GuiComponent.h"
-#include "components/MenuComponent.h"
-#include "components/BusyComponent.h"
+#include "components/ComponentGrid.h"
+#include "components/NinePatchComponent.h"
+#include "components/ComponentList.h"
 #include "components/ComponentTab.h"
-#include "GuiSettings.h"
 #include "RetroAchievements.h"
 #include "GuiRetroAchievements.h"
 
 class FileData;
+class TextComponent;
+class ImageComponent;
+class ButtonComponent;
 
-class GuiGameAchievements : public GuiSettings
+class GuiGameAchievements : public GuiComponent
 {
 public:
 	static void show(Window* window, int gameId);
@@ -18,6 +21,7 @@ public:
 
 	void	render(const Transform4x4f& parentTrans) override;
 	bool	input(InputConfig* config, Input input) override;
+	void	onSizeChanged() override;
 
 	std::vector<HelpPrompt> getHelpPrompts() override;
 
@@ -31,9 +35,18 @@ protected:
 	void	populatePlayHistoryTab();
 
 	FileData* mFile;
-	std::shared_ptr<RetroAchievementProgress> mProgress;
-	std::shared_ptr<ComponentTab> mTabs;
-	int mActiveTab;
-	bool mTabsHasFocus;
 	GameInfoAndUserProgress mRaInfo;
+	int mActiveTab;
+
+	NinePatchComponent mBackground;
+	ComponentGrid mGrid;
+
+	std::shared_ptr<TextComponent> mTitle;
+	std::shared_ptr<TextComponent> mSubtitle;
+	std::shared_ptr<ImageComponent> mTitleImage;
+	std::shared_ptr<RetroAchievementProgress> mProgress;
+
+	std::shared_ptr<ComponentTab> mTabs;
+	std::shared_ptr<ComponentList> mList;
+	std::shared_ptr<ComponentGrid> mButtonGrid;
 };
