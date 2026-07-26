@@ -7,6 +7,7 @@
 #include "components/ComponentTab.h"
 #include "RetroAchievements.h"
 #include "GuiRetroAchievements.h"
+#include <future>
 
 class FileData;
 class TextComponent;
@@ -22,6 +23,7 @@ public:
 	static void show(Window* window, FileData* game);
 
 	void	render(const Transform4x4f& parentTrans) override;
+	void	update(int deltaTime) override;
 	bool	input(InputConfig* config, Input input) override;
 	void	onSizeChanged() override;
 
@@ -36,9 +38,12 @@ protected:
 	void populateAchievementsTab();
 	void populatePlayHistoryTab();
 	void populateInfoTab();
+	void updateAchievementsHeader();
 
 	FileData* mFile;
 	GameInfoAndUserProgress mRaInfo;
+	std::future<GameInfoAndUserProgress> mRaFuture;
+	bool mIsLoadingAchievements;
 	int mActiveTab;
 
 	NinePatchComponent mBackground;

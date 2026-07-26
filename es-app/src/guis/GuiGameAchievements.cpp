@@ -21,17 +21,7 @@
 
 void GuiGameAchievements::show(Window* window, FileData* game)
 {
-	int gameId = Utils::String::toInteger(game->getMetadata(MetaDataId::CheevosId));
-	window->pushGui(new GuiLoading<GameInfoAndUserProgress>(window, _("PLEASE WAIT"),
-		[gameId](auto gui)
-	{
-		if (gameId == 0) return GameInfoAndUserProgress();
-		return RetroAchievements::getGameInfoAndUserProgress(gameId);
-	},
-		[window, game](GameInfoAndUserProgress ra)
-	{
-		window->pushGui(new GuiGameAchievements(window, ra, game));
-	}));
+	window->pushGui(new GuiGameAchievements(window, GameInfoAndUserProgress(), game));
 }
 
 void GuiGameAchievements::show(Window* window, int gameId)
@@ -128,6 +118,19 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mActiveTab = 0;
 	mFile = game != nullptr ? game : GuiRetroAchievements::getFileData(std::to_string(ra.ID));
 
+	int gameId = 0;
+	if (mFile != nullptr) gameId = Utils::String::toInteger(mFile->getMetadata(MetaDataId::CheevosId));
+	if (gameId == 0) gameId = mRaInfo.ID;
+
+	if (gameId != 0 && mRaInfo.ID == 0) {
+		mIsLoadingAchievements = true;
+		mRaFuture = std::async(std::launch::async, [gameId]() {
+			return RetroAchievements::getGameInfoAndUserProgress(gameId);
+		});
+	} else {
+		mIsLoadingAchievements = false;
+	}
+
 	addChild(&mBackground);
 	addChild(&mGrid);
 
@@ -141,45 +144,15 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	// Row 0: Header Grid (2x3) - title, subtitle, progress bar | game image
 	mHeaderGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 3));
 
-	std::string titleText = ra.Title;
-	
-	mTitle = std::make_shared<TextComponent>(mWindow, titleText, theme->Title.font, theme->Title.color, ALIGN_LEFT);
+	mTitle = std::make_shared<TextComponent>(mWindow, "", theme->Title.font, theme->Title.color, ALIGN_LEFT);
+	mSubtitle = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
+	mTitleImage = std::make_shared<WebImageComponent>(mWindow);
 
-	int totalPoints = 0;
-	int userPoints = 0;
-	for (auto game : mRaInfo.Achievements)
-	{
-		if (!game.DateEarned.empty() || !game.DateEarnedHardcore.empty())
-			userPoints += Utils::String::toInteger(game.Points);
-		totalPoints += Utils::String::toInteger(game.Points);
-	}
-
-	std::string subtitleText = "";
-	if (mRaInfo.Achievements.size() == 0)
-		subtitleText = _("THIS GAME HAS NO ACHIEVEMENTS YET");
-	else
-	{
-		subtitleText = std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements) + " " + _("achievements");
-		subtitleText += _U(" · ") + std::to_string(userPoints) + "/" + std::to_string(totalPoints) + " " + _("points");
-	}
-
-	mSubtitle = std::make_shared<TextComponent>(mWindow, subtitleText, theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
-	
 	mHeaderGrid->setEntry(mTitle, Vector2i(0, 0), false, true, Vector2i(1, 1));
 	mHeaderGrid->setEntry(mSubtitle, Vector2i(0, 1), false, true, Vector2i(1, 1));
-
-	mTitleImage = std::make_shared<WebImageComponent>(mWindow);
-	mTitleImage->setImage(ra.getImageUrl());
 	mHeaderGrid->setEntry(mTitleImage, Vector2i(1, 0), false, false, Vector2i(1, 3));
 
-	if (ra.Achievements.size() > 0)
-	{
-		int percent = Math::round(ra.NumAwardedToUser * 100.0f / ra.Achievements.size());
-		char trstring[256];
-		snprintf(trstring, 256, _("%d%% complete").c_str(), percent);
-		mProgress = std::make_shared<RetroAchievementProgress>(mWindow, ra.NumAwardedToUser, ra.NumAwardedToUserHardcore, ra.Achievements.size(), Utils::String::trim(trstring));
-		mHeaderGrid->setEntry(mProgress, Vector2i(0, 2), false, true, Vector2i(1, 1));
-	}
+	updateAchievementsHeader();
 
 	mGrid.setEntry(mHeaderGrid, Vector2i(0, 0), false, true);
 
@@ -420,9 +393,70 @@ void GuiGameAchievements::populateInfoTab()
 	}
 }
 
+void GuiGameAchievements::updateAchievementsHeader()
+{
+	auto theme = ThemeData::getMenuTheme();
+
+	std::string titleText = mRaInfo.Title.empty() && mFile ? mFile->getName() : mRaInfo.Title;
+	mTitle->setText(titleText);
+
+	int totalPoints = 0;
+	int userPoints = 0;
+	for (auto game : mRaInfo.Achievements)
+	{
+		if (!game.DateEarned.empty() || !game.DateEarnedHardcore.empty())
+			userPoints += Utils::String::toInteger(game.Points);
+		totalPoints += Utils::String::toInteger(game.Points);
+	}
+
+	std::string subtitleText = "";
+	if (mIsLoadingAchievements)
+		subtitleText = _("LOADING ACHIEVEMENTS...");
+	else if (mRaInfo.Achievements.size() == 0)
+		subtitleText = _("THIS GAME HAS NO ACHIEVEMENTS YET");
+	else
+	{
+		subtitleText = std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements) + " " + _("achievements");
+		subtitleText += _U(" · ") + std::to_string(userPoints) + "/" + std::to_string(totalPoints) + " " + _("points");
+	}
+
+	mSubtitle->setText(subtitleText);
+	
+	if (!mRaInfo.getImageUrl().empty())
+		mTitleImage->setImage(mRaInfo.getImageUrl());
+
+	if (mRaInfo.Achievements.size() > 0)
+	{
+		int percent = Math::round(mRaInfo.NumAwardedToUser * 100.0f / mRaInfo.Achievements.size());
+		char trstring[256];
+		snprintf(trstring, 256, _("%d%% complete").c_str(), percent);
+		
+		if (mProgress)
+			mHeaderGrid->removeEntry(mProgress);
+
+		mProgress = std::make_shared<RetroAchievementProgress>(mWindow, mRaInfo.NumAwardedToUser, mRaInfo.NumAwardedToUserHardcore, mRaInfo.Achievements.size(), Utils::String::trim(trstring));
+		mHeaderGrid->setEntry(mProgress, Vector2i(0, 2), false, true, Vector2i(1, 1));
+	}
+
+	onSizeChanged();
+}
+
 void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 {
 	GuiComponent::render(parentTrans);
+}
+
+void GuiGameAchievements::update(int deltaTime)
+{
+	GuiComponent::update(deltaTime);
+
+	if (mIsLoadingAchievements && mRaFuture.valid() && mRaFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+		mRaInfo = mRaFuture.get();
+		mIsLoadingAchievements = false;
+		
+		updateAchievementsHeader();
+		if (mActiveTab == 0) populateTabContent();
+	}
 }
 
 bool GuiGameAchievements::input(InputConfig* config, Input input)
