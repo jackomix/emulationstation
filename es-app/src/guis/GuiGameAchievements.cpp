@@ -152,8 +152,6 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mHeaderGrid->setEntry(mSubtitle, Vector2i(0, 1), false, true, Vector2i(1, 1));
 	mHeaderGrid->setEntry(mTitleImage, Vector2i(1, 0), false, false, Vector2i(1, 3));
 
-	updateAchievementsHeader();
-
 	mGrid.setEntry(mHeaderGrid, Vector2i(0, 0), false, true);
 
 	// Row 1: Tabs
@@ -219,6 +217,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 
 
+	updateAchievementsHeader();
 	centerWindow();
 	populateTabContent();
 }
@@ -231,11 +230,12 @@ void GuiGameAchievements::onSizeChanged()
 	
 	mGrid.setSize(mSize);
 
-	const float titleHeight = mTitle->getFont()->getLetterHeight() * 1.5f;
-	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight() * 1.5f;
+	const float titleHeight = mTitle ? mTitle->getFont()->getLetterHeight() * 1.5f : 0;
+	const float subtitleHeight = mSubtitle ? mSubtitle->getFont()->getLetterHeight() * 1.5f : 0;
 	const float progressHeight = Renderer::getScreenHeight() * 0.05f;
 
-	mTabs->setSize(mGrid.getSize().x(), Renderer::getScreenHeight() * 0.06f);
+	if (mTabs)
+		mTabs->setSize(mGrid.getSize().x(), Renderer::getScreenHeight() * 0.06f);
 
 	if (mHeaderGrid)
 	{
@@ -257,7 +257,8 @@ void GuiGameAchievements::onSizeChanged()
 	float headerTotalHeight = titleHeight + subtitleHeight + progressHeight + (Renderer::getScreenHeight() * 0.02f);
 	mGrid.setRowHeight(0, headerTotalHeight);
 	mGrid.setRowHeight(1, Renderer::getScreenHeight() * 0.06f);
-	mGrid.setRowHeight(3, mButtonGrid->getSize().y());
+	if (mButtonGrid)
+		mGrid.setRowHeight(3, mButtonGrid->getSize().y());
 }
 
 void GuiGameAchievements::centerWindow()
