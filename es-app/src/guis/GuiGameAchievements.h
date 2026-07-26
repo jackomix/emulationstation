@@ -53,4 +53,5 @@ protected:
 	std::shared_ptr<ComponentTab> mTabs;
 	std::shared_ptr<ComponentList> mList;
 	std::shared_ptr<ComponentGrid> mButtonGrid;
+	std::shared_ptr<GuiGameOptions> mOptionsUI;
 };
