@@ -29,6 +29,8 @@ public:
 	virtual bool hitTest(int x, int y, Transform4x4f& parentTransform, std::vector<GuiComponent*>* pResult = nullptr) override;
 	virtual bool onMouseClick(int button, bool pressed, int x, int y);
 
+	void setCloseCallback(const std::function<void()>& cb) { mCloseCallback = cb; }
+
 private:
 	static void deleteGame(FileData* file);
 
@@ -50,6 +52,7 @@ private:
 	std::vector<std::function<void()>> mSaveFuncs;
 	bool mReloadAll;	
 	bool mEmbedded;
+	std::function<void()> mCloseCallback;
 };
 
 #endif // ES_APP_GUIS_GUI_GAME_OPTIONS_H

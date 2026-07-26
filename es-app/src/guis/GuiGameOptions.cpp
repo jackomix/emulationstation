@@ -594,11 +594,11 @@ void GuiGameOptions::deleteCollection()
 
 				mWindow->closeSplashScreen();			
 			}
-			delete this;
+			close();
 		}, 
 		_("NO"), [this] 
 		{
-			delete this;
+			close();
 		}));
 
 	
@@ -606,7 +606,14 @@ void GuiGameOptions::deleteCollection()
 
 void GuiGameOptions::close()
 {
-	delete this;
+	if (mCloseCallback)
+	{
+		mCloseCallback();
+		return;
+	}
+
+	if (!mEmbedded)
+		delete this;
 }
 
 bool GuiGameOptions::hitTest(int x, int y, Transform4x4f& parentTransform, std::vector<GuiComponent*>* pResult)

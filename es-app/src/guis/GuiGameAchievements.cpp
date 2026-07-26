@@ -191,7 +191,12 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mTabs->addTab(_("OPTIONS"));
 
 	if (mFile != nullptr)
+	{
 		mOptionsUI = std::make_shared<GuiGameOptions>(mWindow, mFile, true);
+		mOptionsUI->setCloseCallback([this]() {
+			delete this;
+		});
+	}
 
 	mTabs->setCursorChangedCallback([this](const CursorState& state) {
 		if (mActiveTab != mTabs->getCursorIndex()) {
