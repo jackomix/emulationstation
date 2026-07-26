@@ -56,10 +56,12 @@ void RetroAchievementProgress::setValues(int valueSoftcore, int valueHardcore, i
 void RetroAchievementProgress::onSizeChanged()
 {
 	GuiComponent::onSizeChanged();
-	float padding = mSize.x() * 0.1f;
-	float y = (mSize.y() + PROGRESSHEIGHT) / 2.0f;
-	mText->setPosition(padding, y);
-	mText->setSize(mSize.x() - 2.0f * padding, mText->getFont()->getLetterHeight());
+	
+	float textWidth = mText->getFont()->sizeText(mText->getValue()).x();
+	
+	float y = (mSize.y() - mText->getFont()->getLetterHeight()) / 2.0f;
+	mText->setPosition(0, y);
+	mText->setSize(textWidth, mText->getFont()->getLetterHeight());
 }
 
 void RetroAchievementProgress::setColor(unsigned int color)
@@ -73,26 +75,28 @@ void RetroAchievementProgress::render(const Transform4x4f& parentTrans)
 	Transform4x4f trans = parentTrans * getTransform();
 	auto rect = Renderer::getScreenRect(trans, mSize);
 	if (!Renderer::isVisibleOnScreen(rect)) return;
-		
-	int padding = mSize.x() * 0.1f;
-	int w = mSize.x() - 2.0 * padding;
+
+	float textWidth = mText->getSize().x();
+	float padding = Renderer::getScreenWidth() * 0.01f;
+	float barX = textWidth + padding;
+	float w = mSize.x() - barX;
 	float height = PROGRESSHEIGHT;
-	float y = mSize.y() / 2.0f - 1.5f * height;
+	float y = (mSize.y() - height) / 2.0f;
 
 	Renderer::setMatrix(trans);
-	Renderer::drawRect(padding, y, w, height, 0x00000032, 0x00000032);
+	Renderer::drawRect(barX, y, w, height, 0x00000032, 0x00000032);
 
 	if (mMax > 0)
 	{
 		if (mValueSoftCore > 0 && mValueSoftCore > mValueHardCore)
 		{
 			int cur = (w * mValueSoftCore) / mMax;
-			Renderer::drawRect(padding, y, cur, height, 0x0B71C1FF);
+			Renderer::drawRect(barX, y, cur, height, 0x0B71C1FF);
 		}
 		if (mValueHardCore > 0)
 		{
 			int cur = (w * mValueHardCore) / mMax;
-			Renderer::drawRect(padding, y, cur, height, 0xCC9900FF);
+			Renderer::drawRect(barX, y, cur, height, 0xCC9900FF);
 		}
 	}
 	mText->render(trans);

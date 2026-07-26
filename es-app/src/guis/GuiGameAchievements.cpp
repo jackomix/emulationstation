@@ -217,11 +217,8 @@ void GuiGameAchievements::onSizeChanged()
 	GuiComponent::onSizeChanged();
 
 	mBackground.fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
-
-	// Inset the grid by the NinePatch corner size for padding
-	float padding = mBackground.getCornerSize().x();
-	mGrid.setPosition(padding, padding);
-	mGrid.setSize(mSize.x() - 2 * padding, mSize.y() - 2 * padding);
+	
+	mGrid.setSize(mSize);
 
 	const float titleHeight = mTitle->getFont()->getLetterHeight() * 1.5f;
 	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight() * 1.5f;

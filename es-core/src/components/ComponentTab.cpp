@@ -209,23 +209,12 @@ void ComponentTab::render(const Transform4x4f& parentTrans)
 
 	auto& entry = mEntries.at(mCursor);
 		
-	if ((selectorColor != bgColor) && ((selectorColor & 0xFF) != 0x00)) 
-	{			
-		if (mFocused)
-		{				
-			Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), bgColor, Renderer::Blend::ZERO, Renderer::Blend::ONE_MINUS_SRC_COLOR);
-			Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), selectorColor, selectorColor, selectorGradientHorz, Renderer::Blend::ONE, Renderer::Blend::ONE);
-		}
-		else
-		{
-			Renderer::drawRect(mSelectorBarOffset, mSize.y() - SELECTOR_PX, selectedTabWidth, SELECTOR_PX, bgColor, Renderer::Blend::ZERO, Renderer::Blend::ONE_MINUS_SRC_COLOR);
-			Renderer::drawRect(mSelectorBarOffset, mSize.y() - SELECTOR_PX, selectedTabWidth, SELECTOR_PX, selectorColor, selectorColor, selectorGradientHorz, Renderer::Blend::ONE, Renderer::Blend::ONE);
-		}
-	}
+	// draw white background for selected tab
+	Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), textColor);
 
 	for (auto& element : entry.data.elements)
 	{
-		element.component->setColor(selectedColor);
+		element.component->setColor(bgColor);
 		drawAfterCursor.push_back(element.component.get());
 	}
 
@@ -237,6 +226,9 @@ void ComponentTab::render(const Transform4x4f& parentTrans)
 		Renderer::setMatrix(trans);
 
 	// draw separators
+	// draw top border
+	Renderer::drawRect(0.0f, 0.0f, mSize.x(), 1.0f, separatorColor);
+
 	x = 0;
 	for(unsigned int i = 0; i < mEntries.size(); i++)
 	{
@@ -244,7 +236,7 @@ void ComponentTab::render(const Transform4x4f& parentTrans)
 		x += getTabWidth(mEntries.at(i).data);
 	}
 
-	Renderer::drawRect(x , 0.0f, 1.0f, mSize.y(), separatorColor);
+	Renderer::drawRect(x - 1.0f, 0.0f, 1.0f, mSize.y(), separatorColor);
 	Renderer::popClipRect();
 }
 
