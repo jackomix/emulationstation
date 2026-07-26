@@ -137,8 +137,8 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mBackground.setCornerSize(theme->Background.cornerSize);
 	mBackground.setPostProcessShader(theme->Background.menuShader);
 
-	// Row 0: Header Grid (2x2)
-	mHeaderGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 2));
+	// Row 0: Header Grid (2x3) - title, subtitle, progress bar | game image
+	mHeaderGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 3));
 
 	std::string titleText = ra.Title;
 	
@@ -150,7 +150,16 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mTitleImage = std::make_shared<WebImageComponent>(mWindow);
 	mTitleImage->setImage(ra.getImageUrl());
-	mHeaderGrid->setEntry(mTitleImage, Vector2i(1, 0), false, false, Vector2i(1, 2));
+	mHeaderGrid->setEntry(mTitleImage, Vector2i(1, 0), false, false, Vector2i(1, 3));
+
+	if (ra.Achievements.size() > 0)
+	{
+		int percent = Math::round(ra.NumAwardedToUser * 100.0f / ra.Achievements.size());
+		char trstring[256];
+		snprintf(trstring, 256, _("%d%% complete").c_str(), percent);
+		mProgress = std::make_shared<RetroAchievementProgress>(mWindow, ra.NumAwardedToUser, ra.NumAwardedToUserHardcore, ra.Achievements.size(), Utils::String::trim(trstring));
+		mHeaderGrid->setEntry(mProgress, Vector2i(0, 2), false, true, Vector2i(1, 1));
+	}
 
 	mGrid.setEntry(mHeaderGrid, Vector2i(0, 0), false, true);
 
@@ -197,13 +206,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 			return false;
 		});
 
-	if (ra.Achievements.size() > 0)
-	{
-		int percent = Math::round(ra.NumAwardedToUser * 100.0f / ra.Achievements.size());
-		char trstring[256];
-		snprintf(trstring, 256, _("%d%% complete").c_str(), percent);
-		mProgress = std::make_shared<RetroAchievementProgress>(mWindow, ra.NumAwardedToUser, ra.NumAwardedToUserHardcore, ra.Achievements.size(), Utils::String::trim(trstring));
-	}
+
 
 	centerWindow();
 	populateTabContent();
@@ -214,31 +217,39 @@ void GuiGameAchievements::onSizeChanged()
 	GuiComponent::onSizeChanged();
 
 	mBackground.fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
-	mGrid.setSize(mSize);
 
-	const float titleHeight = mTitle->getFont()->getLetterHeight();
-	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight() * 4.5f;
+	// Inset the grid by the NinePatch corner size for padding
+	float padding = mBackground.getCornerSize().x();
+	mGrid.setPosition(padding, padding);
+	mGrid.setSize(mSize.x() - 2 * padding, mSize.y() - 2 * padding);
 
-	mTabs->setSize(mSize.x(), Renderer::getScreenHeight() * 0.06f);
+	const float titleHeight = mTitle->getFont()->getLetterHeight() * 1.5f;
+	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight() * 1.5f;
+	const float progressHeight = Renderer::getScreenHeight() * 0.05f;
+
+	mTabs->setSize(mGrid.getSize().x(), Renderer::getScreenHeight() * 0.06f);
 
 	if (mHeaderGrid)
 	{
 		mHeaderGrid->setRowHeight(0, titleHeight);
 		mHeaderGrid->setRowHeight(1, subtitleHeight);
-		
+		mHeaderGrid->setRowHeight(2, progressHeight);
+
 		float imageWidth = Renderer::getScreenHeight() * 0.15f;
-		float headerWidth = mSize.x();
+		float headerWidth = mGrid.getSize().x();
 		float textWidth = headerWidth - imageWidth;
 
 		mHeaderGrid->setColWidth(0, textWidth);
 		mHeaderGrid->setColWidth(1, imageWidth);
-		
-		if (mTitleImage) mTitleImage->setMaxSize(imageWidth, titleHeight + subtitleHeight);
+
+		if (mTitleImage) mTitleImage->setMaxSize(imageWidth, titleHeight + subtitleHeight + progressHeight);
+		if (mProgress) mProgress->setSize(textWidth * 0.6f, progressHeight);
 	}
 
-	mGrid.setRowHeight(0, titleHeight + subtitleHeight + (Renderer::getScreenHeight() * 0.03f));
+	float headerTotalHeight = titleHeight + subtitleHeight + progressHeight + (Renderer::getScreenHeight() * 0.02f);
+	mGrid.setRowHeight(0, headerTotalHeight);
 	mGrid.setRowHeight(1, Renderer::getScreenHeight() * 0.06f);
-	mGrid.setRowHeight(3, mButtonGrid->getSize().y());	
+	mGrid.setRowHeight(3, mButtonGrid->getSize().y());
 }
 
 void GuiGameAchievements::centerWindow()
@@ -280,9 +291,8 @@ void GuiGameAchievements::populateAchievementsTab()
 		mSubtitle->setText(_("THIS GAME HAS NO ACHIEVEMENTS YET"));
 	else
 	{
-		auto txt = _("Achievements (softcore)") + ": \t" + std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements);
-		txt += "\r\n" + _("Achievements (hardcore)") + ": \t" + std::to_string(mRaInfo.NumAwardedToUserHardcore) + "/" + std::to_string(mRaInfo.NumAchievements);
-		txt += "\r\n" + _("Points") + ": \t" + std::to_string(userPoints) + "/" + std::to_string(totalPoints);
+		auto txt = std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements) + " " + _("achievements");
+		txt += _U(" · ") + std::to_string(userPoints) + "/" + std::to_string(totalPoints) + " " + _("points");
 		mSubtitle->setText(txt);
 	}
 
@@ -351,24 +361,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 {
 	GuiComponent::render(parentTrans);
-
-	if (mProgress != nullptr && mActiveTab == 0)
-	{
-		auto theme = ThemeData::getMenuTheme();
-		float h = theme->TextSmall.font->sizeText("A8O\rA8O", 1.1).y();
-		
-		float titleHeight = mHeaderGrid ? mHeaderGrid->getRowHeight(0) : 0;
-		float sz = titleHeight + Renderer::getScreenHeight() * 0.005;
-
-		float width = mSize.x();
-		float xx = width - (Renderer::getScreenHeight() * 0.15f); // subtract image width
-
-		mProgress->setPosition(xx * 0.55f, sz);
-		mProgress->setSize(xx * 0.36f, h);
-
-		Transform4x4f trans = parentTrans * getTransform();
-		mProgress->render(trans);
-	}
 }
 
 bool GuiGameAchievements::input(InputConfig* config, Input input)
@@ -382,23 +374,7 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 		return true;
 	}
 
-	if (input.value != 0)
-	{
-		if (config->isMappedTo("leftshoulder", input) || config->isMappedTo("pageup", input) || config->isMappedTo("l1", input))
-		{
-			int currentTab = mTabs->getCursorIndex();
-			if (currentTab > 0)
-				mTabs->setCursorIndex(currentTab - 1);
-			return true;
-		}
-		else if (config->isMappedTo("rightshoulder", input) || config->isMappedTo("pagedown", input) || config->isMappedTo("r1", input))
-		{
-			int currentTab = mTabs->getCursorIndex();
-			if (currentTab < mTabs->size() - 1)
-				mTabs->setCursorIndex(currentTab + 1);
-			return true;
-		}
-	}
+
 
 	if (mTabs->input(config, input))
 		return true;
@@ -409,7 +385,6 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 std::vector<HelpPrompt> GuiGameAchievements::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
-	prompts.push_back(HelpPrompt("l/r", _("TAB")));
 	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
 
 	if (mFile != nullptr)

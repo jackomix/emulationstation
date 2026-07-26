@@ -256,6 +256,14 @@ float ComponentTab::getTabWidth(const ComponentTabItem& row) const
 		if(row.elements.at(i).component->getSize().x() > width)
 			width = row.elements.at(i).component->getSize().x();
 
+	// If we have a known container width, distribute equally among tabs
+	if (mSize.x() > 0 && !mEntries.empty())
+	{
+		float equalWidth = mSize.x() / mEntries.size();
+		if (equalWidth > width)
+			width = equalWidth;
+	}
+
 	return width;
 }
 
@@ -293,6 +301,7 @@ void ComponentTab::updateElementPosition(const ComponentTabItem& row)
 void ComponentTab::updateElementSize(const ComponentTabItem& row)
 {
 	float height = mSize.y();
+	float tabWidth = getTabWidth(row);
 	std::vector< std::shared_ptr<GuiComponent> > resizeVec;
 
 	for(auto it = row.elements.cbegin(); it != row.elements.cend(); it++)
@@ -303,10 +312,10 @@ void ComponentTab::updateElementSize(const ComponentTabItem& row)
 			height -= it->component->getSize().y();
 	}
 
-	// redistribute the "unused" width equally among the components with resize_width set to true
+	// redistribute the "unused" height equally among the components with resize_height set to true
 	height = height / resizeVec.size();
 	for(auto item : resizeVec)
-		item->setSize(item->getSize().x() , height); // + 2 * PADDING_PX
+		item->setSize(tabWidth, height);
 }
 
 void ComponentTab::textInput(const char* text)
