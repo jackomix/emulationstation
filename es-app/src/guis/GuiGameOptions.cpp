@@ -27,25 +27,28 @@
 #include "guis/GuiSaveState.h"
 #include "SystemConf.h"
 
-GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(window),
-	mMenu(window, game->getName()), mReloadAll(false)
+GuiGameOptions::GuiGameOptions(Window* window, FileData* game, bool embedded) : GuiComponent(window),
+	mMenu(window, embedded ? "" : game->getName()), mReloadAll(false), mEmbedded(embedded)
 {
 	mHasAdvancedGameOptions = false;
 
 	mGame = game;
 	mSystem = game->getSystem();	
 
-	auto logo = game->getMarqueePath();
-	if (Utils::FileSystem::exists(logo))
+	if (!mEmbedded)
 	{
-		auto image = std::make_shared<ImageComponent>(mWindow, true);  // image expire immediately
-		image->setIsLinear(true);
-		image->setImage(logo);
-		mMenu.setSubTitle("fake");
-		mMenu.setTitleImage(image, true);		
-	}
+		auto logo = game->getMarqueePath();
+		if (Utils::FileSystem::exists(logo))
+		{
+			auto image = std::make_shared<ImageComponent>(mWindow, true);  // image expire immediately
+			image->setIsLinear(true);
+			image->setImage(logo);
+			mMenu.setSubTitle("fake");
+			mMenu.setTitleImage(image, true);		
+		}
 
-	addChild(&mMenu);
+		addChild(&mMenu);
+	}
 
 	bool isImageViewer = game->getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER);
 	bool hasManual = ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(game->getMetadata(MetaDataId::Manual));
@@ -111,30 +114,33 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 			});
 		}
 
-		if (!game->isFeatureSupported(EmulatorFeatures::cheevos) && game->hasCheevos())
+		if (!mEmbedded)
 		{
-			std::string coreList = game->getSourceFileData()->getSystem()->getCompatibleCoreNames(EmulatorFeatures::cheevos);
-			std::string msg = _U("\uF06A  ");
-			msg += _("CURRENT CORE IS NOT COMPATIBLE") + ": " + Utils::String::toUpper(game->getCore(true).empty()? game->getEmulator(true): game->getCore(true));
-			if (!coreList.empty())
+			if (!game->isFeatureSupported(EmulatorFeatures::cheevos) && game->hasCheevos())
 			{
-				msg += _U("\r\n\uF05A  ");
-				msg += _("COMPATIBLE CORE(S)") + ": " + Utils::String::toUpper(coreList);
-			}
+				std::string coreList = game->getSourceFileData()->getSystem()->getCompatibleCoreNames(EmulatorFeatures::cheevos);
+				std::string msg = _U("\uF06A  ");
+				msg += _("CURRENT CORE IS NOT COMPATIBLE") + ": " + Utils::String::toUpper(game->getCore(true).empty()? game->getEmulator(true): game->getCore(true));
+				if (!coreList.empty())
+				{
+					msg += _U("\r\n\uF05A  ");
+					msg += _("COMPATIBLE CORE(S)") + ": " + Utils::String::toUpper(coreList);
+				}
 
-			mMenu.addWithDescription(_("VIEW THIS GAME'S ACHIEVEMENTS"), msg, nullptr, [window, game, this]
+				mMenu.addWithDescription(_("VIEW THIS GAME'S ACHIEVEMENTS"), msg, nullptr, [window, game, this]
+				{
+					GuiGameAchievements::show(window, game);
+					close();
+				}, "", false, true);
+			}
+			else
 			{
-				GuiGameAchievements::show(window, game);
-				close();
-			}, "", false, true);
-		}
-		else
-		{
-			mMenu.addEntry(_("VIEW THIS GAME'S ACHIEVEMENTS"), false, [window, game, this]
-			{
-				GuiGameAchievements::show(window, game);
-				close();
-			});
+				mMenu.addEntry(_("VIEW THIS GAME'S ACHIEVEMENTS"), false, [window, game, this]
+				{
+					GuiGameAchievements::show(window, game);
+					close();
+				});
+			}
 		}
 	}
 
@@ -411,6 +417,8 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 		});
 	}
 
+	if (mEmbedded) return;
+
 	if (Renderer::ScreenSettings::fullScreenMenus())
 	{	
 		mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
@@ -425,10 +433,6 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 		w = Math::max(w, Renderer::getScreenWidth() / 3.0f);
 
 		mMenu.setSize(w, Renderer::getScreenHeight() + 2);
-		/*mMenu.animateTo(
-			Vector2f(-w, -1),
-			Vector2f(-1, -1), AnimateFlags::OPACITY | AnimateFlags::POSITION);
-			*/
 		mMenu.animateTo(
 			Vector2f(Renderer::getScreenWidth(), -1),
 			Vector2f(Renderer::getScreenWidth() - w -1, -1), AnimateFlags::OPACITY | AnimateFlags::POSITION);
@@ -523,14 +527,14 @@ bool GuiGameOptions::input(InputConfig* config, Input input)
 {
 	if ((config->isMappedTo(BUTTON_BACK, input) || config->isMappedTo("select", input)) && input.value)
 	{
-		close();
+		if (!mEmbedded) close();
 		return true;
 	}
 
 	if (mHasAdvancedGameOptions && config->isMappedTo("x", input) && input.value)
 	{
 		GuiMenu::popGameConfigurationGui(mWindow, mGame);
-		close();
+		if (!mEmbedded) close();
 		return true;
 	}
 

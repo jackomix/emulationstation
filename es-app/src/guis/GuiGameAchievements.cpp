@@ -13,6 +13,7 @@
 #include "GuiLoading.h"
 #include "FileData.h"
 #include "SystemData.h"
+#include "GuiGameOptions.h"
 
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
@@ -143,7 +144,26 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	std::string titleText = ra.Title;
 	
 	mTitle = std::make_shared<TextComponent>(mWindow, titleText, theme->Title.font, theme->Title.color, ALIGN_LEFT);
-	mSubtitle = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
+
+	int totalPoints = 0;
+	int userPoints = 0;
+	for (auto game : mRaInfo.Achievements)
+	{
+		if (!game.DateEarned.empty() || !game.DateEarnedHardcore.empty())
+			userPoints += Utils::String::toInteger(game.Points);
+		totalPoints += Utils::String::toInteger(game.Points);
+	}
+
+	std::string subtitleText = "";
+	if (mRaInfo.Achievements.size() == 0)
+		subtitleText = _("THIS GAME HAS NO ACHIEVEMENTS YET");
+	else
+	{
+		subtitleText = std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements) + " " + _("achievements");
+		subtitleText += _U(" · ") + std::to_string(userPoints) + "/" + std::to_string(totalPoints) + " " + _("points");
+	}
+
+	mSubtitle = std::make_shared<TextComponent>(mWindow, subtitleText, theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
 	
 	mHeaderGrid->setEntry(mTitle, Vector2i(0, 0), false, true, Vector2i(1, 1));
 	mHeaderGrid->setEntry(mSubtitle, Vector2i(0, 1), false, true, Vector2i(1, 1));
@@ -166,7 +186,12 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	// Row 1: Tabs
 	mTabs = std::make_shared<ComponentTab>(mWindow);
 	mTabs->addTab(_("ACHIEVEMENTS"));
-	mTabs->addTab(_("PLAY HISTORY"));
+	mTabs->addTab(_("ACTIVITY"));
+	mTabs->addTab(_("INFO"));
+	mTabs->addTab(_("OPTIONS"));
+
+	if (mFile != nullptr)
+		mOptionsUI = std::make_shared<GuiGameOptions>(mWindow, mFile, true);
 
 	mTabs->setCursorChangedCallback([this](const CursorState& state) {
 		if (mActiveTab != mTabs->getCursorIndex()) {
@@ -201,8 +226,16 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mGrid.setUnhandledInputCallback([this](InputConfig* config, Input input) -> bool
 		{
-			if (config->isMappedLike("down", input)) { mGrid.setCursorTo(mList); mList->setCursorIndex(0); return true; }
-			if (config->isMappedLike("up", input)) { mList->setCursorIndex(mList->size() - 1); mGrid.moveCursor(Vector2i(0, 1)); return true; }
+			if (config->isMappedLike("down", input)) { 
+                if (mActiveTab == 3 && mOptionsUI) { mGrid.setCursorTo(mOptionsUI->getMenu()->getList()); mOptionsUI->getMenu()->getList()->setCursorIndex(0); }
+                else { mGrid.setCursorTo(mList); mList->setCursorIndex(0); }
+                return true; 
+            }
+			if (config->isMappedLike("up", input)) { 
+                if (mActiveTab == 3 && mOptionsUI) { mOptionsUI->getMenu()->getList()->setCursorIndex(mOptionsUI->getMenu()->getList()->size() - 1); mGrid.moveCursor(Vector2i(0, 1)); }
+                else { mList->setCursorIndex(mList->size() - 1); mGrid.moveCursor(Vector2i(0, 1)); }
+                return true; 
+            }
 			return false;
 		});
 
@@ -262,37 +295,23 @@ void GuiGameAchievements::centerWindow()
 void GuiGameAchievements::populateTabContent()
 {
 	mList->clear();
+	mGrid.removeEntry(mList);
+	if (mOptionsUI) mGrid.removeEntry(mOptionsUI->getMenu()->getList());
 
-	if (mActiveTab == 0)
-		populateAchievementsTab();
-	else
-		populatePlayHistoryTab();
+	if (mActiveTab == 3 && mOptionsUI) {
+		mGrid.setEntry(mOptionsUI->getMenu()->getList(), Vector2i(0, 2), true, true);
+	} else {
+		mGrid.setEntry(mList, Vector2i(0, 2), true, true);
+		if (mActiveTab == 0) populateAchievementsTab();
+		else if (mActiveTab == 1) populatePlayHistoryTab();
+		else if (mActiveTab == 2) populateInfoTab();
+	}
 
 	centerWindow();
 }
 
 void GuiGameAchievements::populateAchievementsTab()
 {
-	int totalPoints = 0;
-	int userPoints = 0;
-
-	for (auto game : mRaInfo.Achievements)
-	{
-		if (!game.DateEarned.empty() || !game.DateEarnedHardcore.empty())
-			userPoints += Utils::String::toInteger(game.Points);
-
-		totalPoints += Utils::String::toInteger(game.Points);
-	}
-
-	if (mRaInfo.Achievements.size() == 0)
-		mSubtitle->setText(_("THIS GAME HAS NO ACHIEVEMENTS YET"));
-	else
-	{
-		auto txt = std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements) + " " + _("achievements");
-		txt += _U(" · ") + std::to_string(userPoints) + "/" + std::to_string(totalPoints) + " " + _("points");
-		mSubtitle->setText(txt);
-	}
-
 	for (auto game : mRaInfo.Achievements)
 	{
 		ComponentListRow row;
@@ -304,21 +323,7 @@ void GuiGameAchievements::populateAchievementsTab()
 
 void GuiGameAchievements::populatePlayHistoryTab()
 {
-	if (mFile == nullptr)
-	{
-		mSubtitle->setText(_("NO GAME METADATA AVAILABLE"));
-		return;
-	}
-	
-	std::string consoleName = mFile->getSourceFileData()->getSystem()->getFullName();
-	std::string developer = mFile->getMetadata(MetaDataId::Developer);
-	std::string genre = mFile->getMetadata(MetaDataId::Genre);
-	
-	std::string txt = consoleName;
-	if (!developer.empty()) txt += "\r\n" + developer;
-	if (!genre.empty()) txt += "\r\n" + genre;
-	mSubtitle->setText(txt);
-	
+	if (mFile == nullptr) return;
 	auto theme = ThemeData::getMenuTheme();
 	
 	// Play Time
@@ -347,12 +352,67 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	rowLast.addElement(lblLast, true);
 	rowLast.addElement(valLast, false);
 	mList->addRow(rowLast);
+}
+
+void GuiGameAchievements::populateInfoTab()
+{
+	if (mFile == nullptr) return;
+	auto theme = ThemeData::getMenuTheme();
 	
-	// Description
-	ComponentListRow rowDesc;
-	auto lblDesc = std::make_shared<TextComponent>(mWindow, mFile->getMetadata(MetaDataId::Desc), theme->TextSmall.font, theme->Text.color);
-	rowDesc.addElement(lblDesc, true);
-	mList->addRow(rowDesc);
+	std::string consoleName = mFile->getSourceFileData()->getSystem()->getFullName();
+	std::string developer = mFile->getMetadata(MetaDataId::Developer);
+	std::string genre = mFile->getMetadata(MetaDataId::Genre);
+	std::string releaseDate = mFile->getMetadata(MetaDataId::ReleaseDate);
+	std::string desc = mFile->getMetadata(MetaDataId::Desc);
+	
+	if (!consoleName.empty()) {
+		ComponentListRow rowSys;
+		auto lblSys = std::make_shared<TextComponent>(mWindow, _("SYSTEM"), theme->Text.font, theme->Text.color);
+		auto valSys = std::make_shared<TextComponent>(mWindow, consoleName, theme->Text.font, theme->Text.color);
+		valSys->setHorizontalAlignment(ALIGN_RIGHT);
+		rowSys.addElement(lblSys, true);
+		rowSys.addElement(valSys, false);
+		mList->addRow(rowSys);
+	}
+
+	if (!developer.empty() && developer != "Unknown") {
+		ComponentListRow rowDev;
+		auto lblDev = std::make_shared<TextComponent>(mWindow, _("DEVELOPER"), theme->Text.font, theme->Text.color);
+		auto valDev = std::make_shared<TextComponent>(mWindow, developer, theme->Text.font, theme->Text.color);
+		valDev->setHorizontalAlignment(ALIGN_RIGHT);
+		rowDev.addElement(lblDev, true);
+		rowDev.addElement(valDev, false);
+		mList->addRow(rowDev);
+	}
+
+	if (!genre.empty() && genre != "Unknown") {
+		ComponentListRow rowGen;
+		auto lblGen = std::make_shared<TextComponent>(mWindow, _("GENRE"), theme->Text.font, theme->Text.color);
+		auto valGen = std::make_shared<TextComponent>(mWindow, genre, theme->Text.font, theme->Text.color);
+		valGen->setHorizontalAlignment(ALIGN_RIGHT);
+		rowGen.addElement(lblGen, true);
+		rowGen.addElement(valGen, false);
+		mList->addRow(rowGen);
+	}
+
+	if (releaseDate.length() >= 4) {
+		std::string year = releaseDate.substr(0, 4);
+		ComponentListRow rowYear;
+		auto lblYear = std::make_shared<TextComponent>(mWindow, _("RELEASE YEAR"), theme->Text.font, theme->Text.color);
+		auto valYear = std::make_shared<TextComponent>(mWindow, year, theme->Text.font, theme->Text.color);
+		valYear->setHorizontalAlignment(ALIGN_RIGHT);
+		rowYear.addElement(lblYear, true);
+		rowYear.addElement(valYear, false);
+		mList->addRow(rowYear);
+	}
+
+	if (!desc.empty()) {
+		ComponentListRow rowDesc;
+		auto valDesc = std::make_shared<TextComponent>(mWindow, desc, theme->TextSmall.font, theme->Text.color);
+		valDesc->setSize(mList->getSize().x(), 0);
+		rowDesc.addElement(valDesc, true);
+		mList->addRow(rowDesc);
+	}
 }
 
 void GuiGameAchievements::render(const Transform4x4f& parentTrans)
@@ -369,6 +429,12 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 	{
 		delete this;
 		return true;
+	}
+
+	if (mActiveTab == 3 && mOptionsUI)
+	{
+		if (mOptionsUI->input(config, input))
+			return true;
 	}
 
 

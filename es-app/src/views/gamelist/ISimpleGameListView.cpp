@@ -15,7 +15,7 @@
 #include "components/SwitchComponent.h"
 #include "ApiSystem.h"
 #include "animations/LambdaAnimation.h"
-#include "guis/GuiGameOptions.h"
+#include "guis/GuiGameAchievements.h"
 #include "guis/GuiTextEditPopup.h"
 #include "guis/GuiTextEditPopupKeyboard.h"
 #include "SaveStateRepository.h"
@@ -354,7 +354,7 @@ void ISimpleGameListView::showSelectedGameOptions()
 	if (cursor == nullptr)
 		return;
 
-	mWindow->pushGui(new GuiGameOptions(mWindow, cursor));
+	GuiGameAchievements::show(mWindow, cursor);
 }
 
 bool ISimpleGameListView::cursorHasSaveStatesEnabled()

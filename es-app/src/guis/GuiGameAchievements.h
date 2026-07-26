@@ -13,6 +13,8 @@ class TextComponent;
 class ImageComponent;
 class ButtonComponent;
 
+class GuiGameOptions;
+
 class GuiGameAchievements : public GuiComponent
 {
 public:
@@ -30,9 +32,10 @@ protected:
 
 	void	centerWindow();
 
-	void	populateTabContent();
-	void	populateAchievementsTab();
-	void	populatePlayHistoryTab();
+	void populateTabContent();
+	void populateAchievementsTab();
+	void populatePlayHistoryTab();
+	void populateInfoTab();
 
 	FileData* mFile;
 	GameInfoAndUserProgress mRaInfo;

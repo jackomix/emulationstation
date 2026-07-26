@@ -13,8 +13,10 @@ class SystemData;
 class GuiGameOptions : public GuiComponent
 {
 public:
-	GuiGameOptions(Window* window, FileData* game);
+	GuiGameOptions(Window* window, FileData* game, bool embedded = false);
 	virtual ~GuiGameOptions();
+	
+	MenuComponent* getMenu() { return &mMenu; }
 
 	virtual bool input(InputConfig* config, Input input) override;
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
@@ -47,6 +49,7 @@ private:
 
 	std::vector<std::function<void()>> mSaveFuncs;
 	bool mReloadAll;	
+	bool mEmbedded;
 };
 
 #endif // ES_APP_GUIS_GUI_GAME_OPTIONS_H
