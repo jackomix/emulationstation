@@ -180,12 +180,12 @@ public:
 
 		for (int i = 0; i < 5; i++) {
 			auto topRect = std::make_shared<RectangleComponent>(window);
-			topRect->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+			topRect->setColor((mBgColor & 0xFFFFFF00) | 0);
 			mTopGradient.push_back(topRect);
 			addChild(topRect.get());
 
 			auto botRect = std::make_shared<RectangleComponent>(window);
-			botRect->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+			botRect->setColor((mBgColor & 0xFFFFFF00) | 0);
 			mBottomGradient.push_back(botRect);
 			addChild(botRect.get());
 		}
@@ -255,17 +255,17 @@ public:
 				if (showUp) {
 					int alpha = 255 - (i * 255 / 4);
 					if (alpha < 0) alpha = 0;
-					mTopGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, alpha));
+					mTopGradient[i]->setColor((mBgColor & 0xFFFFFF00) | alpha);
 				} else {
-					mTopGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+					mTopGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
 				}
 
 				if (showDown) {
 					int alpha = (i * 255 / 4);
 					if (alpha > 255) alpha = 255;
-					mBottomGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, alpha));
+					mBottomGradient[i]->setColor((mBgColor & 0xFFFFFF00) | alpha);
 				} else {
-					mBottomGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+					mBottomGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
 				}
 			}
 		}
@@ -274,8 +274,8 @@ public:
 			mUpArrow->setOpacity(0);
 			mDownArrow->setOpacity(0);
 			for (int i = 0; i < 5; i++) {
-				mTopGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
-				mBottomGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+				mTopGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
+				mBottomGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
 			}
 		}
 	}
@@ -603,7 +603,7 @@ void GuiGameAchievements::populateInfoTab()
 		valDesc->mText->setSize(exactWidth, 0);
 		
 		float textH = valDesc->mText->getSize().y();
-		float labelH = valDesc->mLabel->getSize().y();
+		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.5f;
 		float arrowH = valDesc->mUpArrow->getFont()->getLetterHeight();
 		float maxLinesH = theme->Text.font->getLetterHeight() * 8.5f;
 
