@@ -4,6 +4,7 @@
 #include "components/ButtonComponent.h"
 #include "components/MultiLineMenuEntry.h"
 #include "components/ScrollableContainer.h"
+#include "components/RectangleComponent.h"
 #include "utils/HtmlColor.h"
 #include "views/ViewController.h"
 #include "Window.h"
@@ -152,6 +153,7 @@ public:
 	ScrollableDescription(Window* window, const std::string& text) : GuiComponent(window)
 	{
 		auto theme = ThemeData::getMenuTheme();
+		mBgColor = theme->Background.color;
 		mLabel = std::make_shared<TextComponent>(window, _("DESCRIPTION"), theme->Text.font, theme->Text.color);
 		mLabel->setVerticalAlignment(ALIGN_TOP);
 
@@ -175,6 +177,19 @@ public:
 
 		addChild(mLabel.get());
 		addChild(mContainer.get());
+
+		for (int i = 0; i < 5; i++) {
+			auto topRect = std::make_shared<RectangleComponent>(window);
+			topRect->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+			mTopGradient.push_back(topRect);
+			addChild(topRect.get());
+
+			auto botRect = std::make_shared<RectangleComponent>(window);
+			botRect->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+			mBottomGradient.push_back(botRect);
+			addChild(botRect.get());
+		}
+
 		addChild(mUpArrow.get());
 		addChild(mDownArrow.get());
 	}
@@ -183,7 +198,7 @@ public:
 	{
 		GuiComponent::onSizeChanged();
 		
-		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.5f;
+		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.2f;
 		mLabel->setSize(mSize.x(), labelHeight);
 		mLabel->setPosition(0, 0);
 
@@ -195,12 +210,6 @@ public:
 		
 		float containerHeight = Math::max(0.0f, mSize.y() - labelHeight);
 		float containerY = labelHeight;
-
-		// If text is taller than the available space, shrink container to make room for arrows outside of it
-		if (textHeight > containerHeight + 1.0f) {
-			containerY += arrowHeight;
-			containerHeight = Math::max(0.0f, containerHeight - (arrowHeight * 2.0f));
-		}
 		
 		// Snap the container height to an exact multiple of the font's line height to prevent partial text lines
 		float lineHeight = mText->getFont()->getHeight();
@@ -211,10 +220,20 @@ public:
 		mContainer->setSize(mSize.x(), containerHeight);
 
 		mUpArrow->setSize(mSize.x(), arrowHeight);
-		mUpArrow->setPosition(0, labelHeight);
+		mUpArrow->setPosition(0, containerY);
 		
 		mDownArrow->setSize(mSize.x(), arrowHeight);
-		mDownArrow->setPosition(0, mSize.y() - arrowHeight);
+		mDownArrow->setPosition(0, containerY + containerHeight - arrowHeight);
+
+		int steps = 5;
+		float stepHeight = arrowHeight / steps;
+		for (int i = 0; i < steps; i++) {
+			mTopGradient[i]->setSize(mSize.x(), stepHeight);
+			mTopGradient[i]->setPosition(0, containerY + i * stepHeight);
+			
+			mBottomGradient[i]->setSize(mSize.x(), stepHeight);
+			mBottomGradient[i]->setPosition(0, containerY + containerHeight - arrowHeight + i * stepHeight);
+		}
 	}
 
 	void update(int deltaTime) override
@@ -226,13 +245,38 @@ public:
 			float scrollY = mContainer->getScrollPos().y();
 			float maxScroll = mText->getSize().y() - mContainer->getSize().y();
 			
-			mUpArrow->setOpacity(scrollY > 0 ? 192 : 0);
-			mDownArrow->setOpacity(scrollY < maxScroll ? 192 : 0);
+			bool showUp = scrollY > 0;
+			bool showDown = scrollY < maxScroll;
+
+			mUpArrow->setOpacity(showUp ? 192 : 0);
+			mDownArrow->setOpacity(showDown ? 192 : 0);
+
+			for (int i = 0; i < 5; i++) {
+				if (showUp) {
+					int alpha = 255 - (i * 255 / 4);
+					if (alpha < 0) alpha = 0;
+					mTopGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, alpha));
+				} else {
+					mTopGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+				}
+
+				if (showDown) {
+					int alpha = (i * 255 / 4);
+					if (alpha > 255) alpha = 255;
+					mBottomGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, alpha));
+				} else {
+					mBottomGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+				}
+			}
 		}
 		else
 		{
 			mUpArrow->setOpacity(0);
 			mDownArrow->setOpacity(0);
+			for (int i = 0; i < 5; i++) {
+				mTopGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+				mBottomGradient[i]->setColor(Utils::HtmlColor::applyColorOpacity(mBgColor, 0));
+			}
 		}
 	}
 
@@ -265,6 +309,9 @@ public:
 		mDownArrow->setColor(Utils::HtmlColor::applyColorOpacity(color, 192));
 	}
 
+	unsigned int mBgColor;
+	std::vector<std::shared_ptr<RectangleComponent>> mTopGradient;
+	std::vector<std::shared_ptr<RectangleComponent>> mBottomGradient;
 	std::shared_ptr<TextComponent> mLabel;
 	std::shared_ptr<TextComponent> mText;
 	std::shared_ptr<ScrollableContainer> mContainer;
@@ -562,8 +609,7 @@ void GuiGameAchievements::populateInfoTab()
 
 		float finalHeight;
 		if (textH > maxLinesH) {
-			// Reserve space for top and bottom arrows so they don't overlap the text container
-			finalHeight = labelH + maxLinesH + (arrowH * 2.0f);
+			finalHeight = labelH + maxLinesH;
 		} else {
 			finalHeight = labelH + textH;
 		}
