@@ -32,10 +32,12 @@ struct ComponentListRow
 	{
 		selectable = true;
 		group = false;
+		hide_cursor = false;
 	};
 
 	bool group;
 	bool selectable;
+	bool hide_cursor;
 	std::vector<ComponentListElement> elements;
 
 	// The input handler is called when the user enters any input while this row is highlighted (including up/down).

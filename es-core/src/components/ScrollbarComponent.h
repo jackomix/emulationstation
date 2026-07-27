@@ -16,6 +16,7 @@ public:
 	ScrollbarComponent(Window* window);
 
 	bool isEnabled() { return mEnabled; }
+	void setEnabled(bool enabled) { mEnabled = enabled; }
 
 	void update(int deltaTime) override;
 	void render(const Transform4x4f& parentTrans) override;

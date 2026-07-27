@@ -360,7 +360,7 @@ void ComponentList::render(const Transform4x4f& parentTrans)
 
 		if (y - mCameraOffset + rowHeight >= 0)
 		{
-			if (mFocused && entry.data.selectable && i == mCursor)
+			if (mFocused && entry.data.selectable && i == mCursor && !entry.data.hide_cursor)
 			{
 				Renderer::setMatrix(trans);
 

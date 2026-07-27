@@ -168,6 +168,10 @@ public:
 
 		mScrollbar = std::make_shared<ScrollbarComponent>(window);
 		mScrollbar->loadFromMenuTheme();
+		if (theme->Background.scrollbarColor == 0) {
+			mScrollbar->setColor((theme->Text.color & 0xFFFFFF00) | 0x50);
+			mScrollbar->setEnabled(true);
+		}
 
 		addChild(mLabel.get());
 		addChild(mContainer.get());
@@ -177,7 +181,7 @@ public:
 	void onSizeChanged() override
 	{
 		GuiComponent::onSizeChanged();
-		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.9f;
+		float labelHeight = mLabel->getFont()->getLetterHeight() * 2.0f;
 		mLabel->setSize(mSize.x(), labelHeight);
 		mLabel->setPosition(0, 0);
 
@@ -215,6 +219,11 @@ public:
 	{
 		mIsFocused = false;
 		mScrollbar->loadFromMenuTheme();
+		auto theme = ThemeData::getMenuTheme();
+		if (theme->Background.scrollbarColor == 0) {
+			mScrollbar->setColor((theme->Text.color & 0xFFFFFF00) | 0x50);
+			mScrollbar->setEnabled(true);
+		}
 		GuiComponent::onFocusLost();
 	}
 
@@ -545,7 +554,7 @@ void GuiGameAchievements::populateInfoTab()
 		valDesc->mText->setSize(exactWidth, 0);
 		
 		float textH = valDesc->mText->getSize().y();
-		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.9f;
+		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 2.0f;
 		float maxLinesH = theme->Text.font->getLetterHeight() * 8.5f;
 		float lineHeight = valDesc->mText->getFont()->getHeight();
 
@@ -557,6 +566,7 @@ void GuiGameAchievements::populateInfoTab()
 		
 		valDesc->setSize(mList->getSize().x(), finalHeight);
 		rowDesc.addElement(valDesc, true);
+		rowDesc.hide_cursor = true;
 		mList->addRow(rowDesc);
 	}
 }
