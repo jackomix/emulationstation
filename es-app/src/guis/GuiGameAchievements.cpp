@@ -5,6 +5,7 @@
 #include "components/MultiLineMenuEntry.h"
 #include "components/ScrollableContainer.h"
 #include "components/RectangleComponent.h"
+#include "components/ScrollbarComponent.h"
 #include "utils/HtmlColor.h"
 #include "views/ViewController.h"
 #include "Window.h"
@@ -165,39 +166,18 @@ public:
 		mContainer = std::make_shared<ScrollableContainer>(window);
 		mContainer->addChild(mText.get());
 
-		mUpArrow = std::make_shared<TextComponent>(window, "▲", theme->TextSmall.font, theme->Text.color);
-		mUpArrow->setHorizontalAlignment(ALIGN_CENTER);
-		mUpArrow->setVerticalAlignment(ALIGN_TOP);
-		mUpArrow->setOpacity(0);
-		
-		mDownArrow = std::make_shared<TextComponent>(window, "▼", theme->TextSmall.font, theme->Text.color);
-		mDownArrow->setHorizontalAlignment(ALIGN_CENTER);
-		mDownArrow->setVerticalAlignment(ALIGN_BOTTOM);
-		mDownArrow->setOpacity(0);
+		mScrollbar = std::make_shared<ScrollbarComponent>(window);
+		mScrollbar->loadFromMenuTheme();
 
 		addChild(mLabel.get());
 		addChild(mContainer.get());
-
-		for (int i = 0; i < 5; i++) {
-			auto topRect = std::make_shared<RectangleComponent>(window);
-			topRect->setColor((mBgColor & 0xFFFFFF00) | 0);
-			mTopGradient.push_back(topRect);
-			addChild(topRect.get());
-
-			auto botRect = std::make_shared<RectangleComponent>(window);
-			botRect->setColor((mBgColor & 0xFFFFFF00) | 0);
-			mBottomGradient.push_back(botRect);
-			addChild(botRect.get());
-		}
-
-		addChild(mUpArrow.get());
-		addChild(mDownArrow.get());
+		addChild(mScrollbar.get());
 	}
 
 	void onSizeChanged() override
 	{
 		GuiComponent::onSizeChanged();
-		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.8f;
+		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.9f;
 		mLabel->setSize(mSize.x(), labelHeight);
 		mLabel->setPosition(0, 0);
 
@@ -205,7 +185,6 @@ public:
 			mText->setSize(mSize.x(), 0);
 
 		float textHeight = mText->getSize().y();
-		float arrowHeight = mUpArrow->getFont()->getLetterHeight();
 		
 		float containerHeight = Math::max(0.0f, mSize.y() - labelHeight);
 		float containerY = labelHeight;
@@ -218,65 +197,33 @@ public:
 		mContainer->setPosition(0, containerY);
 		mContainer->setSize(mSize.x(), containerHeight);
 
-		mUpArrow->setSize(mSize.x(), arrowHeight);
-		mUpArrow->setPosition(0, containerY);
-		
-		mDownArrow->setSize(mSize.x(), arrowHeight);
-		mDownArrow->setPosition(0, containerY + containerHeight - arrowHeight);
-
-		int steps = 5;
-		float stepHeight = arrowHeight / steps;
-		for (int i = 0; i < steps; i++) {
-			mTopGradient[i]->setSize(mSize.x(), stepHeight);
-			mTopGradient[i]->setPosition(0, containerY + i * stepHeight);
-			
-			mBottomGradient[i]->setSize(mSize.x(), stepHeight);
-			mBottomGradient[i]->setPosition(0, containerY + containerHeight - arrowHeight + i * stepHeight);
-		}
+		mScrollbar->setContainerBounds(Vector3f(0, labelHeight, 0), Vector2f(mSize.x(), containerHeight), true);
+		mScrollbar->setRange(0, mText->getSize().y(), containerHeight);
 	}
 
 	void update(int deltaTime) override
 	{
 		GuiComponent::update(deltaTime);
 		
-		if (mText->getSize().y() > mContainer->getSize().y())
-		{
-			float scrollY = mContainer->getScrollPos().y();
-			float maxScroll = mText->getSize().y() - mContainer->getSize().y();
-			
-			bool showUp = scrollY > 0;
-			bool showDown = scrollY < maxScroll;
+		mScrollbar->update(deltaTime);
+		mScrollbar->setScrollPosition(mContainer->getScrollPos().y());
+		if (mIsFocused)
+			mScrollbar->onCursorChanged();
+	}
 
-			mUpArrow->setOpacity(showUp ? 192 : 0);
-			mDownArrow->setOpacity(showDown ? 192 : 0);
+	void onFocusLost() override
+	{
+		mIsFocused = false;
+		mScrollbar->loadFromMenuTheme();
+		GuiComponent::onFocusLost();
+	}
 
-			for (int i = 0; i < 5; i++) {
-				if (showUp) {
-					int alpha = 255 - (i * 255 / 4);
-					if (alpha < 0) alpha = 0;
-					mTopGradient[i]->setColor((mBgColor & 0xFFFFFF00) | alpha);
-				} else {
-					mTopGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
-				}
-
-				if (showDown) {
-					int alpha = (i * 255 / 4);
-					if (alpha > 255) alpha = 255;
-					mBottomGradient[i]->setColor((mBgColor & 0xFFFFFF00) | alpha);
-				} else {
-					mBottomGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
-				}
-			}
-		}
-		else
-		{
-			mUpArrow->setOpacity(0);
-			mDownArrow->setOpacity(0);
-			for (int i = 0; i < 5; i++) {
-				mTopGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
-				mBottomGradient[i]->setColor((mBgColor & 0xFFFFFF00) | 0);
-			}
-		}
+	void onFocusGained() override
+	{
+		mIsFocused = true;
+		auto theme = ThemeData::getMenuTheme();
+		mScrollbar->setColor(theme->Text.selectorColor);
+		GuiComponent::onFocusGained();
 	}
 
 	bool input(InputConfig* config, Input input) override
@@ -304,18 +251,14 @@ public:
 	void setColor(unsigned int color) override { 
 		mLabel->setColor(color);
 		mText->setColor(Utils::HtmlColor::applyColorOpacity(color, 192));
-		mUpArrow->setColor(Utils::HtmlColor::applyColorOpacity(color, 192));
-		mDownArrow->setColor(Utils::HtmlColor::applyColorOpacity(color, 192));
 	}
 
 	unsigned int mBgColor;
-	std::vector<std::shared_ptr<RectangleComponent>> mTopGradient;
-	std::vector<std::shared_ptr<RectangleComponent>> mBottomGradient;
 	std::shared_ptr<TextComponent> mLabel;
 	std::shared_ptr<TextComponent> mText;
 	std::shared_ptr<ScrollableContainer> mContainer;
-	std::shared_ptr<TextComponent> mUpArrow;
-	std::shared_ptr<TextComponent> mDownArrow;
+	std::shared_ptr<ScrollbarComponent> mScrollbar;
+	bool mIsFocused = false;
 };
 
 GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
@@ -602,8 +545,7 @@ void GuiGameAchievements::populateInfoTab()
 		valDesc->mText->setSize(exactWidth, 0);
 		
 		float textH = valDesc->mText->getSize().y();
-		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.8f;
-		float arrowH = valDesc->mUpArrow->getFont()->getLetterHeight();
+		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.9f;
 		float maxLinesH = theme->Text.font->getLetterHeight() * 8.5f;
 		float lineHeight = valDesc->mText->getFont()->getHeight();
 
