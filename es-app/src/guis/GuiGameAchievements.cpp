@@ -45,8 +45,8 @@ void GuiGameAchievements::show(Window* window, int gameId)
 class GameAchievementEntry : public ComponentGrid
 {
 public:
-	GameAchievementEntry(Window* window, Achievement& ra) :
-		ComponentGrid(window, Vector2i(3, 4))
+	GameAchievementEntry(Window* window, GameInfoAndUserProgress& raInfo, Achievement& ra) :
+		ComponentGrid(window, Vector2i(4, 4))
 	{
 		mGameInfo = ra;
 
@@ -57,13 +57,12 @@ public:
 		setEntry(mImage, Vector2i(0, 0), false, false, Vector2i(1, 4));
 				
 		std::string desc = mGameInfo.Description;
-		desc += _U(" - ") + _("Points") + ": " + mGameInfo.Points;
 
 		if (!mGameInfo.DateEarnedHardcore.empty()) {
-			desc += _U("  \uf091  ") + _("Unlocked on") + ": " + mGameInfo.DateEarnedHardcore + _U(" - ") + _("HARDCORE MODE");
+			desc += _U("\n\uf091 ") + _("Unlocked on") + ": " + mGameInfo.DateEarnedHardcore + _U(" - ") + _("HARDCORE MODE");
 		}
 		else if (!mGameInfo.DateEarned.empty()) {
-			desc += _U("  \uf091  ") + _("Unlocked on") + ": " + mGameInfo.DateEarned;
+			desc += _U("\n\uf091 ") + _("Unlocked on") + ": " + mGameInfo.DateEarned;
 		}
 
 		mText = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, theme->Text.font, theme->Text.color);
@@ -72,8 +71,22 @@ public:
 		mSubstring = std::make_shared<TextComponent>(mWindow, desc, theme->TextSmall.font, theme->Text.color);
 		mSubstring->setOpacity(192);
 
+		float percentage = 0.0f;
+		float distinctPlayers = Utils::String::toFloat(raInfo.NumDistinctPlayersCasual);
+		if (distinctPlayers > 0.0f)
+			percentage = (Utils::String::toFloat(mGameInfo.NumAwarded) / distinctPlayers) * 100.0f;
+
+		char pctStr[32];
+		snprintf(pctStr, sizeof(pctStr), "%.1f%%", percentage);
+
+		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+		mPercentage = std::make_shared<TextComponent>(mWindow, pctStr, theme->TextSmall.font, theme->Text.color, ALIGN_RIGHT);
+		mPercentage->setOpacity(192);
+
 		setEntry(mText, Vector2i(2, 1), false, true);
 		setEntry(mSubstring, Vector2i(2, 2), false, true);
+		setEntry(mPoints, Vector2i(3, 1), false, true);
+		setEntry(mPercentage, Vector2i(3, 2), false, true);
 
 		int height = Math::max(IMAGESIZE + IMAGESPACER, mText->getSize().y() + mSubstring->getSize().y());
 
@@ -86,8 +99,10 @@ public:
 		setRowHeightPerc(2, hSub);
 		setRowHeightPerc(3, Math::max(0.0f, 1.0f - topPadding - hTxt - hSub));
 
+		float pointsColWidth = Renderer::getScreenHeight() * 0.12f / WINDOW_WIDTH;
 		setColWidthPerc(0, (height - IMAGESPACER) / WINDOW_WIDTH);
 		setColWidthPerc(1, IMAGESPACER / WINDOW_WIDTH);
+		setColWidthPerc(3, pointsColWidth);
 	
 		mImage->setMaxSize(height - IMAGESPACER, height - IMAGESPACER);
 		mImage->setImage(mGameInfo.getBadgeUrl());
@@ -102,11 +117,15 @@ public:
 	{
 		mText->setColor(color);
 		mSubstring->setColor(color);
+		if (mPoints) mPoints->setColor(color);
+		if (mPercentage) mPercentage->setColor(color);
 	}
 
 private:
 	std::shared_ptr<TextComponent> mText;
 	std::shared_ptr<TextComponent> mSubstring;
+	std::shared_ptr<TextComponent> mPoints;
+	std::shared_ptr<TextComponent> mPercentage;
 	std::shared_ptr<WebImageComponent> mImage;
 	Achievement mGameInfo;
 };
@@ -294,7 +313,7 @@ void GuiGameAchievements::populateAchievementsTab()
 	for (auto game : mRaInfo.Achievements)
 	{
 		ComponentListRow row;
-		auto itstring = std::make_shared<GameAchievementEntry>(mWindow, game);
+		auto itstring = std::make_shared<GameAchievementEntry>(mWindow, mRaInfo, game);
 		row.addElement(itstring, true);
 		mList->addRow(row);
 	}
@@ -387,8 +406,7 @@ void GuiGameAchievements::populateInfoTab()
 
 	if (!desc.empty()) {
 		ComponentListRow rowDesc;
-		auto valDesc = std::make_shared<TextComponent>(mWindow, desc, theme->TextSmall.font, theme->Text.color);
-		valDesc->setSize(mList->getSize().x(), 0);
+		auto valDesc = std::make_shared<MultiLineMenuEntry>(mWindow, _("DESCRIPTION"), desc, true);
 		rowDesc.addElement(valDesc, true);
 		mList->addRow(rowDesc);
 	}
