@@ -183,9 +183,8 @@ public:
 	{
 		GuiComponent::onSizeChanged();
 		
-		// Use actual layout height to get natural font padding
-		mLabel->setSize(mSize.x(), 0);
-		float labelHeight = mLabel->getSize().y();
+		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.5f;
+		mLabel->setSize(mSize.x(), labelHeight);
 		mLabel->setPosition(0, 0);
 
 		if (mSize.x() > 0)
@@ -202,6 +201,11 @@ public:
 			containerY += arrowHeight;
 			containerHeight = Math::max(0.0f, containerHeight - (arrowHeight * 2.0f));
 		}
+		
+		// Snap the container height to an exact multiple of the font's line height to prevent partial text lines
+		float lineHeight = mText->getFont()->getHeight();
+		int numLines = (int)(containerHeight / lineHeight);
+		containerHeight = numLines * lineHeight;
 
 		mContainer->setPosition(0, containerY);
 		mContainer->setSize(mSize.x(), containerHeight);
