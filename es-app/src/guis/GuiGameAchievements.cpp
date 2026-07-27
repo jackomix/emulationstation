@@ -59,10 +59,10 @@ public:
 		std::string desc = mGameInfo.Description;
 
 		if (!mGameInfo.DateEarnedHardcore.empty()) {
-			desc += _U("\n\uf091 ") + _("Unlocked on") + ": " + mGameInfo.DateEarnedHardcore + _U(" - ") + _("HARDCORE MODE");
+			desc += _U(" / \uf091 ") + mGameInfo.DateEarnedHardcore + _U(" - ") + _("HARDCORE MODE");
 		}
 		else if (!mGameInfo.DateEarned.empty()) {
-			desc += _U("\n\uf091 ") + _("Unlocked on") + ": " + mGameInfo.DateEarned;
+			desc += _U(" / \uf091 ") + mGameInfo.DateEarned;
 		}
 
 		mText = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, theme->Text.font, theme->Text.color);
@@ -70,6 +70,7 @@ public:
 
 		mSubstring = std::make_shared<TextComponent>(mWindow, desc, theme->TextSmall.font, theme->Text.color);
 		mSubstring->setOpacity(192);
+		mSubstring->setAutoScrollDelay(1500);
 
 		float percentage = 0.0f;
 		float distinctPlayers = Utils::String::toFloat(raInfo.NumDistinctPlayersCasual);
@@ -119,6 +120,18 @@ public:
 		mSubstring->setColor(color);
 		if (mPoints) mPoints->setColor(color);
 		if (mPercentage) mPercentage->setColor(color);
+	}
+
+	void onFocusLost() override
+	{
+		mSubstring->setAutoScroll(TextComponent::NONE);
+		ComponentGrid::onFocusLost();
+	}
+
+	void onFocusGained() override
+	{
+		mSubstring->setAutoScroll(TextComponent::HORIZONTAL);
+		ComponentGrid::onFocusGained();
 	}
 
 private:

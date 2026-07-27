@@ -62,6 +62,7 @@ public:
 	AutoScrollType getAutoScroll() { return mAutoScroll; }
 	void setAutoScroll(AutoScrollType value);
 	void setAutoScroll(bool scroll);
+	void setAutoScrollDelay(int delay) { mAutoScrollDelay = delay; }
 
 	unsigned int getColor() { return mColor; }
 
