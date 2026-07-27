@@ -335,7 +335,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 		}
 	});
 
-	mGrid.setEntry(mTabs, Vector2i(0, 1), false, true);
+	mGrid.setEntry(mTabs, Vector2i(0, 1), true, true);
 
 	// Row 2: Content List
 	mList = std::make_shared<ComponentList>(mWindow);
