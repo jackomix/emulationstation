@@ -131,14 +131,27 @@ void ComponentTab::updateCameraOffset()
 
 	if (mCursor >= 0 && mCursor < mEntries.size())
 	{
-		int right = mSelectorBarOffset + getTabWidth(mEntries.at(mCursor).data);
-		if (right > totalWidth)
+		float left = mSelectorBarOffset;
+		float right = left + getTabWidth(mEntries.at(mCursor).data);
+
+		if (right > mCameraOffset + totalWidth)
 			mCameraOffset = right - totalWidth;
-		else 
+		else if (left < mCameraOffset)
+			mCameraOffset = left;
+
+		float maxOffset = getTotalTabWidth() - totalWidth;
+		if (maxOffset < 0)
+			maxOffset = 0;
+
+		if (mCameraOffset > maxOffset)
+			mCameraOffset = maxOffset;
+		if (mCameraOffset < 0)
 			mCameraOffset = 0;
 	}
 	else 
+	{
 		mCameraOffset = 0;
+	}
 }
 
 void ComponentTab::render(const Transform4x4f& parentTrans)
