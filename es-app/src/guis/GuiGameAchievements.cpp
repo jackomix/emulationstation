@@ -72,7 +72,7 @@ public:
 
 		mSubstring = std::make_shared<TextComponent>(mWindow, desc, theme->TextSmall.font, theme->Text.color);
 		mSubstring->setOpacity(192);
-		mSubstring->setAutoScrollDelay(750);
+		mSubstring->setAutoScrollDelay(500);
 
 		float percentage = 0.0f;
 		float distinctPlayers = Utils::String::toFloat(raInfo.NumDistinctPlayersCasual);
@@ -176,7 +176,9 @@ public:
 		setRowHeight(1, Math::max(0.0f, mSize.y() - labelHeight));
 
 		mText->setPosition(pad, 0);
-		mText->setSize(Math::max(0.0f, mSize.x() - (pad * 2.0f)), 0);
+		float textWidth = mSize.x() - (pad * 2.0f);
+		if (textWidth > 0)
+			mText->setSize(textWidth, 0);
 	}
 
 	bool input(InputConfig* config, Input input) override
