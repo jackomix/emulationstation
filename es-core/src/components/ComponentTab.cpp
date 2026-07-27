@@ -80,9 +80,9 @@ bool ComponentTab::input(InputConfig* config, Input input)
 		return false;
 	
 	// input handler didn't consume the input - try to scroll
-	if(config->isMappedLike("left", input))
+	if(config->isMappedLike("left", input) || config->isMappedTo("leftshoulder", input))
 		return listInput(input.value != 0 ? -1 : 0);
-	else if(config->isMappedLike("right", input))
+	else if(config->isMappedLike("right", input) || config->isMappedTo("rightshoulder", input))
 		return listInput(input.value != 0 ? 1 : 0);
 
 	return false;
