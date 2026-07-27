@@ -653,11 +653,6 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 		if (mOptionsUI->input(config, input))
 			return true;
 	}
-	if (config->isMappedTo("leftshoulder", input) || config->isMappedTo("rightshoulder", input))
-	{
-		if (mTabs->input(config, input))
-			return true;
-	}
 
 	return false;
 }

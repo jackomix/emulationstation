@@ -80,9 +80,9 @@ bool ComponentTab::input(InputConfig* config, Input input)
 		return false;
 	
 	// input handler didn't consume the input - try to scroll
-	if(config->isMappedLike("left", input) || config->isMappedTo("leftshoulder", input))
+	if(config->isMappedLike("left", input))
 		return listInput(input.value != 0 ? -1 : 0);
-	else if(config->isMappedLike("right", input) || config->isMappedTo("rightshoulder", input))
+	else if(config->isMappedLike("right", input))
 		return listInput(input.value != 0 ? 1 : 0);
 
 	return false;
@@ -239,9 +239,6 @@ void ComponentTab::render(const Transform4x4f& parentTrans)
 		Renderer::setMatrix(trans);
 
 	// draw separators
-	// draw top border
-	Renderer::drawRect(0.0f, 0.0f, mSize.x(), 1.0f, separatorColor);
-
 	x = 0;
 	for(unsigned int i = 0; i < mEntries.size(); i++)
 	{
@@ -250,6 +247,9 @@ void ComponentTab::render(const Transform4x4f& parentTrans)
 	}
 
 	Renderer::drawRect(x - 1.0f, 0.0f, 1.0f, mSize.y(), separatorColor);
+	
+	// draw top border
+	Renderer::drawRect(0.0f, 0.0f, x, 1.0f, separatorColor);
 	Renderer::popClipRect();
 }
 
