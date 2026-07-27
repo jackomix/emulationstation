@@ -421,7 +421,14 @@ void GuiGameAchievements::populateInfoTab()
 		ComponentListRow rowDesc;
 		auto valDesc = std::make_shared<MultiLineMenuEntry>(mWindow, _("DESCRIPTION"), desc, true);
 		rowDesc.addElement(valDesc, true);
+		rowDesc.selectable = false;
 		mList->addRow(rowDesc);
+
+		ComponentListRow dummyRow;
+		auto dummy = std::make_shared<GuiComponent>(mWindow);
+		dummy->setSize(0, 0);
+		dummyRow.addElement(dummy, false);
+		mList->addRow(dummyRow);
 	}
 }
 
