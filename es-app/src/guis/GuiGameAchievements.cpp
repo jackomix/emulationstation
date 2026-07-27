@@ -72,7 +72,7 @@ public:
 
 		mSubstring = std::make_shared<TextComponent>(mWindow, desc, theme->TextSmall.font, theme->Text.color);
 		mSubstring->setOpacity(192);
-		mSubstring->setAutoScrollDelay(1500);
+		mSubstring->setAutoScrollDelay(750);
 
 		float percentage = 0.0f;
 		float distinctPlayers = Utils::String::toFloat(raInfo.NumDistinctPlayersCasual);
@@ -172,11 +172,11 @@ public:
 		float pad = Renderer::getScreenWidth() * 0.02f;
 		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.2f;
 		
-		setRowHeight(0, labelHeight);
-		setRowHeight(1, mSize.y() - labelHeight);
+		setRowHeight(0, Math::max(0.0f, labelHeight));
+		setRowHeight(1, Math::max(0.0f, mSize.y() - labelHeight));
 
 		mText->setPosition(pad, 0);
-		mText->setSize(mSize.x() - (pad * 2.0f), 0);
+		mText->setSize(Math::max(0.0f, mSize.x() - (pad * 2.0f)), 0);
 	}
 
 	bool input(InputConfig* config, Input input) override
@@ -491,7 +491,7 @@ void GuiGameAchievements::populateInfoTab()
 		valDesc->setSize(mList->getSize().x(), 0);
 		float textH = valDesc->mText->getSize().y();
 		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.2f;
-		valDesc->setSize(0, Math::min(theme->Text.font->getLetterHeight() * 8.5f, textH + labelH + (theme->Text.font->getLetterHeight() * 0.5f)));
+		valDesc->setSize(mList->getSize().x(), Math::min(theme->Text.font->getLetterHeight() * 8.5f, textH + labelH + (theme->Text.font->getLetterHeight() * 0.5f)));
 		rowDesc.addElement(valDesc, true);
 		mList->addRow(rowDesc);
 	}
