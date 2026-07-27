@@ -163,16 +163,30 @@ public:
 		mContainer = std::make_shared<ScrollableContainer>(window);
 		mContainer->addChild(mText.get());
 
+		mUpArrow = std::make_shared<TextComponent>(window, "▲", theme->TextSmall.font, theme->Text.color);
+		mUpArrow->setHorizontalAlignment(ALIGN_CENTER);
+		mUpArrow->setVerticalAlignment(ALIGN_TOP);
+		mUpArrow->setOpacity(0);
+		
+		mDownArrow = std::make_shared<TextComponent>(window, "▼", theme->TextSmall.font, theme->Text.color);
+		mDownArrow->setHorizontalAlignment(ALIGN_CENTER);
+		mDownArrow->setVerticalAlignment(ALIGN_BOTTOM);
+		mDownArrow->setOpacity(0);
+
 		addChild(mLabel.get());
 		addChild(mContainer.get());
+		addChild(mUpArrow.get());
+		addChild(mDownArrow.get());
 	}
 
 	void onSizeChanged() override
 	{
 		GuiComponent::onSizeChanged();
-		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.2f;
 		
-		mLabel->setSize(mSize.x(), labelHeight);
+		// Use actual layout height to get natural font padding, instead of hardcoded 1.2f multiplier!
+		mLabel->setSize(mSize.x(), 0);
+		float labelHeight = mLabel->getSize().y();
+		
 		mLabel->setPosition(0, 0);
 
 		float containerHeight = Math::max(0.0f, mSize.y() - labelHeight);
@@ -181,6 +195,31 @@ public:
 
 		if (mSize.x() > 0)
 			mText->setSize(mSize.x(), 0);
+
+		mUpArrow->setSize(mSize.x(), mUpArrow->getFont()->getLetterHeight());
+		mUpArrow->setPosition(0, labelHeight);
+		
+		mDownArrow->setSize(mSize.x(), mDownArrow->getFont()->getLetterHeight());
+		mDownArrow->setPosition(0, mSize.y() - mDownArrow->getSize().y());
+	}
+
+	void update(int deltaTime) override
+	{
+		GuiComponent::update(deltaTime);
+		
+		if (mText->getSize().y() > mContainer->getSize().y())
+		{
+			float scrollY = mContainer->getScrollPos().y();
+			float maxScroll = mText->getSize().y() - mContainer->getSize().y();
+			
+			mUpArrow->setOpacity(scrollY > 0 ? 192 : 0);
+			mDownArrow->setOpacity(scrollY < maxScroll ? 192 : 0);
+		}
+		else
+		{
+			mUpArrow->setOpacity(0);
+			mDownArrow->setOpacity(0);
+		}
 	}
 
 	bool input(InputConfig* config, Input input) override
@@ -207,12 +246,16 @@ public:
 
 	void setColor(unsigned int color) override { 
 		mLabel->setColor(color);
-		mText->setColor(Utils::HtmlColor::applyColorOpacity(color, 192)); 
+		mText->setColor(Utils::HtmlColor::applyColorOpacity(color, 192));
+		mUpArrow->setColor(Utils::HtmlColor::applyColorOpacity(color, 192));
+		mDownArrow->setColor(Utils::HtmlColor::applyColorOpacity(color, 192));
 	}
 
 	std::shared_ptr<TextComponent> mLabel;
 	std::shared_ptr<TextComponent> mText;
 	std::shared_ptr<ScrollableContainer> mContainer;
+	std::shared_ptr<TextComponent> mUpArrow;
+	std::shared_ptr<TextComponent> mDownArrow;
 };
 
 GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
