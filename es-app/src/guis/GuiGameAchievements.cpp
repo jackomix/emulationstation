@@ -153,7 +153,7 @@ public:
 	ScrollableDescription(Window* window, const std::string& text) : GuiComponent(window)
 	{
 		auto theme = ThemeData::getMenuTheme();
-		mBgColor = theme->Background.color;
+		mBgColor = (theme->Background.centerColor & 0xFFFFFF00) | 0xFF;
 		mLabel = std::make_shared<TextComponent>(window, _("DESCRIPTION"), theme->Text.font, theme->Text.color);
 		mLabel->setVerticalAlignment(ALIGN_TOP);
 
@@ -198,7 +198,7 @@ public:
 	{
 		GuiComponent::onSizeChanged();
 		
-		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.2f;
+		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.5f;
 		mLabel->setSize(mSize.x(), labelHeight);
 		mLabel->setPosition(0, 0);
 
