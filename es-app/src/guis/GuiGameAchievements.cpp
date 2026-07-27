@@ -70,7 +70,7 @@ public:
 
 		mSubstring = std::make_shared<TextComponent>(mWindow, desc, theme->TextSmall.font, theme->Text.color);
 		mSubstring->setOpacity(192);
-		mSubstring->setAutoScrollDelay(1500);
+		mSubstring->setAutoScrollDelay(500);
 
 		float percentage = 0.0f;
 		float distinctPlayers = Utils::String::toFloat(raInfo.NumDistinctPlayersCasual);
