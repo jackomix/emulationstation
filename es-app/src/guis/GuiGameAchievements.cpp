@@ -197,8 +197,7 @@ public:
 	void onSizeChanged() override
 	{
 		GuiComponent::onSizeChanged();
-		
-		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.5f;
+		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.8f;
 		mLabel->setSize(mSize.x(), labelHeight);
 		mLabel->setPosition(0, 0);
 
@@ -603,16 +602,16 @@ void GuiGameAchievements::populateInfoTab()
 		valDesc->mText->setSize(exactWidth, 0);
 		
 		float textH = valDesc->mText->getSize().y();
-		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.5f;
+		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.8f;
 		float arrowH = valDesc->mUpArrow->getFont()->getLetterHeight();
 		float maxLinesH = theme->Text.font->getLetterHeight() * 8.5f;
+		float lineHeight = valDesc->mText->getFont()->getHeight();
 
-		float finalHeight;
-		if (textH > maxLinesH) {
-			finalHeight = labelH + maxLinesH;
-		} else {
-			finalHeight = labelH + textH;
-		}
+		float targetContainerH = Math::min(textH, maxLinesH);
+		int numLines = (int)(targetContainerH / lineHeight);
+		float snappedContainerH = numLines * lineHeight;
+
+		float finalHeight = labelH + snappedContainerH;
 		
 		valDesc->setSize(mList->getSize().x(), finalHeight);
 		rowDesc.addElement(valDesc, true);

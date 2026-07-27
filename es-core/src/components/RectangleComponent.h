@@ -23,6 +23,7 @@ public:
 
 	ThemeData::ThemeElement::Property getProperty(const std::string name) override;
 	void setProperty(const std::string name, const ThemeData::ThemeElement::Property& value) override;
+	void setColor(unsigned int color) override { mColor = color; }
 
 private:
 	unsigned int mColor;
