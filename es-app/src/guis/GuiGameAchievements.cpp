@@ -131,6 +131,7 @@ public:
 	void onFocusGained() override
 	{
 		mSubstring->setAutoScroll(TextComponent::HORIZONTAL);
+		mSubstring->onShow();
 		ComponentGrid::onFocusGained();
 	}
 
