@@ -183,24 +183,34 @@ public:
 	{
 		GuiComponent::onSizeChanged();
 		
-		// Use actual layout height to get natural font padding, instead of hardcoded 1.2f multiplier!
+		// Use actual layout height to get natural font padding
 		mLabel->setSize(mSize.x(), 0);
 		float labelHeight = mLabel->getSize().y();
-		
 		mLabel->setPosition(0, 0);
-
-		float containerHeight = Math::max(0.0f, mSize.y() - labelHeight);
-		mContainer->setPosition(0, labelHeight);
-		mContainer->setSize(mSize.x(), containerHeight);
 
 		if (mSize.x() > 0)
 			mText->setSize(mSize.x(), 0);
 
-		mUpArrow->setSize(mSize.x(), mUpArrow->getFont()->getLetterHeight());
+		float textHeight = mText->getSize().y();
+		float arrowHeight = mUpArrow->getFont()->getLetterHeight();
+		
+		float containerHeight = Math::max(0.0f, mSize.y() - labelHeight);
+		float containerY = labelHeight;
+
+		// If text is taller than the available space, shrink container to make room for arrows outside of it
+		if (textHeight > containerHeight + 1.0f) {
+			containerY += arrowHeight;
+			containerHeight = Math::max(0.0f, containerHeight - (arrowHeight * 2.0f));
+		}
+
+		mContainer->setPosition(0, containerY);
+		mContainer->setSize(mSize.x(), containerHeight);
+
+		mUpArrow->setSize(mSize.x(), arrowHeight);
 		mUpArrow->setPosition(0, labelHeight);
 		
-		mDownArrow->setSize(mSize.x(), mDownArrow->getFont()->getLetterHeight());
-		mDownArrow->setPosition(0, mSize.y() - mDownArrow->getSize().y());
+		mDownArrow->setSize(mSize.x(), arrowHeight);
+		mDownArrow->setPosition(0, mSize.y() - arrowHeight);
 	}
 
 	void update(int deltaTime) override
@@ -535,10 +545,26 @@ void GuiGameAchievements::populateInfoTab()
 	if (!desc.empty()) {
 		ComponentListRow rowDesc;
 		auto valDesc = std::make_shared<ScrollableDescription>(mWindow, desc);
-		valDesc->setSize(mList->getSize().x(), 0);
+		
+		// Calculate precise height based on the final width (ComponentList padding is 20px)
+		float exactWidth = mList->getSize().x() - 20.0f;
+		valDesc->mLabel->setSize(exactWidth, 0);
+		valDesc->mText->setSize(exactWidth, 0);
+		
 		float textH = valDesc->mText->getSize().y();
-		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.2f;
-		valDesc->setSize(mList->getSize().x(), Math::min(theme->Text.font->getLetterHeight() * 8.5f, textH + labelH + (theme->Text.font->getLetterHeight() * 0.5f)));
+		float labelH = valDesc->mLabel->getSize().y();
+		float arrowH = valDesc->mUpArrow->getFont()->getLetterHeight();
+		float maxLinesH = theme->Text.font->getLetterHeight() * 8.5f;
+
+		float finalHeight;
+		if (textH > maxLinesH) {
+			// Reserve space for top and bottom arrows so they don't overlap the text container
+			finalHeight = labelH + maxLinesH + (arrowH * 2.0f);
+		} else {
+			finalHeight = labelH + textH;
+		}
+		
+		valDesc->setSize(mList->getSize().x(), finalHeight);
 		rowDesc.addElement(valDesc, true);
 		mList->addRow(rowDesc);
 	}
