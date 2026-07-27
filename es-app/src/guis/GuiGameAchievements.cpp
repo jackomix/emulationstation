@@ -3,6 +3,8 @@
 #include "components/TextComponent.h"
 #include "components/ButtonComponent.h"
 #include "components/MultiLineMenuEntry.h"
+#include "components/ScrollableContainer.h"
+#include "utils/HtmlColor.h"
 #include "views/ViewController.h"
 #include "Window.h"
 #include <string>
@@ -142,6 +144,71 @@ private:
 	std::shared_ptr<TextComponent> mPercentage;
 	std::shared_ptr<WebImageComponent> mImage;
 	Achievement mGameInfo;
+};
+
+class ScrollableDescription : public ComponentGrid
+{
+public:
+	ScrollableDescription(Window* window, const std::string& text) : ComponentGrid(window, Vector2i(1, 2))
+	{
+		auto theme = ThemeData::getMenuTheme();
+		mLabel = std::make_shared<TextComponent>(window, _("DESCRIPTION"), theme->Text.font, theme->Text.color);
+		mLabel->setVerticalAlignment(ALIGN_TOP);
+
+		mText = std::make_shared<TextComponent>(window, text, theme->TextSmall.font, theme->Text.color);
+		mText->setVerticalAlignment(ALIGN_TOP);
+		mText->setOpacity(192);
+
+		mContainer = std::make_shared<ScrollableContainer>(window);
+		mContainer->addChild(mText.get());
+
+		setEntry(mLabel, Vector2i(0, 0), false, true);
+		setEntry(mContainer, Vector2i(0, 1), false, true);
+	}
+
+	void onSizeChanged() override
+	{
+		ComponentGrid::onSizeChanged();
+		float pad = Renderer::getScreenWidth() * 0.02f;
+		float labelHeight = mLabel->getFont()->getLetterHeight() * 1.2f;
+		
+		setRowHeight(0, labelHeight);
+		setRowHeight(1, mSize.y() - labelHeight);
+
+		mText->setPosition(pad, 0);
+		mText->setSize(mSize.x() - (pad * 2.0f), 0);
+	}
+
+	bool input(InputConfig* config, Input input) override
+	{
+		if (input.value != 0) {
+			float scrollAmount = mText->getFont()->getLetterHeight() * 2.0f;
+			if (config->isMappedLike("up", input)) {
+				if (mContainer->getScrollPos().y() > 0) {
+					float newY = Math::max(0.0f, mContainer->getScrollPos().y() - scrollAmount);
+					mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), newY));
+					return true;
+				}
+			}
+			if (config->isMappedLike("down", input)) {
+				if (mContainer->getScrollPos().y() + mContainer->getSize().y() < mText->getSize().y()) {
+					float newY = Math::min(mText->getSize().y() - mContainer->getSize().y(), mContainer->getScrollPos().y() + scrollAmount);
+					mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), newY));
+					return true;
+				}
+			}
+		}
+		return ComponentGrid::input(config, input);
+	}
+
+	void setColor(unsigned int color) override { 
+		mLabel->setColor(color);
+		mText->setColor(Utils::HtmlColor::applyColorOpacity(color, 192)); 
+	}
+
+	std::shared_ptr<TextComponent> mLabel;
+	std::shared_ptr<TextComponent> mText;
+	std::shared_ptr<ScrollableContainer> mContainer;
 };
 
 GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
@@ -420,16 +487,13 @@ void GuiGameAchievements::populateInfoTab()
 
 	if (!desc.empty()) {
 		ComponentListRow rowDesc;
-		auto valDesc = std::make_shared<MultiLineMenuEntry>(mWindow, _("DESCRIPTION"), desc, true);
+		auto valDesc = std::make_shared<ScrollableDescription>(mWindow, desc);
+		valDesc->setSize(mList->getSize().x(), 0);
+		float textH = valDesc->mText->getSize().y();
+		float labelH = valDesc->mLabel->getFont()->getLetterHeight() * 1.2f;
+		valDesc->setSize(0, Math::min(theme->Text.font->getLetterHeight() * 8.5f, textH + labelH + (theme->Text.font->getLetterHeight() * 0.5f)));
 		rowDesc.addElement(valDesc, true);
-		rowDesc.selectable = false;
 		mList->addRow(rowDesc);
-
-		ComponentListRow dummyRow;
-		auto dummy = std::make_shared<GuiComponent>(mWindow);
-		dummy->setSize(0, 0);
-		dummyRow.addElement(dummy, false);
-		mList->addRow(dummyRow);
 	}
 }
 
