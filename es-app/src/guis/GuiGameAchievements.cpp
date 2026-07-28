@@ -211,8 +211,7 @@ public:
 		
 		mScrollbar->update(deltaTime);
 		mScrollbar->setScrollPosition(mContainer->getScrollPos().y());
-		if (mIsFocused)
-			mScrollbar->onCursorChanged();
+		mScrollbar->onCursorChanged();
 	}
 
 	void onFocusLost() override
@@ -335,7 +334,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 		}
 	});
 
-	mGrid.setEntry(mTabs, Vector2i(0, 1), true, true);
+	mGrid.setEntry(mTabs, Vector2i(0, 1), false, true);
 
 	// Row 2: Content List
 	mList = std::make_shared<ComponentList>(mWindow);
@@ -651,6 +650,12 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 	if (mActiveTab == 3 && mOptionsUI)
 	{
 		if (mOptionsUI->input(config, input))
+			return true;
+	}
+
+	if (mGrid.getCursor().y() == 2)
+	{
+		if (mTabs->input(config, input))
 			return true;
 	}
 
