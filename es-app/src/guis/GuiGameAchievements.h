@@ -53,6 +53,7 @@ protected:
 	bool mDownHeld = false;
 	int mUpTime = 0;
 	int mDownTime = 0;
+	int mManualScrollAccum = 0;
 
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;

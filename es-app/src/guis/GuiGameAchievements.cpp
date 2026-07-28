@@ -627,8 +627,7 @@ void GuiGameAchievements::populateInfoTab()
 		auto valDesc = std::make_shared<ScrollableDescription>(mWindow, desc, this);
 		valDesc->mBoundaryCallback = [this](int dir) {
 			if (dir == 1) {
-				mGrid.setCursorTo(mList);
-				mList->setCursorIndex(0);
+				mGrid.moveCursor(Vector2i(0, 1));
 			} else if (dir == -1) {
 				int target = mList->getCursorIndex() - 1;
 				if (target >= 0) {
@@ -717,6 +716,34 @@ void GuiGameAchievements::update(int deltaTime)
 {
 	if (mDownHeld) mDownTime += deltaTime; else mDownTime = 0;
 	if (mUpHeld) mUpTime += deltaTime; else mUpTime = 0;
+
+	if (mGrid.isCursorTo(mList) && !mList->isScrolling()) {
+		if (mUpHeld && mUpTime > 400 && mList->getCursorIndex() < mList->size() - 1) {
+			mManualScrollAccum += deltaTime;
+			if (mManualScrollAccum >= 114) {
+				mManualScrollAccum -= 114;
+				int target = mList->getCursorIndex() - 1;
+				if (target >= 0) {
+					mList->setCursorIndex(target);
+				} else {
+					mGrid.moveCursor(Vector2i(0, 1));
+				}
+			}
+		} else if (mDownHeld && mDownTime > 400 && mList->getCursorIndex() < mList->size() - 1) {
+			mManualScrollAccum += deltaTime;
+			if (mManualScrollAccum >= 114) {
+				mManualScrollAccum -= 114;
+				int target = mList->getCursorIndex() + 1;
+				if (target <= mList->size() - 1) {
+					mList->setCursorIndex(target);
+				}
+			}
+		} else {
+			mManualScrollAccum = 0;
+		}
+	} else {
+		mManualScrollAccum = 0;
+	}
 
 	GuiComponent::update(deltaTime);
 
