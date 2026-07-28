@@ -4,6 +4,7 @@
 #include "ProfileManager.h"
 #include "utils/FileSystemUtil.h"
 #include "utils/TimeUtil.h"
+#include "utils/StringUtil.h"
 #include "RetroAchievements.h"
 #include "Log.h"
 #include <rapidjson/document.h>
