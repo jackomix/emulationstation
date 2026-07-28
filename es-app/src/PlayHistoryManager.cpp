@@ -4,6 +4,7 @@
 #include "ProfileManager.h"
 #include "utils/FileSystemUtil.h"
 #include "utils/TimeUtil.h"
+#include "RetroAchievements.h"
 #include "Log.h"
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -45,13 +46,20 @@ std::vector<PlaySession> PlayHistoryManager::getSessions(FileData* game) {
     doc.Parse(content.c_str());
     if (doc.HasParseError() || !doc.IsObject()) return sessions;
     
-    if (doc.HasMember("sessions") && doc["sessions"].IsArray()) {
-        for (auto& v : doc["sessions"].GetArray()) {
+    std::string gamePath = game->getPath();
+    if (doc.HasMember(gamePath.c_str()) && doc[gamePath.c_str()].IsArray()) {
+        for (auto& v : doc[gamePath.c_str()].GetArray()) {
             PlaySession s;
             if (v.HasMember("id") && v["id"].IsString()) s.id = v["id"].GetString();
             if (v.HasMember("startTime") && v["startTime"].IsString()) s.startTime = v["startTime"].GetString();
             if (v.HasMember("durationSeconds") && v["durationSeconds"].IsInt()) s.durationSeconds = v["durationSeconds"].GetInt();
             if (v.HasMember("completed") && v["completed"].IsBool()) s.completed = v["completed"].GetBool();
+            
+            if (v.HasMember("achievementIds") && v["achievementIds"].IsArray()) {
+                for (auto& a : v["achievementIds"].GetArray()) {
+                    if (a.IsString()) s.achievementIds.push_back(a.GetString());
+                }
+            }
             sessions.push_back(s);
         }
     }
@@ -65,9 +73,20 @@ void PlayHistoryManager::saveSessions(FileData* game, const std::vector<PlaySess
     
     rapidjson::Document doc;
     doc.SetObject();
-    rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
     
-    doc.AddMember("gamePath", rapidjson::Value(game->getPath().c_str(), allocator), allocator);
+    if (Utils::FileSystem::exists(path)) {
+        std::string content = Utils::FileSystem::readAllText(path);
+        if (!content.empty()) {
+            rapidjson::Document existing;
+            existing.Parse(content.c_str());
+            if (!existing.HasParseError() && existing.IsObject()) {
+                doc.CopyFrom(existing, doc.GetAllocator());
+            }
+        }
+    }
+    
+    rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
+    std::string gamePath = game->getPath();
     
     rapidjson::Value sessionsArray(rapidjson::kArrayType);
     for (const auto& s : sessions) {
@@ -76,10 +95,20 @@ void PlayHistoryManager::saveSessions(FileData* game, const std::vector<PlaySess
         sObj.AddMember("startTime", rapidjson::Value(s.startTime.c_str(), allocator), allocator);
         sObj.AddMember("durationSeconds", s.durationSeconds, allocator);
         sObj.AddMember("completed", s.completed, allocator);
+        
+        rapidjson::Value arr(rapidjson::kArrayType);
+        for (const auto& a : s.achievementIds) {
+            arr.PushBack(rapidjson::Value(a.c_str(), allocator), allocator);
+        }
+        sObj.AddMember("achievementIds", arr, allocator);
+        
         sessionsArray.PushBack(sObj, allocator);
     }
     
-    doc.AddMember("sessions", sessionsArray, allocator);
+    if (doc.HasMember(gamePath.c_str())) {
+        doc.RemoveMember(gamePath.c_str());
+    }
+    doc.AddMember(rapidjson::Value(gamePath.c_str(), allocator), sessionsArray, allocator);
     
     rapidjson::StringBuffer buffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
@@ -108,8 +137,25 @@ void PlayHistoryManager::startSession(FileData* game) {
     
     mCurrentSession.durationSeconds = 0;
     mCurrentSession.completed = false;
+    mCurrentSession.achievementIds.clear();
     
     auto sessions = getSessions(mCurrentGame);
+    bool needsSave = false;
+    for (auto& s : sessions) {
+        if (!s.completed) {
+            s.completed = true;
+            needsSave = true;
+            int playCount = mCurrentGame->getMetadata().getInt(MetaDataId::PlayCount) + 1;
+            mCurrentGame->setMetadata(MetaDataId::PlayCount, std::to_string(static_cast<long long>(playCount)));
+            long gameTime = mCurrentGame->getMetadata().getInt(MetaDataId::GameTime) + s.durationSeconds;
+            if (s.durationSeconds >= 10)
+                mCurrentGame->setMetadata(MetaDataId::GameTime, std::to_string(static_cast<long>(gameTime)));
+            
+            // For LastPlayed, just use now since we are booting/recovering
+            mCurrentGame->setMetadata(MetaDataId::LastPlayed, Utils::Time::DateTime(Utils::Time::now()));
+        }
+    }
+    
     sessions.push_back(mCurrentSession);
     saveSessions(mCurrentGame, sessions);
     
@@ -175,3 +221,50 @@ void PlayHistoryManager::heartbeatLoop() {
         }
     }
 }
+
+void PlayHistoryManager::updateAchievementsForCurrentSession(const GameInfoAndUserProgress& raInfo) {
+    std::lock_guard<std::mutex> lock(mSessionMutex);
+    if (mCurrentGame == nullptr) return;
+    if (!mCurrentSession.completed) return;
+    if (raInfo.Achievements.empty()) return;
+
+    long sStart = std::stoll(mCurrentSession.id);
+    long sEnd = sStart + mCurrentSession.durationSeconds + 60; // 60s buffer
+    
+    struct tm * ptminfoStart = gmtime(&sStart);
+    char bufStart[128];
+    strftime(bufStart, sizeof(bufStart), "%Y-%m-%dT%H:%M:%SZ", ptminfoStart);
+    std::string sIso = bufStart;
+    
+    struct tm * ptminfoEnd = gmtime(&sEnd);
+    char bufEnd[128];
+    strftime(bufEnd, sizeof(bufEnd), "%Y-%m-%dT%H:%M:%SZ", ptminfoEnd);
+    std::string eIso = bufEnd;
+    
+    bool updated = false;
+    for (auto& ach : raInfo.Achievements) {
+        std::string earned = ach.DateEarned.empty() ? ach.DateEarnedHardcore : ach.DateEarned;
+        if (earned.empty()) continue;
+        
+        std::string earnedIso = Utils::String::replace(earned, " ", "T") + "Z";
+        
+        if (earnedIso >= sIso && earnedIso <= eIso) {
+            if (std::find(mCurrentSession.achievementIds.begin(), mCurrentSession.achievementIds.end(), ach.ID) == mCurrentSession.achievementIds.end()) {
+                mCurrentSession.achievementIds.push_back(ach.ID);
+                updated = true;
+            }
+        }
+    }
+    
+    if (updated) {
+        auto sessions = getSessions(mCurrentGame);
+        for (auto& s : sessions) {
+            if (s.id == mCurrentSession.id) {
+                s.achievementIds = mCurrentSession.achievementIds;
+                break;
+            }
+        }
+        saveSessions(mCurrentGame, sessions);
+    }
+}
+

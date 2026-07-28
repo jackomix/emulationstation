@@ -670,27 +670,13 @@ void GuiGameAchievements::populatePlayHistoryTab()
 
 	std::map<std::string, std::vector<Achievement>> sessionAchievements;
 
-	for (auto& ach : mRaInfo.Achievements) {
-		std::string earned = ach.DateEarned.empty() ? ach.DateEarnedHardcore : ach.DateEarned;
-		if (earned.empty()) continue;
-
-		std::string earnedIso = earned;
-		earnedIso = Utils::String::replace(earnedIso, " ", "T") + "Z";
-		
-		bool foundSession = false;
-		for (auto& s : sessions) {
-			if (!s.completed) {
-				s.completed = true;
-				PlayHistoryManager::getInstance()->saveSessions(mFile, sessions);
-			}
-
-			time_t sStart = Utils::Time::stringToTime(Utils::String::replace(Utils::String::replace(s.startTime, "-", ""), ":", "").substr(0, 15), "%Y%m%dT%H%M%S");
-			time_t eTime = Utils::Time::stringToTime(Utils::String::replace(Utils::String::replace(earnedIso, "-", ""), ":", "").substr(0, 15), "%Y%m%dT%H%M%S");
-			
-			if (eTime >= sStart && eTime <= sStart + s.durationSeconds) {
-				sessionAchievements[s.id].push_back(ach);
-				foundSession = true;
-				break;
+	for (auto& s : sessions) {
+		for (auto& id : s.achievementIds) {
+			for (auto& ach : mRaInfo.Achievements) {
+				if (ach.ID == id) {
+					sessionAchievements[s.id].push_back(ach);
+					break;
+				}
 			}
 		}
 	}

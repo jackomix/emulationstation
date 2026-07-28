@@ -934,6 +934,8 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		int raId = gameToUpdate->getMetadata().getInt(MetaDataId::CheevosId);
 		if (raId != 0) {
 			Utils::FileSystem::removeFile("/roms/achievements/games/" + std::to_string(raId) + ".json");
+			auto raInfo = RetroAchievements::getGameInfoAndUserProgress(raId);
+			PlayHistoryManager::getInstance()->updateAchievementsForCurrentSession(raInfo);
 		}
 
 		int timesPlayed = gameToUpdate->getMetadata().getInt(MetaDataId::PlayCount) + 1;

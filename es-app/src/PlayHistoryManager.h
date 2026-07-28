@@ -11,9 +11,11 @@ struct PlaySession {
     std::string startTime;
     int durationSeconds;
     bool completed;
+    std::vector<std::string> achievementIds;
 };
 
 class FileData;
+struct GameInfoAndUserProgress;
 
 class PlayHistoryManager {
 public:
@@ -24,6 +26,7 @@ public:
     
     std::vector<PlaySession> getSessions(FileData* game);
     void saveSessions(FileData* game, const std::vector<PlaySession>& sessions);
+    void updateAchievementsForCurrentSession(const GameInfoAndUserProgress& raInfo);
 
 private:
     PlayHistoryManager();
