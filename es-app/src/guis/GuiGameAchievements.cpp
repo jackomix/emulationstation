@@ -18,6 +18,8 @@
 #include "FileData.h"
 #include "SystemData.h"
 #include "GuiGameOptions.h"
+#include "PlayHistoryManager.h"
+#include "utils/TimeUtil.h"
 
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
@@ -469,7 +471,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	// Row 1: Tabs
 	mTabs = std::make_shared<ComponentTab>(mWindow);
 	mTabs->addTab(_("ACHIEVEMENTS"));
-	mTabs->addTab(_("ACTIVITY"));
+	mTabs->addTab(_("PLAY HISTORY"));
 	mTabs->addTab(_("INFO"));
 	mTabs->addTab(_("OPTIONS"));
 
@@ -661,40 +663,56 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	mList->addRow(rowLast);
 
 	// PLAYTHROUGH HISTORY
-	if (mRaInfo.Achievements.empty()) return;
+	auto sessions = PlayHistoryManager::getInstance()->getSessions(mFile);
+	std::sort(sessions.begin(), sessions.end(), [](const PlaySession& a, const PlaySession& b) {
+		return a.startTime > b.startTime;
+	});
 
-	std::map<std::string, std::vector<Achievement>, std::greater<std::string>> sessions;
+	std::map<std::string, std::vector<Achievement>> sessionAchievements;
+
 	for (auto& ach : mRaInfo.Achievements) {
 		std::string earned = ach.DateEarned.empty() ? ach.DateEarnedHardcore : ach.DateEarned;
-		if (!earned.empty()) {
-			// Group by day (YYYY-MM-DD prefix)
-			std::string day = earned.substr(0, 10);
-			sessions[day].push_back(ach);
+		if (earned.empty()) continue;
+
+		std::string earnedIso = earned;
+		earnedIso = Utils::String::replace(earnedIso, " ", "T") + "Z";
+		
+		bool foundSession = false;
+		for (auto& s : sessions) {
+			if (!s.completed) {
+				s.completed = true;
+				PlayHistoryManager::getInstance()->saveSessions(mFile, sessions);
+			}
+
+			time_t sStart = Utils::Time::stringToTime(Utils::String::replace(Utils::String::replace(s.startTime, "-", ""), ":", "").substr(0, 15), "%Y%m%dT%H%M%S");
+			time_t eTime = Utils::Time::stringToTime(Utils::String::replace(Utils::String::replace(earnedIso, "-", ""), ":", "").substr(0, 15), "%Y%m%dT%H%M%S");
+			
+			if (eTime >= sStart && eTime <= sStart + s.durationSeconds) {
+				sessionAchievements[s.id].push_back(ach);
+				foundSession = true;
+				break;
+			}
 		}
 	}
 
-	if (sessions.empty()) return;
-
-	for (auto& pair : sessions) {
-		const std::string& day = pair.first;
-		const auto& achs = pair.second;
-
-		int sessionPoints = 0;
-		for (const auto& a : achs) {
-			sessionPoints += Utils::String::toInteger(a.Points);
-		}
-
-		// Format day header
-		std::string firstEarned = achs.front().DateEarned.empty() ? achs.front().DateEarnedHardcore : achs.front().DateEarned;
-		std::string isoDate = firstEarned;
+	for (auto& s : sessions) {
+		std::string isoDate = s.startTime;
 		isoDate = Utils::String::replace(isoDate, "-", "");
 		isoDate = Utils::String::replace(isoDate, ":", "");
-		isoDate = Utils::String::replace(isoDate, " ", "T");
+		isoDate = Utils::String::replace(isoDate, "Z", "");
 		std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
-
+		
+		std::string durationStr = Utils::Time::secondsToString(s.durationSeconds, false, true);
+		if (s.durationSeconds < 60) durationStr = std::to_string(s.durationSeconds) + " sec";
+		
 		ComponentListRow sessionRow;
-		auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate, theme->TextSmall.font, theme->Text.color);
+		auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate + " - " + durationStr, theme->TextSmall.font, theme->Text.color);
 		lblSession->setOpacity(160);
+		
+		int sessionPoints = 0;
+		for (const auto& a : sessionAchievements[s.id]) {
+			sessionPoints += Utils::String::toInteger(a.Points);
+		}
 		
 		std::string rightStr = std::to_string(sessionPoints) + _U(" \uf091");
 		auto valSession = std::make_shared<TextComponent>(mWindow, rightStr, theme->TextSmall.font, theme->Text.color);
@@ -705,17 +723,14 @@ void GuiGameAchievements::populatePlayHistoryTab()
 		sessionRow.addElement(valSession, false);
 		mList->addRow(sessionRow);
 
-		for (auto ach : achs) {
+		for (auto ach : sessionAchievements[s.id]) {
 			ComponentListRow achRow;
 			auto entry = std::make_shared<SessionAchievementEntry>(mWindow, ach);
 			
-			// Spacer for indentation
 			auto spacer = std::make_shared<GuiComponent>(mWindow);
 			spacer->setSize(Renderer::getScreenHeight() * 0.02f, 0);
 			achRow.addElement(spacer, false);
-			
 			achRow.addElement(entry, true);
-
 			achRow.makeAcceptInputHandler([this, ach] {
 				int index = 0;
 				for (auto& a : mRaInfo.Achievements) {
@@ -727,7 +742,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 					mList->setCursorIndex(index);
 				});
 			});
-
 			mList->addRow(achRow);
 		}
 	}

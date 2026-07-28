@@ -37,6 +37,7 @@
 #include "guis/GuiMsgBox.h"
 #include "Paths.h"
 #include "resources/TextureData.h"
+#include "PlayHistoryManager.h"
 
 using namespace Utils::Platform;
 
@@ -798,6 +799,8 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 
 	mRunningGame = gameToUpdate;
 
+	PlayHistoryManager::getInstance()->startSession(gameToUpdate);
+
 	ProcessStartInfo process(command);
 	
 	std::ofstream f_dbg("/home/ark/es_debug.log", std::ios::app);
@@ -886,6 +889,8 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	}
 
 	int exitCode = process.run();
+	
+	PlayHistoryManager::getInstance()->stopSession();
 	
 	Utils::FileSystem::removeFile("/tmp/es_profile.cfg");
 
