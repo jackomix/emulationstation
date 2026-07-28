@@ -276,3 +276,4 @@ void PlayHistoryManager::updateAchievementsForGame(FileData* game, const GameInf
         saveSessions(game, sessions);
     }
 
+}
