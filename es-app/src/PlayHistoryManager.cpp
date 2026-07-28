@@ -131,6 +131,11 @@ void PlayHistoryManager::stopSession() {
     std::lock_guard<std::mutex> lock(mSessionMutex);
     if (mCurrentGame == nullptr) return;
     
+    time_t rawtime = Utils::Time::now();
+    try {
+        mCurrentSession.durationSeconds = (int)(rawtime - std::stoll(mCurrentSession.id));
+    } catch (...) {}
+    
     mCurrentSession.completed = true;
     
     auto sessions = getSessions(mCurrentGame);

@@ -928,8 +928,14 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	window->normalizeNextUpdate();
 
 	//update number of times the game has been launched
-	if (exitCode == 0)
+	// ALWAYS update metadata regardless of exit code (since users might exit via Start+Select which isn't 0)
+	if (true)
 	{
+		int raId = gameToUpdate->getMetadata().getInt(MetaDataId::CheevosId);
+		if (raId != 0) {
+			Utils::FileSystem::removeFile("/roms/achievements/games/" + std::to_string(raId) + ".json");
+		}
+
 		int timesPlayed = gameToUpdate->getMetadata().getInt(MetaDataId::PlayCount) + 1;
 		gameToUpdate->setMetadata(MetaDataId::PlayCount, std::to_string(static_cast<long long>(timesPlayed)));
 
@@ -945,7 +951,9 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		gameToUpdate->setMetadata(MetaDataId::LastPlayed, Utils::Time::DateTime(Utils::Time::now()));
 		CollectionSystemManager::get()->refreshCollectionSystems(gameToUpdate);
 		saveToGamelistRecovery(gameToUpdate);
-	} else {
+	}
+	
+	if (exitCode != 0) {
 		// show AmberELEC error message
 		LOG(LogWarning) << "...Show Error message! exit code " << exitCode << "!";
 	}

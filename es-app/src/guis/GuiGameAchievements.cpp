@@ -706,7 +706,7 @@ void GuiGameAchievements::populatePlayHistoryTab()
 		if (s.durationSeconds < 60) durationStr = std::to_string(s.durationSeconds) + " sec";
 		
 		ComponentListRow sessionRow;
-		auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate + " - " + durationStr, theme->TextSmall.font, theme->Text.color);
+		auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate, theme->TextSmall.font, theme->Text.color);
 		lblSession->setOpacity(160);
 		
 		int sessionPoints = 0;
@@ -714,7 +714,10 @@ void GuiGameAchievements::populatePlayHistoryTab()
 			sessionPoints += Utils::String::toInteger(a.Points);
 		}
 		
-		std::string rightStr = std::to_string(sessionPoints) + _U(" \uf091");
+		std::string rightStr = durationStr;
+		if (sessionPoints > 0)
+			rightStr += "   " + std::to_string(sessionPoints) + _U(" \uf091");
+			
 		auto valSession = std::make_shared<TextComponent>(mWindow, rightStr, theme->TextSmall.font, theme->Text.color);
 		valSession->setHorizontalAlignment(ALIGN_RIGHT);
 		valSession->setOpacity(160);
