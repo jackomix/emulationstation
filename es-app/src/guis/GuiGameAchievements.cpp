@@ -152,7 +152,7 @@ class SessionAchievementEntry : public ComponentGrid
 {
 public:
 	SessionAchievementEntry(Window* window, Achievement& ra) :
-		ComponentGrid(window, Vector2i(5, 1))
+		ComponentGrid(window, Vector2i(6, 1))
 	{
 		mGameInfo = ra;
 		auto theme = ThemeData::getMenuTheme();
@@ -167,8 +167,11 @@ public:
 
 		// Bold font if available, fallback to regular
 		auto boldFont = theme->Text.font;
-		mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title + " - ", boldFont, theme->Text.color);
+		mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, boldFont, theme->Text.color);
 		
+		mSeparator = std::make_shared<TextComponent>(mWindow, " - ", theme->TextSmall.font, theme->Text.color);
+		mSeparator->setOpacity(192);
+
 		mDesc = std::make_shared<TextComponent>(mWindow, mGameInfo.Description, theme->TextSmall.font, theme->Text.color);
 		mDesc->setOpacity(192);
 		mDesc->setAutoScrollDelay(500);
@@ -176,21 +179,24 @@ public:
 		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
 
 		setEntry(mTitle, Vector2i(1, 0), false, true);
-		setEntry(mDesc, Vector2i(2, 0), false, true);
-		setEntry(mPoints, Vector2i(3, 0), false, true);
+		setEntry(mSeparator, Vector2i(2, 0), false, true);
+		setEntry(mDesc, Vector2i(3, 0), false, true);
+		setEntry(mPoints, Vector2i(4, 0), false, true);
 
 		// Layout percentages
 		float badgeW = (badgeSize + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
 		float titleW = mTitle->getSize().x() / WINDOW_WIDTH;
+		float sepW = mSeparator->getSize().x() / WINDOW_WIDTH;
 		float pointsW = (mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
 		float rightPadW = (Renderer::getScreenHeight() * 0.02f) / WINDOW_WIDTH;
-		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - pointsW - rightPadW); 
+		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - sepW - pointsW - rightPadW); 
 
 		setColWidthPerc(0, badgeW);
 		setColWidthPerc(1, titleW);
-		setColWidthPerc(2, descW);
-		setColWidthPerc(3, pointsW);
-		setColWidthPerc(4, rightPadW);
+		setColWidthPerc(2, sepW);
+		setColWidthPerc(3, descW);
+		setColWidthPerc(4, pointsW);
+		setColWidthPerc(5, rightPadW);
 
 		setSize(0, rowHeight);
 	}
@@ -198,6 +204,7 @@ public:
 	virtual void setColor(unsigned int color)
 	{
 		mTitle->setColor(color);
+		mSeparator->setColor(color);
 		mDesc->setColor(color);
 		if (mPoints) mPoints->setColor(color);
 	}
@@ -217,6 +224,7 @@ public:
 
 private:
 	std::shared_ptr<TextComponent> mTitle;
+	std::shared_ptr<TextComponent> mSeparator;
 	std::shared_ptr<TextComponent> mDesc;
 	std::shared_ptr<TextComponent> mPoints;
 	std::shared_ptr<WebImageComponent> mImage;
@@ -672,21 +680,8 @@ void GuiGameAchievements::populatePlayHistoryTab()
 		const auto& achs = pair.second;
 
 		int sessionPoints = 0;
-		long minTime = -1, maxTime = -1;
-
 		for (const auto& a : achs) {
 			sessionPoints += Utils::String::toInteger(a.Points);
-			std::string earned = a.DateEarned.empty() ? a.DateEarnedHardcore : a.DateEarned;
-			if (!earned.empty()) {
-				// RA DateEarned is "YYYY-MM-DD HH:MM:SS". Convert to ISO for DateTime
-				std::string isoDate = earned;
-				isoDate = Utils::String::replace(isoDate, "-", "");
-				isoDate = Utils::String::replace(isoDate, ":", "");
-				isoDate = Utils::String::replace(isoDate, " ", "T");
-				time_t t = Utils::Time::DateTime(isoDate).getTime();
-				if (minTime == -1 || t < minTime) minTime = (long)t;
-				if (maxTime == -1 || t > maxTime) maxTime = (long)t;
-			}
 		}
 
 		// Format day header
@@ -697,23 +692,17 @@ void GuiGameAchievements::populatePlayHistoryTab()
 		isoDate = Utils::String::replace(isoDate, " ", "T");
 		std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
 
-		std::string durationStr = "";
-		if (maxTime != -1 && minTime != -1 && (maxTime - minTime) > 0) {
-			durationStr = Utils::Time::secondsToString(maxTime - minTime, false, true) + _U("  ·  ");
-		}
-
 		ComponentListRow sessionRow;
 		auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate, theme->TextSmall.font, theme->Text.color);
 		lblSession->setOpacity(160);
 		
-		std::string rightStr = durationStr + std::to_string(sessionPoints) + _U(" \uf091");
+		std::string rightStr = std::to_string(sessionPoints) + _U(" \uf091");
 		auto valSession = std::make_shared<TextComponent>(mWindow, rightStr, theme->TextSmall.font, theme->Text.color);
 		valSession->setHorizontalAlignment(ALIGN_RIGHT);
 		valSession->setOpacity(160);
 
 		sessionRow.addElement(lblSession, true);
 		sessionRow.addElement(valSession, false);
-		sessionRow.hide_cursor = true;
 		mList->addRow(sessionRow);
 
 		for (auto ach : achs) {
@@ -733,8 +722,10 @@ void GuiGameAchievements::populatePlayHistoryTab()
 					if (a.ID == ach.ID) break;
 					index++;
 				}
-				mTabs->setCursorIndex(0);
-				mList->setCursorIndex(index);
+				mWindow->postToUiThread([this, index]() {
+					mTabs->setCursorIndex(0);
+					mList->setCursorIndex(index);
+				});
 			});
 
 			mList->addRow(achRow);
