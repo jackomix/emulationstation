@@ -5,6 +5,7 @@
 #include "utils/TimeUtil.h"
 #include "AchievementCache.h"
 #include "RetroAchievements.h"
+#include "PlayHistoryManager.h"
 #include <thread>
 #include <memory>
 #include <rapidjson/document.h>
@@ -280,7 +281,7 @@ void AchievementServer::start()
 				
 				bool hardcore = getParam("h") == "1";
 				int remaining = 0;
-				std::string nowStr = Utils::Time::timeToString(Utils::Time::now(), "%Y-%m-%d %H:%M:%S") + " (offline)";
+				std::string nowStr = Utils::Time::timeToString(Utils::Time::now(), "%Y-%m-%d %H:%M:%S");
 				
 				for (auto& ach : prog.Achievements) {
 					if (ach.ID == a) {
@@ -290,6 +291,8 @@ void AchievementServer::start()
 						if (hardcore && ach.DateEarnedHardcore.empty()) {
 							ach.DateEarnedHardcore = nowStr;
 						}
+						
+						PlayHistoryManager::getInstance()->addAchievementToCurrentSession(a);
 					}
 					
 					// Count remaining achievements
