@@ -148,6 +148,87 @@ private:
 	Achievement mGameInfo;
 };
 
+class SessionAchievementEntry : public ComponentGrid
+{
+public:
+	SessionAchievementEntry(Window* window, Achievement& ra) :
+		ComponentGrid(window, Vector2i(5, 1))
+	{
+		mGameInfo = ra;
+		auto theme = ThemeData::getMenuTheme();
+
+		float badgeSize = Renderer::getScreenHeight() * (24.0f / 720.0f); // 24px small badge
+		float rowHeight = badgeSize * 1.5f;
+
+		mImage = std::make_shared<WebImageComponent>(mWindow);
+		mImage->setMaxSize(badgeSize, badgeSize);
+		mImage->setImage(mGameInfo.getBadgeUrl());
+		setEntry(mImage, Vector2i(0, 0), false, false);
+
+		// Bold font if available, fallback to regular
+		auto boldFont = theme->Text.font;
+		mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, boldFont, theme->Text.color);
+		
+		mSeparator = std::make_shared<TextComponent>(mWindow, " - ", theme->TextSmall.font, theme->Text.color);
+		mSeparator->setOpacity(192);
+
+		mDesc = std::make_shared<TextComponent>(mWindow, mGameInfo.Description, theme->TextSmall.font, theme->Text.color);
+		mDesc->setOpacity(192);
+		mDesc->setAutoScrollDelay(500);
+
+		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+
+		setEntry(mTitle, Vector2i(1, 0), false, true);
+		setEntry(mSeparator, Vector2i(2, 0), false, true);
+		setEntry(mDesc, Vector2i(3, 0), false, true);
+		setEntry(mPoints, Vector2i(4, 0), false, true);
+
+		// Layout percentages
+		float badgeW = (badgeSize + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
+		float titleW = (mTitle->getSize().x() + 5.0f) / WINDOW_WIDTH;
+		float sepW = mSeparator->getSize().x() / WINDOW_WIDTH;
+		float pointsW = Renderer::getScreenHeight() * 0.12f / WINDOW_WIDTH;
+		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - sepW - pointsW - 0.05f); // Leave some padding
+
+		setColWidthPerc(0, badgeW);
+		setColWidthPerc(1, titleW);
+		setColWidthPerc(2, sepW);
+		setColWidthPerc(3, descW);
+		setColWidthPerc(4, pointsW);
+
+		setSize(0, rowHeight);
+	}
+
+	virtual void setColor(unsigned int color)
+	{
+		mTitle->setColor(color);
+		mSeparator->setColor(color);
+		mDesc->setColor(color);
+		if (mPoints) mPoints->setColor(color);
+	}
+
+	void onFocusLost() override
+	{
+		mDesc->setAutoScroll(TextComponent::NONE);
+		ComponentGrid::onFocusLost();
+	}
+
+	void onFocusGained() override
+	{
+		mDesc->setAutoScroll(TextComponent::HORIZONTAL);
+		mDesc->onShow();
+		ComponentGrid::onFocusGained();
+	}
+
+private:
+	std::shared_ptr<TextComponent> mTitle;
+	std::shared_ptr<TextComponent> mSeparator;
+	std::shared_ptr<TextComponent> mDesc;
+	std::shared_ptr<TextComponent> mPoints;
+	std::shared_ptr<WebImageComponent> mImage;
+	Achievement mGameInfo;
+};
+
 class GuiGameAchievements;
 
 class ScrollableDescription : public GuiComponent
@@ -545,7 +626,7 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	// Play Time
 	ComponentListRow rowTime;
 	auto lblTime = std::make_shared<TextComponent>(mWindow, _("PLAY TIME"), theme->Text.font, theme->Text.color);
-	auto valTime = std::make_shared<TextComponent>(mWindow, Utils::Time::secondsToString(Utils::String::toInteger(mFile->getMetadata(MetaDataId::GameTime))), theme->Text.font, theme->Text.color);
+	auto valTime = std::make_shared<TextComponent>(mWindow, Utils::Time::secondsToString(Utils::String::toInteger(mFile->getMetadata(MetaDataId::GameTime)), false, true), theme->Text.font, theme->Text.color);
 	valTime->setHorizontalAlignment(ALIGN_RIGHT);
 	rowTime.addElement(lblTime, true);
 	rowTime.addElement(valTime, false);
@@ -563,11 +644,82 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	// Last Played
 	ComponentListRow rowLast;
 	auto lblLast = std::make_shared<TextComponent>(mWindow, _("LAST PLAYED"), theme->Text.font, theme->Text.color);
-	auto valLast = std::make_shared<TextComponent>(mWindow, mFile->getMetadata(MetaDataId::LastPlayed), theme->Text.font, theme->Text.color);
+	
+	std::string lastPlayedRaw = mFile->getMetadata(MetaDataId::LastPlayed);
+	std::string lastPlayedFormatted = lastPlayedRaw;
+	if (lastPlayedRaw != "0" && !lastPlayedRaw.empty()) {
+		lastPlayedFormatted = Utils::Time::DateTime(lastPlayedRaw).toFullString();
+	}
+	
+	auto valLast = std::make_shared<TextComponent>(mWindow, lastPlayedFormatted, theme->Text.font, theme->Text.color);
 	valLast->setHorizontalAlignment(ALIGN_RIGHT);
 	rowLast.addElement(lblLast, true);
 	rowLast.addElement(valLast, false);
 	mList->addRow(rowLast);
+
+	// PLAYTHROUGH HISTORY
+	if (mRaInfo.Achievements.empty()) return;
+
+	std::map<std::string, std::vector<Achievement>, std::greater<std::string>> sessions;
+	for (auto& ach : mRaInfo.Achievements) {
+		std::string earned = ach.DateEarned.empty() ? ach.DateEarnedHardcore : ach.DateEarned;
+		if (!earned.empty()) {
+			// Group by day (YYYY-MM-DD prefix)
+			std::string day = earned.substr(0, 10);
+			sessions[day].push_back(ach);
+		}
+	}
+
+	if (sessions.empty()) return;
+
+	ComponentListRow rowHistoryHeader;
+	auto lblHistory = std::make_shared<TextComponent>(mWindow, _("PLAYTHROUGH HISTORY"), theme->Text.font, theme->Text.color);
+	rowHistoryHeader.addElement(lblHistory, true);
+	rowHistoryHeader.hide_cursor = true;
+	mList->addRow(rowHistoryHeader);
+
+	for (auto& pair : sessions) {
+		const std::string& day = pair.first;
+		const auto& achs = pair.second;
+
+		int sessionPoints = 0;
+		for (const auto& a : achs) sessionPoints += Utils::String::toInteger(a.Points);
+
+		// Format day header
+		std::string isoDate = day + "T000000";
+		isoDate = Utils::String::replace(isoDate, "-", "");
+		std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
+		// Trim time part if it includes " at 12:00 AM"
+		size_t atPos = formattedDate.find(" at");
+		if (atPos != std::string::npos) formattedDate = formattedDate.substr(0, atPos);
+
+		ComponentListRow sessionRow;
+		auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate, theme->TextSmall.font, theme->Text.color);
+		lblSession->setOpacity(160);
+		
+		std::string rightStr = std::to_string(sessionPoints) + _U(" \uf091");
+		auto valSession = std::make_shared<TextComponent>(mWindow, rightStr, theme->TextSmall.font, theme->Text.color);
+		valSession->setHorizontalAlignment(ALIGN_RIGHT);
+		valSession->setOpacity(160);
+
+		sessionRow.addElement(lblSession, true);
+		sessionRow.addElement(valSession, false);
+		sessionRow.hide_cursor = true;
+		mList->addRow(sessionRow);
+
+		for (auto ach : achs) {
+			ComponentListRow achRow;
+			auto entry = std::make_shared<SessionAchievementEntry>(mWindow, ach);
+			
+			// Spacer for indentation
+			auto spacer = std::make_shared<GuiComponent>(mWindow);
+			spacer->setSize(Renderer::getScreenHeight() * 0.02f, 0);
+			achRow.addElement(spacer, false);
+			
+			achRow.addElement(entry, true);
+			mList->addRow(achRow);
+		}
+	}
 }
 
 void GuiGameAchievements::populateInfoTab()

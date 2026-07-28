@@ -37,6 +37,7 @@ namespace Utils
 			void               setIsoString (const std::string& _isoString);
 			const std::string& getIsoString () const { return mIsoString; }
 			std::string		   toLocalTimeString();
+			std::string		   toFullString();
 
 			double			   elapsedSecondsSince(const DateTime& _since);
 
@@ -77,7 +78,7 @@ namespace Utils
 		std::string timeToString(const time_t& _time, const std::string& _format = "%Y%m%dT%H%M%S");
 		int         daysInMonth (const int _year, const int _month);
 		int         daysInYear  (const int _year);
-		std::string secondsToString(const long seconds, bool asTime = false);
+		std::string secondsToString(const long seconds, bool asTime = false, bool fullFormat = false);
 
 		std::string getSystemDateFormat(bool includeHours = false);
 		std::string getElapsedSinceString(const time_t& _time);

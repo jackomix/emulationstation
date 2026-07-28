@@ -191,6 +191,18 @@ namespace Utils
 			return clockBuf;
 		}
 
+		std::string DateTime::toFullString()
+		{
+			time_t     clockNow = getTime();
+			if (clockNow == 0) return _("Unknown Date");
+			struct tm  clockTstruct = *localtime(&clockNow);
+
+			char       clockBuf[256];
+			// Example: August 7, 2026 at 11:58 PM
+			strftime(clockBuf, sizeof(clockBuf), "%B %e, %Y at %I:%M %p", &clockTstruct);
+			return clockBuf;
+		}
+
 		Duration::Duration(const time_t& _time)
 		{
 			mTotalSeconds = (unsigned int)_time;
@@ -463,7 +475,7 @@ namespace Utils
 		} // timeToString
 
 		  // transforms a number of seconds into a human readable string
-		std::string secondsToString(const long seconds, bool asTime)
+		std::string secondsToString(const long seconds, bool asTime, bool fullFormat)
 		{
 			if (seconds == 0)
 				return _("never");
@@ -484,13 +496,43 @@ namespace Utils
 				return Utils::String::format("%02d:%02d", m, s);
 			}
 
-			char buf[256];
-
-			int d =0, h = 0, m = 0, s = 0;
+			int d = 0, h = 0, m = 0, s = 0;
 			d = seconds / 86400;
 			h = (seconds / 3600) % 24;
 			m = (seconds / 60) % 60;
 			s = seconds % 60;
+
+			if (fullFormat)
+			{
+				std::string result;
+				if (d > 0)
+				{
+					result += Utils::String::format(d > 1 ? _("%d days").c_str() : _("%d day").c_str(), d);
+				}
+				if (h > 0 || (d > 0 && m > 0))
+				{
+					if (!result.empty()) result += ", ";
+					result += Utils::String::format(h == 1 ? _("%d hour").c_str() : _("%d hours").c_str(), h);
+				}
+				if (m > 0 || (h > 0 && s > 0))
+				{
+					if (!result.empty()) result += ", ";
+					result += Utils::String::format(m == 1 ? _("%d minute").c_str() : _("%d minutes").c_str(), m);
+				}
+				if (s > 0 && d == 0) // Usually omit seconds if days are involved, but for full format we can include or omit
+				{
+					if (!result.empty()) result += ", ";
+					result += Utils::String::format(s == 1 ? _("%d second").c_str() : _("%d seconds").c_str(), s);
+				}
+				if (result.empty())
+				{
+					result = Utils::String::format(_("%d seconds").c_str(), s);
+				}
+				return result;
+			}
+
+			char buf[256];
+
 			if (d > 1)
 			{
 				snprintf(buf, 256, _("%d d").c_str(), d);
