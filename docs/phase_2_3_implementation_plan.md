@@ -91,4 +91,9 @@ Based on codebase verification, here are the technical paths for these features:
 - Change the base class of `GuiProfileSelect` to inherit from `GuiComponent` directly.
 - Use a 1-row `ComponentGrid` populated with custom `ProfileCard` components.
 - `ComponentGrid::input` natively maps D-pad left/right inputs to `moveCursor(Vector2i(-1/1, 0))` and manages focus loss/gain, audio menu move sounds, and help prompts.
-- Pressing the X button (mapped to `"x"`) pushes a standard `GuiSettings` popup menu for "Rename Profile" and "Delete Profile".
+
+
+### 5. Future Ideas / Miscellaneous
+- **Duplicate RetroAchievements**: Implement deduplication logic for multiple ROM copies of the same game (RA identifies by hash).
+- **HowLongToBeat Support**: Integrate HLTB data to show expected completion times for games.
+- **Mark as Beaten**: Add functionality to manually mark games as 'Beaten'. This could be synced or managed alongside RetroAchievements data when they confirm the game is beaten.
