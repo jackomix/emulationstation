@@ -82,6 +82,8 @@ void PlayHistoryManager::saveSessions(FileData* game, const std::vector<PlaySess
             existing.Parse(content.c_str());
             if (!existing.HasParseError() && existing.IsObject()) {
                 doc.CopyFrom(existing, doc.GetAllocator());
+            } else {
+                Utils::FileSystem::writeAllText(path + ".corrupted", content);
             }
         }
     }
@@ -118,12 +120,19 @@ void PlayHistoryManager::saveSessions(FileData* game, const std::vector<PlaySess
     std::string tmpPath = path + ".tmp";
     Utils::FileSystem::writeAllText(tmpPath, buffer.GetString());
     
-    remove(path.c_str());
     rename(tmpPath.c_str(), path.c_str());
 }
 
 void PlayHistoryManager::startSession(FileData* game) {
     if (game == nullptr) return;
+    
+    {
+        std::lock_guard<std::mutex> lock(mSessionMutex);
+        mRunHeartbeat = false;
+    }
+    if (mHeartbeatThread.joinable()) {
+        mHeartbeatThread.join();
+    }
     
     std::lock_guard<std::mutex> lock(mSessionMutex);
     
@@ -212,12 +221,15 @@ void PlayHistoryManager::heartbeatLoop() {
             
             mCurrentSession.durationSeconds += 30;
             auto sessions = getSessions(mCurrentGame);
+            bool found = false;
             for (auto& s : sessions) {
                 if (s.id == mCurrentSession.id) {
                     s.durationSeconds = mCurrentSession.durationSeconds;
+                    found = true;
                     break;
                 }
             }
+            if (!found) sessions.push_back(mCurrentSession);
             saveSessions(mCurrentGame, sessions);
         }
     }
