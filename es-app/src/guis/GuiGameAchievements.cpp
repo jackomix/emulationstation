@@ -148,10 +148,12 @@ private:
 	Achievement mGameInfo;
 };
 
+class GuiGameAchievements;
+
 class ScrollableDescription : public GuiComponent
 {
 public:
-	ScrollableDescription(Window* window, const std::string& text, bool* upHeld = nullptr, bool* downHeld = nullptr) : GuiComponent(window), mUpHeldPtr(upHeld), mDownHeldPtr(downHeld)
+	ScrollableDescription(Window* window, const std::string& text, GuiGameAchievements* parent) : GuiComponent(window), mParent(parent)
 	{
 		auto theme = ThemeData::getMenuTheme();
 		mBgColor = (theme->Background.centerColor & 0xFFFFFF00) | 0xFF;
@@ -229,7 +231,10 @@ public:
 				}
 
 				if (!scrolled) {
+					int oldScrollDir = mScrollDir;
 					mScrollDir = 0;
+					if (mBoundaryCallback)
+						mBoundaryCallback(oldScrollDir);
 					break;
 				}
 			}
@@ -259,14 +264,14 @@ public:
 		auto theme = ThemeData::getMenuTheme();
 		mScrollbar->setColor(theme->Text.selectorColor);
 
-		if (mDownHeldPtr && *mDownHeldPtr) {
+		if (mParent->mDownHeld) {
 			mScrollDir = 1;
 			mScrollAccumulator = 0;
-			mScrollDelay = 114;
-		} else if (mUpHeldPtr && *mUpHeldPtr) {
+			mScrollDelay = (mParent->mDownTime > 400) ? 114 : 500;
+		} else if (mParent->mUpHeld) {
 			mScrollDir = -1;
 			mScrollAccumulator = 0;
-			mScrollDelay = 114;
+			mScrollDelay = (mParent->mUpTime > 400) ? 114 : 500;
 		}
 
 		GuiComponent::onFocusGained();
@@ -327,8 +332,8 @@ public:
 	int mScrollDir = 0;
 	int mScrollAccumulator = 0;
 	int mScrollDelay = 500;
-	bool* mUpHeldPtr;
-	bool* mDownHeldPtr;
+	GuiGameAchievements* mParent;
+	std::function<void(int)> mBoundaryCallback;
 };
 
 GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
@@ -615,7 +620,18 @@ void GuiGameAchievements::populateInfoTab()
 
 	if (!desc.empty()) {
 		ComponentListRow rowDesc;
-		auto valDesc = std::make_shared<ScrollableDescription>(mWindow, desc, &mUpHeld, &mDownHeld);
+		auto valDesc = std::make_shared<ScrollableDescription>(mWindow, desc, this);
+		valDesc->mBoundaryCallback = [this](int dir) {
+			if (dir == 1) {
+				mGrid.setCursorTo(mList);
+				mList->setCursorIndex(0);
+			} else if (dir == -1) {
+				int target = mList->getCursorIndex() - 1;
+				if (target >= 0) {
+					mList->setCursorIndex(target);
+				}
+			}
+		};
 		
 		// Calculate precise height based on the final width (ComponentList padding is 20px)
 		float exactWidth = mList->getSize().x() - 20.0f;
@@ -695,6 +711,9 @@ void GuiGameAchievements::render(const Transform4x4f& parentTrans)
 
 void GuiGameAchievements::update(int deltaTime)
 {
+	if (mDownHeld) mDownTime += deltaTime; else mDownTime = 0;
+	if (mUpHeld) mUpTime += deltaTime; else mUpTime = 0;
+
 	GuiComponent::update(deltaTime);
 
 	if (mIsLoadingAchievements && mRaFuture.valid() && mRaFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {

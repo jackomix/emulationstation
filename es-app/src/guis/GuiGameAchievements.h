@@ -49,6 +49,8 @@ protected:
 	std::map<int, int> mTabCursors;
 	bool mUpHeld = false;
 	bool mDownHeld = false;
+	int mUpTime = 0;
+	int mDownTime = 0;
 
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;
