@@ -167,11 +167,8 @@ public:
 
 		// Bold font if available, fallback to regular
 		auto boldFont = theme->Text.font;
-		mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, boldFont, theme->Text.color);
+		mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title + " - ", boldFont, theme->Text.color);
 		
-		mSeparator = std::make_shared<TextComponent>(mWindow, " - ", theme->TextSmall.font, theme->Text.color);
-		mSeparator->setOpacity(192);
-
 		mDesc = std::make_shared<TextComponent>(mWindow, mGameInfo.Description, theme->TextSmall.font, theme->Text.color);
 		mDesc->setOpacity(192);
 		mDesc->setAutoScrollDelay(500);
@@ -179,22 +176,21 @@ public:
 		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
 
 		setEntry(mTitle, Vector2i(1, 0), false, true);
-		setEntry(mSeparator, Vector2i(2, 0), false, true);
-		setEntry(mDesc, Vector2i(3, 0), false, true);
-		setEntry(mPoints, Vector2i(4, 0), false, true);
+		setEntry(mDesc, Vector2i(2, 0), false, true);
+		setEntry(mPoints, Vector2i(3, 0), false, true);
 
 		// Layout percentages
 		float badgeW = (badgeSize + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
-		float titleW = (mTitle->getSize().x() + 5.0f) / WINDOW_WIDTH;
-		float sepW = mSeparator->getSize().x() / WINDOW_WIDTH;
-		float pointsW = Renderer::getScreenHeight() * 0.12f / WINDOW_WIDTH;
-		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - sepW - pointsW - 0.05f); // Leave some padding
+		float titleW = mTitle->getSize().x() / WINDOW_WIDTH;
+		float pointsW = (mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
+		float rightPadW = (Renderer::getScreenHeight() * 0.02f) / WINDOW_WIDTH;
+		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - pointsW - rightPadW); 
 
 		setColWidthPerc(0, badgeW);
 		setColWidthPerc(1, titleW);
-		setColWidthPerc(2, sepW);
-		setColWidthPerc(3, descW);
-		setColWidthPerc(4, pointsW);
+		setColWidthPerc(2, descW);
+		setColWidthPerc(3, pointsW);
+		setColWidthPerc(4, rightPadW);
 
 		setSize(0, rowHeight);
 	}
@@ -202,7 +198,6 @@ public:
 	virtual void setColor(unsigned int color)
 	{
 		mTitle->setColor(color);
-		mSeparator->setColor(color);
 		mDesc->setColor(color);
 		if (mPoints) mPoints->setColor(color);
 	}
@@ -222,7 +217,6 @@ public:
 
 private:
 	std::shared_ptr<TextComponent> mTitle;
-	std::shared_ptr<TextComponent> mSeparator;
 	std::shared_ptr<TextComponent> mDesc;
 	std::shared_ptr<TextComponent> mPoints;
 	std::shared_ptr<WebImageComponent> mImage;
@@ -646,8 +640,9 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	auto lblLast = std::make_shared<TextComponent>(mWindow, _("LAST PLAYED"), theme->Text.font, theme->Text.color);
 	
 	std::string lastPlayedRaw = mFile->getMetadata(MetaDataId::LastPlayed);
-	std::string lastPlayedFormatted = lastPlayedRaw;
+	std::string lastPlayedFormatted = _("never");
 	if (lastPlayedRaw != "0" && !lastPlayedRaw.empty()) {
+		// EmulationStation saves LastPlayed in "%Y%m%dT%H%M%S" format
 		lastPlayedFormatted = Utils::Time::DateTime(lastPlayedRaw).toFullString();
 	}
 	
@@ -672,32 +667,46 @@ void GuiGameAchievements::populatePlayHistoryTab()
 
 	if (sessions.empty()) return;
 
-	ComponentListRow rowHistoryHeader;
-	auto lblHistory = std::make_shared<TextComponent>(mWindow, _("PLAYTHROUGH HISTORY"), theme->Text.font, theme->Text.color);
-	rowHistoryHeader.addElement(lblHistory, true);
-	rowHistoryHeader.hide_cursor = true;
-	mList->addRow(rowHistoryHeader);
-
 	for (auto& pair : sessions) {
 		const std::string& day = pair.first;
 		const auto& achs = pair.second;
 
 		int sessionPoints = 0;
-		for (const auto& a : achs) sessionPoints += Utils::String::toInteger(a.Points);
+		long minTime = -1, maxTime = -1;
+
+		for (const auto& a : achs) {
+			sessionPoints += Utils::String::toInteger(a.Points);
+			std::string earned = a.DateEarned.empty() ? a.DateEarnedHardcore : a.DateEarned;
+			if (!earned.empty()) {
+				// RA DateEarned is "YYYY-MM-DD HH:MM:SS". Convert to ISO for DateTime
+				std::string isoDate = earned;
+				isoDate = Utils::String::replace(isoDate, "-", "");
+				isoDate = Utils::String::replace(isoDate, ":", "");
+				isoDate = Utils::String::replace(isoDate, " ", "T");
+				time_t t = Utils::Time::DateTime(isoDate).getTime();
+				if (minTime == -1 || t < minTime) minTime = (long)t;
+				if (maxTime == -1 || t > maxTime) maxTime = (long)t;
+			}
+		}
 
 		// Format day header
-		std::string isoDate = day + "T000000";
+		std::string firstEarned = achs.front().DateEarned.empty() ? achs.front().DateEarnedHardcore : achs.front().DateEarned;
+		std::string isoDate = firstEarned;
 		isoDate = Utils::String::replace(isoDate, "-", "");
+		isoDate = Utils::String::replace(isoDate, ":", "");
+		isoDate = Utils::String::replace(isoDate, " ", "T");
 		std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
-		// Trim time part if it includes " at 12:00 AM"
-		size_t atPos = formattedDate.find(" at");
-		if (atPos != std::string::npos) formattedDate = formattedDate.substr(0, atPos);
+
+		std::string durationStr = "";
+		if (maxTime != -1 && minTime != -1 && (maxTime - minTime) > 0) {
+			durationStr = Utils::Time::secondsToString(maxTime - minTime, false, true) + _U("  ·  ");
+		}
 
 		ComponentListRow sessionRow;
 		auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate, theme->TextSmall.font, theme->Text.color);
 		lblSession->setOpacity(160);
 		
-		std::string rightStr = std::to_string(sessionPoints) + _U(" \uf091");
+		std::string rightStr = durationStr + std::to_string(sessionPoints) + _U(" \uf091");
 		auto valSession = std::make_shared<TextComponent>(mWindow, rightStr, theme->TextSmall.font, theme->Text.color);
 		valSession->setHorizontalAlignment(ALIGN_RIGHT);
 		valSession->setOpacity(160);
@@ -717,6 +726,17 @@ void GuiGameAchievements::populatePlayHistoryTab()
 			achRow.addElement(spacer, false);
 			
 			achRow.addElement(entry, true);
+
+			achRow.makeAcceptInputHandler([this, ach] {
+				int index = 0;
+				for (auto& a : mRaInfo.Achievements) {
+					if (a.ID == ach.ID) break;
+					index++;
+				}
+				mTabs->setCursorIndex(0);
+				mList->setCursorIndex(index);
+			});
+
 			mList->addRow(achRow);
 		}
 	}

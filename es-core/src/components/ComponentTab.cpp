@@ -222,12 +222,22 @@ void ComponentTab::render(const Transform4x4f& parentTrans)
 
 	auto& entry = mEntries.at(mCursor);
 		
-	// draw white background for selected tab
-	Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), textColor);
+	// draw background for selected tab
+	if (selectorColor != selectorGradientColor)
+	{
+		Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), selectorColor, selectorColor, selectorGradientColor, selectorGradientColor, selectorGradientHorz);
+	}
+	else
+	{
+		Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), selectorColor);
+	}
+
+	unsigned int activeTextColor = menuTheme->Text.selectedColor;
+	if (activeTextColor == 0) activeTextColor = menuTheme->Text.color;
 
 	for (auto& element : entry.data.elements)
 	{
-		element.component->setColor(bgColor);
+		element.component->setColor(activeTextColor);
 		drawAfterCursor.push_back(element.component.get());
 	}
 
