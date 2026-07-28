@@ -23,6 +23,8 @@ public:
 	static void show(Window* window, int gameId);
 	static void show(Window* window, FileData* game);
 
+	friend class ScrollableDescription;
+
 	void	render(const Transform4x4f& parentTrans) override;
 	void	update(int deltaTime) override;
 	bool	input(InputConfig* config, Input input) override;

@@ -272,6 +272,10 @@ public:
 			mScrollDir = -1;
 			mScrollAccumulator = 0;
 			mScrollDelay = (mParent->mUpTime > 400) ? 114 : 500;
+			
+			// Snap to bottom if entering by wrapping from the top of the list
+			float maxScroll = Math::max(0.0f, mText->getSize().y() - mContainer->getSize().y());
+			mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), maxScroll));
 		}
 
 		GuiComponent::onFocusGained();
