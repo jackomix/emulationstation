@@ -8,6 +8,7 @@
 #include "RetroAchievements.h"
 #include "GuiRetroAchievements.h"
 #include <future>
+#include <map>
 
 class FileData;
 class TextComponent;
@@ -45,6 +46,7 @@ protected:
 	std::future<GameInfoAndUserProgress> mRaFuture;
 	bool mIsLoadingAchievements;
 	int mActiveTab;
+	std::map<int, int> mTabCursors;
 
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;

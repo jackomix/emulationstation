@@ -329,6 +329,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mTabs->setCursorChangedCallback([this](const CursorState& state) {
 		if (mActiveTab != mTabs->getCursorIndex()) {
+			if (mActiveTab != 3) mTabCursors[mActiveTab] = mList->getCursorIndex();
 			mActiveTab = mTabs->getCursorIndex();
 			populateTabContent();
 		}
@@ -442,6 +443,13 @@ void GuiGameAchievements::populateTabContent()
 		if (mActiveTab == 0) populateAchievementsTab();
 		else if (mActiveTab == 1) populatePlayHistoryTab();
 		else if (mActiveTab == 2) populateInfoTab();
+
+		if (mTabCursors.find(mActiveTab) != mTabCursors.end() && mList->size() > 0) {
+			int cursorIndex = mTabCursors[mActiveTab];
+			if (cursorIndex >= mList->size()) cursorIndex = mList->size() - 1;
+			if (cursorIndex < 0) cursorIndex = 0;
+			mList->setCursorIndex(cursorIndex);
+		}
 	}
 
 	centerWindow();
