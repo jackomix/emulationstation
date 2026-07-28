@@ -360,6 +360,12 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game, bool embedded) : 
 		
 		mMenu.addEntry(_("SCRAPE"), false, [this, game]
 		{
+			if (Settings::getInstance()->getString("Scraper") == "none")
+			{
+				mWindow->pushGui(new GuiMsgBox(mWindow, _("NO SCRAPERS FOUND."), _("OK"), nullptr));
+				return;
+			}
+
 			ScraperSearchParams scraperParams;
 			scraperParams.game = game;
 			scraperParams.system = game->getSourceFileData()->getSystem();

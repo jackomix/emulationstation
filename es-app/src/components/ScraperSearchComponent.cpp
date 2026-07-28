@@ -262,11 +262,15 @@ void ScraperSearchComponent::search(const ScraperSearchParams& params)
 	
 	if (mScrapEngines.size() == 0)
 	{
-		ScraperSearch* ss = new ScraperSearch();
-		ss->name = Settings::getInstance()->getString("Scraper");
-		ss->params = params;
-		ss->searchHandle = Scraper::getScraper(ss->name)->search(params);
-		mScrapEngines.push_back(ss);
+		auto scraper = Scraper::getScraper(Settings::getInstance()->getString("Scraper"));
+		if (scraper != nullptr)
+		{
+			ScraperSearch* ss = new ScraperSearch();
+			ss->name = Settings::getInstance()->getString("Scraper");
+			ss->params = params;
+			ss->searchHandle = scraper->search(params);
+			mScrapEngines.push_back(ss);
+		}
 	}
 }
 
