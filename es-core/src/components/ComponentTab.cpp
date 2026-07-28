@@ -225,7 +225,7 @@ void ComponentTab::render(const Transform4x4f& parentTrans)
 	// draw background for selected tab
 	if (selectorColor != selectorGradientColor)
 	{
-		Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), selectorColor, selectorColor, selectorGradientColor, selectorGradientColor, selectorGradientHorz);
+		Renderer::drawRect(mSelectorBarOffset, 0.0f, selectedTabWidth, mSize.y(), selectorColor, selectorGradientColor, selectorGradientHorz);
 	}
 	else
 	{
