@@ -151,7 +151,7 @@ private:
 class ScrollableDescription : public GuiComponent
 {
 public:
-	ScrollableDescription(Window* window, const std::string& text) : GuiComponent(window)
+	ScrollableDescription(Window* window, const std::string& text, bool* upHeld = nullptr, bool* downHeld = nullptr) : GuiComponent(window), mUpHeldPtr(upHeld), mDownHeldPtr(downHeld)
 	{
 		auto theme = ThemeData::getMenuTheme();
 		mBgColor = (theme->Background.centerColor & 0xFFFFFF00) | 0xFF;
@@ -258,6 +258,17 @@ public:
 		mIsFocused = true;
 		auto theme = ThemeData::getMenuTheme();
 		mScrollbar->setColor(theme->Text.selectorColor);
+
+		if (mDownHeldPtr && *mDownHeldPtr) {
+			mScrollDir = 1;
+			mScrollAccumulator = 0;
+			mScrollDelay = 114;
+		} else if (mUpHeldPtr && *mUpHeldPtr) {
+			mScrollDir = -1;
+			mScrollAccumulator = 0;
+			mScrollDelay = 114;
+		}
+
 		GuiComponent::onFocusGained();
 	}
 
@@ -316,6 +327,8 @@ public:
 	int mScrollDir = 0;
 	int mScrollAccumulator = 0;
 	int mScrollDelay = 500;
+	bool* mUpHeldPtr;
+	bool* mDownHeldPtr;
 };
 
 GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
@@ -602,7 +615,7 @@ void GuiGameAchievements::populateInfoTab()
 
 	if (!desc.empty()) {
 		ComponentListRow rowDesc;
-		auto valDesc = std::make_shared<ScrollableDescription>(mWindow, desc);
+		auto valDesc = std::make_shared<ScrollableDescription>(mWindow, desc, &mUpHeld, &mDownHeld);
 		
 		// Calculate precise height based on the final width (ComponentList padding is 20px)
 		float exactWidth = mList->getSize().x() - 20.0f;
@@ -695,6 +708,9 @@ void GuiGameAchievements::update(int deltaTime)
 
 bool GuiGameAchievements::input(InputConfig* config, Input input)
 {
+	if (config->isMappedLike("down", input)) mDownHeld = (input.value != 0);
+	if (config->isMappedLike("up", input)) mUpHeld = (input.value != 0);
+
 	if (GuiComponent::input(config, input))
 		return true;
 

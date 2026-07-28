@@ -47,6 +47,8 @@ protected:
 	bool mIsLoadingAchievements;
 	int mActiveTab;
 	std::map<int, int> mTabCursors;
+	bool mUpHeld = false;
+	bool mDownHeld = false;
 
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;
