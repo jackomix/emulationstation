@@ -229,8 +229,9 @@ void PlayHistoryManager::updateAchievementsForCurrentSession(const GameInfoAndUs
     if (!mCurrentSession.completed) return;
     if (raInfo.Achievements.empty()) return;
 
-    long sStart = std::stoll(mCurrentSession.id);
-    long sEnd = sStart + mCurrentSession.durationSeconds + 60; // 60s buffer
+    time_t sStart = 0;
+    try { sStart = std::stoll(mCurrentSession.id); } catch(...) { return; }
+    time_t sEnd = sStart + mCurrentSession.durationSeconds + 60; // 60s buffer
     
     struct tm * ptminfoStart = gmtime(&sStart);
     char bufStart[128];

@@ -365,6 +365,7 @@ namespace Utils
 				{
 					++s;
 					++f;
+					++parsedChars;
 				}
 			}
 
