@@ -934,7 +934,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		int raId = gameToUpdate->getMetadata().getInt(MetaDataId::CheevosId);
 		if (raId != 0) {
 			auto raInfo = RetroAchievements::getGameInfoAndUserProgress(raId);
-			PlayHistoryManager::getInstance()->updateAchievementsForCurrentSession(raInfo);
+			PlayHistoryManager::getInstance()->updateAchievementsForGame(gameToUpdate, raInfo);
 		}
 
 		int timesPlayed = gameToUpdate->getMetadata().getInt(MetaDataId::PlayCount) + 1;

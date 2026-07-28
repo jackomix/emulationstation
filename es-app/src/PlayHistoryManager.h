@@ -26,7 +26,7 @@ public:
     
     std::vector<PlaySession> getSessions(FileData* game);
     void saveSessions(FileData* game, const std::vector<PlaySession>& sessions);
-    void updateAchievementsForCurrentSession(const GameInfoAndUserProgress& raInfo);
+    void updateAchievementsForGame(FileData* game, const GameInfoAndUserProgress& raInfo);
 
 private:
     PlayHistoryManager();

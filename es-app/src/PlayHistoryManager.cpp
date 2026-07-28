@@ -223,15 +223,18 @@ void PlayHistoryManager::heartbeatLoop() {
     }
 }
 
-void PlayHistoryManager::updateAchievementsForCurrentSession(const GameInfoAndUserProgress& raInfo) {
+void PlayHistoryManager::updateAchievementsForGame(FileData* game, const GameInfoAndUserProgress& raInfo) {
     std::lock_guard<std::mutex> lock(mSessionMutex);
-    if (mCurrentGame == nullptr) return;
-    if (!mCurrentSession.completed) return;
-    if (raInfo.Achievements.empty()) return;
+    if (game == nullptr || raInfo.Achievements.empty()) return;
+    
+    auto sessions = getSessions(game);
+    if (sessions.empty()) return;
+    
+    auto& lastSession = sessions.back();
 
     time_t sStart = 0;
-    try { sStart = std::stoll(mCurrentSession.id); } catch(...) { return; }
-    time_t sEnd = sStart + mCurrentSession.durationSeconds + 60; // 60s buffer
+    try { sStart = std::stoll(lastSession.id); } catch(...) { return; }
+    time_t sEnd = sStart + lastSession.durationSeconds + 60; // 60s buffer
     
     struct tm * ptminfoStart = gmtime(&sStart);
     char bufStart[128];
@@ -262,22 +265,14 @@ void PlayHistoryManager::updateAchievementsForCurrentSession(const GameInfoAndUs
         }
         
         if (matches) {
-            if (std::find(mCurrentSession.achievementIds.begin(), mCurrentSession.achievementIds.end(), ach.ID) == mCurrentSession.achievementIds.end()) {
-                mCurrentSession.achievementIds.push_back(ach.ID);
+            if (std::find(lastSession.achievementIds.begin(), lastSession.achievementIds.end(), ach.ID) == lastSession.achievementIds.end()) {
+                lastSession.achievementIds.push_back(ach.ID);
                 updated = true;
             }
         }
     }
     
     if (updated) {
-        auto sessions = getSessions(mCurrentGame);
-        for (auto& s : sessions) {
-            if (s.id == mCurrentSession.id) {
-                s.achievementIds = mCurrentSession.achievementIds;
-                break;
-            }
-        }
-        saveSessions(mCurrentGame, sessions);
+        saveSessions(game, sessions);
     }
-}
 
