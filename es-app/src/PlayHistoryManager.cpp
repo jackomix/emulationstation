@@ -234,12 +234,12 @@ void PlayHistoryManager::updateAchievementsForCurrentSession(const GameInfoAndUs
     
     struct tm * ptminfoStart = gmtime(&sStart);
     char bufStart[128];
-    strftime(bufStart, sizeof(bufStart), "%Y-%m-%dT%H:%M:%SZ", ptminfoStart);
+    strftime(bufStart, sizeof(bufStart), "%Y-%m-%d %H:%M:%S", ptminfoStart);
     std::string sIso = bufStart;
     
     struct tm * ptminfoEnd = gmtime(&sEnd);
     char bufEnd[128];
-    strftime(bufEnd, sizeof(bufEnd), "%Y-%m-%dT%H:%M:%SZ", ptminfoEnd);
+    strftime(bufEnd, sizeof(bufEnd), "%Y-%m-%d %H:%M:%S", ptminfoEnd);
     std::string eIso = bufEnd;
     
     bool updated = false;
@@ -247,9 +247,20 @@ void PlayHistoryManager::updateAchievementsForCurrentSession(const GameInfoAndUs
         std::string earned = ach.DateEarned.empty() ? ach.DateEarnedHardcore : ach.DateEarned;
         if (earned.empty()) continue;
         
-        std::string earnedIso = Utils::String::replace(earned, " ", "T") + "Z";
+        bool matches = false;
+        if (earned.find("(offline)") != std::string::npos) {
+            std::string d = Utils::String::replace(earned, " (offline)", "");
+            time_t t = Utils::Time::stringToTime(d, "%Y-%m-%d %H:%M:%S");
+            if (t >= sStart && t <= sEnd) {
+                matches = true;
+            }
+        } else {
+            if (earned >= sIso && earned <= eIso) {
+                matches = true;
+            }
+        }
         
-        if (earnedIso >= sIso && earnedIso <= eIso) {
+        if (matches) {
             if (std::find(mCurrentSession.achievementIds.begin(), mCurrentSession.achievementIds.end(), ach.ID) == mCurrentSession.achievementIds.end()) {
                 mCurrentSession.achievementIds.push_back(ach.ID);
                 updated = true;
