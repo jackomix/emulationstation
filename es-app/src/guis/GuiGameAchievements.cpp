@@ -209,6 +209,32 @@ public:
 	{
 		GuiComponent::update(deltaTime);
 		
+		if (mScrollDir != 0) {
+			mScrollAccumulator += deltaTime;
+			while (mScrollAccumulator >= mScrollDelay) {
+				mScrollAccumulator -= mScrollDelay;
+				mScrollDelay = 114;
+
+				float scrollAmount = mText->getFont()->getLetterHeight() * 2.0f;
+				bool scrolled = false;
+				if (mScrollDir == -1 && mContainer->getScrollPos().y() > 0) {
+					float newY = Math::max(0.0f, mContainer->getScrollPos().y() - scrollAmount);
+					mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), newY));
+					scrolled = true;
+				}
+				else if (mScrollDir == 1 && mContainer->getScrollPos().y() + mContainer->getSize().y() < mText->getSize().y()) {
+					float newY = Math::min(mText->getSize().y() - mContainer->getSize().y(), mContainer->getScrollPos().y() + scrollAmount);
+					mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), newY));
+					scrolled = true;
+				}
+
+				if (!scrolled) {
+					mScrollDir = 0;
+					break;
+				}
+			}
+		}
+
 		mScrollbar->update(deltaTime);
 		mScrollbar->setScrollPosition(mContainer->getScrollPos().y());
 		mScrollbar->onCursorChanged();
@@ -217,6 +243,7 @@ public:
 	void onFocusLost() override
 	{
 		mIsFocused = false;
+		mScrollDir = 0;
 		mScrollbar->loadFromMenuTheme();
 		auto theme = ThemeData::getMenuTheme();
 		if (theme->Background.scrollbarColor == 0) {
@@ -236,19 +263,38 @@ public:
 
 	bool input(InputConfig* config, Input input) override
 	{
-		if (input.value != 0) {
-			float scrollAmount = mText->getFont()->getLetterHeight() * 2.0f;
-			if (config->isMappedLike("up", input)) {
+		if (config->isMappedLike("up", input)) {
+			if (input.value != 0) {
 				if (mContainer->getScrollPos().y() > 0) {
+					mScrollDir = -1;
+					mScrollAccumulator = 0;
+					mScrollDelay = 500;
+					float scrollAmount = mText->getFont()->getLetterHeight() * 2.0f;
 					float newY = Math::max(0.0f, mContainer->getScrollPos().y() - scrollAmount);
 					mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), newY));
 					return true;
 				}
+			} else {
+				if (mScrollDir == -1) {
+					mScrollDir = 0;
+					return true;
+				}
 			}
-			if (config->isMappedLike("down", input)) {
+		}
+		if (config->isMappedLike("down", input)) {
+			if (input.value != 0) {
 				if (mContainer->getScrollPos().y() + mContainer->getSize().y() < mText->getSize().y()) {
+					mScrollDir = 1;
+					mScrollAccumulator = 0;
+					mScrollDelay = 500;
+					float scrollAmount = mText->getFont()->getLetterHeight() * 2.0f;
 					float newY = Math::min(mText->getSize().y() - mContainer->getSize().y(), mContainer->getScrollPos().y() + scrollAmount);
 					mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), newY));
+					return true;
+				}
+			} else {
+				if (mScrollDir == 1) {
+					mScrollDir = 0;
 					return true;
 				}
 			}
@@ -267,6 +313,9 @@ public:
 	std::shared_ptr<ScrollableContainer> mContainer;
 	std::shared_ptr<ScrollbarComponent> mScrollbar;
 	bool mIsFocused = false;
+	int mScrollDir = 0;
+	int mScrollAccumulator = 0;
+	int mScrollDelay = 500;
 };
 
 GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
