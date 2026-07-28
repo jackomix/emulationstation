@@ -240,7 +240,8 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game, bool embedded) : 
 					[this, game]
 				{
 					deleteGame(game);
-					close();
+					if (mEmbedded && mCloseCallback) mCloseCallback();
+					else close();
 				},
 					_("NO"), nullptr));
 
@@ -262,10 +263,17 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game, bool embedded) : 
 			char trstring[1024];
 
 			snprintf(trstring, 1024, std::string(game->getFavorite() ? _("REMOVE FROM %s") : _("ADD TO %s")).c_str(), _("FAVORITES").c_str());
-			mMenu.addEntry(trstring, false, [this, game]
+			
+			auto favTextPtr = std::make_shared<std::shared_ptr<TextComponent>>();
+			*favTextPtr = mMenu.addEntry(trstring, false, [this, game, favTextPtr]
 			{
 				CollectionSystemManager::get()->toggleGameInCollection(game, "Favorites");
 				close();
+				if (mEmbedded) {
+					char newstr[1024];
+					snprintf(newstr, 1024, std::string(game->getFavorite() ? _("REMOVE FROM %s") : _("ADD TO %s")).c_str(), _("FAVORITES").c_str());
+					(*favTextPtr)->setText(newstr);
+				}
 			});
 
 			int addToCollectionCount = 0;
@@ -317,10 +325,17 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game, bool embedded) : 
 					continue;
 
 				snprintf(trstring, 1024, std::string(exists ? _("REMOVE FROM %s") : _("ADD TO %s")).c_str(), Utils::String::toUpper(collectionName).c_str());
-				mMenu.addEntry(trstring, false, [this, game, collectionName]
+				auto colTextPtr = std::make_shared<std::shared_ptr<TextComponent>>();
+				*colTextPtr = mMenu.addEntry(trstring, false, [this, game, collectionName, colTextPtr]
 				{
 					CollectionSystemManager::get()->toggleGameInCollection(game, collectionName);
 					close();
+					if (mEmbedded) {
+						char newstr[1024];
+						bool isNowIn = CollectionSystemManager::get()->inInCustomCollection(game, collectionName);
+						snprintf(newstr, 1024, std::string(isNowIn ? _("REMOVE FROM %s") : _("ADD TO %s")).c_str(), Utils::String::toUpper(collectionName).c_str());
+						(*colTextPtr)->setText(newstr);
+					}
 				});
 			}
 
@@ -606,14 +621,16 @@ void GuiGameOptions::deleteCollection()
 
 void GuiGameOptions::close()
 {
+	if (mEmbedded)
+		return;
+
 	if (mCloseCallback)
 	{
 		mCloseCallback();
 		return;
 	}
 
-	if (!mEmbedded)
-		delete this;
+	delete this;
 }
 
 bool GuiGameOptions::hitTest(int x, int y, Transform4x4f& parentTransform, std::vector<GuiComponent*>* pResult)

@@ -34,7 +34,7 @@ public:
 
 	void addWithLabel(const std::string& label, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func = nullptr, const std::string& iconName = "", bool setCursorHere = false);
 	void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func = nullptr, const std::string& iconName = "", bool setCursorHere = false, bool multiLine = false, const std::string& userData = "", bool doUpdateSize = true);
-	void addEntry(const std::string& name, bool add_arrow = false, const std::function<void()>& func = nullptr, const std::string& iconName = "", bool setCursorHere = false, bool onButtonRelease = false, const std::string& userData = "", bool doUpdateSize = true);
+	std::shared_ptr<TextComponent> addEntry(const std::string& name, bool add_arrow = false, const std::function<void()>& func = nullptr, const std::string& iconName = "", bool setCursorHere = false, bool onButtonRelease = false, const std::string& userData = "", bool doUpdateSize = true);
 	void addGroup(const std::string& label, bool forceVisible = false, bool doUpdateSize = true) { mList->addGroup(label, forceVisible); if (doUpdateSize) updateSize(); }
 	void removeLastRowIfGroup(bool doUpdateSize = true) { mList->removeLastRowIfGroup(); if (doUpdateSize) updateSize(); }
 	void removeEntry(const std::string& userData, bool doUpdateSize = true) { mList->remove(userData); if (doUpdateSize) updateSize(); }
