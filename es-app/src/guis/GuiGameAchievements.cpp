@@ -653,7 +653,7 @@ bool GuiGameAchievements::input(InputConfig* config, Input input)
 			return true;
 	}
 
-	if (mGrid.getCursor().y() == 2)
+	if (mGrid.isCursorTo(mList) || (mOptionsUI && mGrid.isCursorTo(mOptionsUI->getMenu()->getList())))
 	{
 		if (mTabs->input(config, input))
 			return true;
