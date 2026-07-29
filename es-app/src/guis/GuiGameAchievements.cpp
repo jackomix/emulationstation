@@ -20,10 +20,52 @@
 #include "GuiGameOptions.h"
 #include "PlayHistoryManager.h"
 #include "utils/TimeUtil.h"
+#include <ctime>
 
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
 #define IMAGESPACER (Renderer::getScreenHeight() * (10.0 / 720.0))
+
+static std::string formatTimeIn(int seconds)
+{
+	if (seconds < 0) seconds = 0;
+	if (seconds < 3600)
+	{
+		int m = seconds / 60;
+		int s = seconds % 60;
+		return std::to_string(m) + "m " + std::to_string(s) + "s in";
+	}
+	else
+	{
+		int h = seconds / 3600;
+		int m = (seconds % 3600) / 60;
+		return std::to_string(h) + "h " + std::to_string(m) + "m in";
+	}
+}
+
+// Parse "YYYY-MM-DD HH:MM:SS" or ISO 8601 "YYYY-MM-DDTHH:MM:SSZ" to time_t
+static time_t parseDateTime(const std::string& dt)
+{
+	if (dt.empty()) return 0;
+	struct tm t = {};
+	// Try "YYYY-MM-DD HH:MM:SS"
+	if (sscanf(dt.c_str(), "%d-%d-%d %d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) == 6)
+	{
+		t.tm_year -= 1900;
+		t.tm_mon -= 1;
+		t.tm_isdst = -1;
+		return mktime(&t);
+	}
+	// Try ISO 8601 "YYYY-MM-DDTHH:MM:SSZ"
+	if (sscanf(dt.c_str(), "%d-%d-%dT%d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) == 6)
+	{
+		t.tm_year -= 1900;
+		t.tm_mon -= 1;
+		t.tm_isdst = -1;
+		return mktime(&t);
+	}
+	return 0;
+}
 
 void GuiGameAchievements::show(Window* window, FileData* game)
 {
@@ -65,10 +107,10 @@ public:
 		std::string desc = mGameInfo.Description;
 
 		if (!mGameInfo.DateEarnedHardcore.empty()) {
-			desc += _U(" / \uf091 ") + mGameInfo.DateEarnedHardcore + _U(" - ") + _("HARDCORE MODE");
+			desc += _U(" \u00b7 \uf091 ") + mGameInfo.DateEarnedHardcore + _U(" \u00b7 ") + _("HARDCORE MODE");
 		}
 		else if (!mGameInfo.DateEarned.empty()) {
-			desc += _U(" / \uf091 ") + mGameInfo.DateEarned;
+			desc += _U(" \u00b7 \uf091 ") + mGameInfo.DateEarned;
 		}
 
 		mText = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, theme->Text.font, theme->Text.color);
@@ -153,13 +195,13 @@ private:
 class SessionAchievementEntry : public ComponentGrid
 {
 public:
-	SessionAchievementEntry(Window* window, Achievement& ra) :
+	SessionAchievementEntry(Window* window, Achievement& ra, const std::string& sessionStartTime) :
 		ComponentGrid(window, Vector2i(6, 1))
 	{
 		mGameInfo = ra;
 		auto theme = ThemeData::getMenuTheme();
 
-		float badgeSize = Renderer::getScreenHeight() * (24.0f / 720.0f); // 24px small badge
+		float badgeSize = Renderer::getScreenHeight() * (24.0f / 720.0f);
 		float rowHeight = badgeSize * 1.5f;
 
 		mImage = std::make_shared<WebImageComponent>(mWindow);
@@ -167,14 +209,27 @@ public:
 		mImage->setImage(mGameInfo.getBadgeUrl());
 		setEntry(mImage, Vector2i(0, 0), false, false);
 
-		// Bold font if available, fallback to regular
 		auto boldFont = theme->Text.font;
 		mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, boldFont, theme->Text.color);
-		
-		mSeparator = std::make_shared<TextComponent>(mWindow, " - ", theme->TextSmall.font, theme->Text.color);
+
+		// Build "X min Y sec in" offset string from session start + achievement earn time
+		std::string timeInStr;
+		if (!sessionStartTime.empty() && !mGameInfo.DateEarned.empty())
+		{
+			time_t sessionT = parseDateTime(sessionStartTime);
+			time_t earnedT  = parseDateTime(mGameInfo.DateEarned);
+			if (sessionT > 0 && earnedT > 0 && earnedT >= sessionT)
+				timeInStr = formatTimeIn((int)(earnedT - sessionT));
+		}
+
+		std::string descText = mGameInfo.Description;
+		if (!timeInStr.empty())
+			descText += _U(" \u00b7 ") + timeInStr;
+
+		mSeparator = std::make_shared<TextComponent>(mWindow, _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
 		mSeparator->setOpacity(192);
 
-		mDesc = std::make_shared<TextComponent>(mWindow, mGameInfo.Description, theme->TextSmall.font, theme->Text.color);
+		mDesc = std::make_shared<TextComponent>(mWindow, descText, theme->TextSmall.font, theme->Text.color);
 		mDesc->setOpacity(192);
 		mDesc->setAutoScrollDelay(500);
 
@@ -185,13 +240,12 @@ public:
 		setEntry(mDesc, Vector2i(3, 0), false, true);
 		setEntry(mPoints, Vector2i(4, 0), false, true);
 
-		// Layout percentages
 		float badgeW = (badgeSize + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
 		float titleW = mTitle->getSize().x() / WINDOW_WIDTH;
 		float sepW = mSeparator->getSize().x() / WINDOW_WIDTH;
 		float pointsW = (mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
 		float rightPadW = (Renderer::getScreenHeight() * 0.02f) / WINDOW_WIDTH;
-		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - sepW - pointsW - rightPadW); 
+		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - sepW - pointsW - rightPadW);
 
 		setColWidthPerc(0, badgeW);
 		setColWidthPerc(1, titleW);
@@ -280,7 +334,6 @@ public:
 		float containerHeight = Math::max(0.0f, mSize.y() - labelHeight);
 		float containerY = labelHeight;
 		
-		// Snap the container height to an exact multiple of the font's line height to prevent partial text lines
 		float lineHeight = mText->getFont()->getHeight();
 		int numLines = (int)(containerHeight / lineHeight);
 		containerHeight = numLines * lineHeight;
@@ -358,7 +411,6 @@ public:
 			mScrollAccumulator = 0;
 			mScrollDelay = (mParent->mUpTime > 400) ? 114 : 500;
 			
-			// Snap to bottom if entering by wrapping from the top of the list
 			float maxScroll = Math::max(0.0f, mText->getSize().y() - mContainer->getSize().y());
 			mContainer->setScrollPos(Vector2f(mContainer->getScrollPos().x(), maxScroll));
 		}
@@ -455,7 +507,6 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mBackground.setCornerSize(theme->Background.cornerSize);
 	mBackground.setPostProcessShader(theme->Background.menuShader);
 
-	// Row 0: Header Grid (2x3) - title, subtitle, progress bar | game image
 	mHeaderGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 3));
 
 	mTitle = std::make_shared<TextComponent>(mWindow, "", theme->Title.font, theme->Title.color, ALIGN_LEFT);
@@ -468,7 +519,6 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mGrid.setEntry(mHeaderGrid, Vector2i(0, 0), false, true);
 
-	// Row 1: Tabs
 	mTabs = std::make_shared<ComponentTab>(mWindow);
 	mTabs->addTab(_("ACHIEVEMENTS"));
 	mTabs->addTab(_("PLAY HISTORY"));
@@ -493,12 +543,10 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mGrid.setEntry(mTabs, Vector2i(0, 1), false, true);
 
-	// Row 2: Content List
 	mList = std::make_shared<ComponentList>(mWindow);
 	mList->setUpdateType(ComponentListFlags::UPDATE_ALWAYS);
 	mGrid.setEntry(mList, Vector2i(0, 2), true, true);
 
-	// Row 3: Buttons
 	std::vector<std::shared_ptr<ButtonComponent>> buttons;
 	if (mFile != nullptr)
 	{
@@ -529,8 +577,6 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
             }
 			return false;
 		});
-
-
 
 	updateAchievementsHeader();
 	centerWindow();
@@ -627,7 +673,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	if (mFile == nullptr) return;
 	auto theme = ThemeData::getMenuTheme();
 	
-	// Play Time
 	ComponentListRow rowTime;
 	auto lblTime = std::make_shared<TextComponent>(mWindow, _("PLAY TIME"), theme->Text.font, theme->Text.color);
 	auto valTime = std::make_shared<TextComponent>(mWindow, Utils::Time::secondsToString(Utils::String::toInteger(mFile->getMetadata(MetaDataId::GameTime)), false, true), theme->Text.font, theme->Text.color);
@@ -636,7 +681,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	rowTime.addElement(valTime, false);
 	mList->addRow(rowTime);
 	
-	// Play Count
 	ComponentListRow rowCount;
 	auto lblCount = std::make_shared<TextComponent>(mWindow, _("PLAY COUNT"), theme->Text.font, theme->Text.color);
 	auto valCount = std::make_shared<TextComponent>(mWindow, mFile->getMetadata(MetaDataId::PlayCount), theme->Text.font, theme->Text.color);
@@ -645,14 +689,12 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	rowCount.addElement(valCount, false);
 	mList->addRow(rowCount);
 	
-	// Last Played
 	ComponentListRow rowLast;
 	auto lblLast = std::make_shared<TextComponent>(mWindow, _("LAST PLAYED"), theme->Text.font, theme->Text.color);
 	
 	std::string lastPlayedRaw = mFile->getMetadata(MetaDataId::LastPlayed);
 	std::string lastPlayedFormatted = _("never");
 	if (lastPlayedRaw != "0" && !lastPlayedRaw.empty()) {
-		// EmulationStation saves LastPlayed in "%Y%m%dT%H%M%S" format
 		lastPlayedFormatted = Utils::Time::DateTime(lastPlayedRaw).toFullString();
 	}
 	
@@ -662,7 +704,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	rowLast.addElement(valLast, false);
 	mList->addRow(rowLast);
 
-	// PLAYTHROUGH HISTORY
 	auto sessions = PlayHistoryManager::getInstance()->getSessions(mFile);
 	std::sort(sessions.begin(), sessions.end(), [](const PlaySession& a, const PlaySession& b) {
 		return a.startTime > b.startTime;
@@ -714,7 +755,8 @@ void GuiGameAchievements::populatePlayHistoryTab()
 
 		for (auto ach : sessionAchievements[s.id]) {
 			ComponentListRow achRow;
-			auto entry = std::make_shared<SessionAchievementEntry>(mWindow, ach);
+			achRow.no_separator = true;
+			auto entry = std::make_shared<SessionAchievementEntry>(mWindow, ach, s.startTime);
 			
 			auto spacer = std::make_shared<GuiComponent>(mWindow);
 			spacer->setSize(Renderer::getScreenHeight() * 0.02f, 0);
@@ -802,7 +844,6 @@ void GuiGameAchievements::populateInfoTab()
 			}
 		};
 		
-		// Calculate precise height based on the final width (ComponentList padding is 20px)
 		float exactWidth = mList->getSize().x() - 20.0f;
 		valDesc->mLabel->setSize(exactWidth, 0);
 		valDesc->mText->setSize(exactWidth, 0);
@@ -849,7 +890,7 @@ void GuiGameAchievements::updateAchievementsHeader()
 	else
 	{
 		subtitleText = std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements) + " " + _("achievements");
-		subtitleText += _U(" · ") + std::to_string(userPoints) + "/" + std::to_string(totalPoints) + " " + _("points");
+		subtitleText += _U(" \u00b7 ") + std::to_string(userPoints) + "/" + std::to_string(totalPoints) + " " + _("points");
 	}
 
 	mSubtitle->setText(subtitleText);
