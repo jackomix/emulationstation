@@ -53,16 +53,14 @@ static time_t parseDateTime(const std::string& dt)
 	{
 		t.tm_year -= 1900;
 		t.tm_mon -= 1;
-		t.tm_isdst = -1;
-		return mktime(&t);
+		return timegm(&t);
 	}
 	// Try ISO 8601 "YYYY-MM-DDTHH:MM:SSZ"
 	if (sscanf(dt.c_str(), "%d-%d-%dT%d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) == 6)
 	{
 		t.tm_year -= 1900;
 		t.tm_mon -= 1;
-		t.tm_isdst = -1;
-		return mktime(&t);
+		return timegm(&t);
 	}
 	return 0;
 }
@@ -226,7 +224,7 @@ public:
 		if (!timeInStr.empty())
 			descText += _U(" \u00b7 ") + timeInStr;
 
-		mSeparator = std::make_shared<TextComponent>(mWindow, _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
+		mSeparator = std::make_shared<TextComponent>(mWindow, _U("\u00b7 "), theme->TextSmall.font, theme->Text.color);
 		mSeparator->setOpacity(192);
 
 		mDesc = std::make_shared<TextComponent>(mWindow, descText, theme->TextSmall.font, theme->Text.color);
