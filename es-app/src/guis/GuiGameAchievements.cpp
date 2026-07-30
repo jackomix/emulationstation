@@ -257,10 +257,10 @@ public:
 		float badgeW = badgeSize + Renderer::getScreenHeight() * 0.015f;
 		float titleW = mTitle->getSize().x();
 		float sepW = mSeparator->getSize().x();
-		float spaceW = tinyFont->sizeText(" ").x();
-		float timeInW = mTimeIn->getSize().x() > 0 ? (mTimeIn->getSize().x() + spaceW) : 0;
+		float descPadding = theme->TextSmall.font->sizeText(" ").x();
+		float timeInW = mTimeIn->getSize().x() > 0 ? (mTimeIn->getSize().x() + descPadding) : 0;
 		float timeSepW = mTimeSeparator->getSize().x() > 0 ? mTimeSeparator->getSize().x() : 0;
-		float pointsW = mPoints->getSize().x() + theme->Text.font->sizeText(" ").x();
+		float pointsW = mPoints->getSize().x();
 		float rightPadW = Renderer::getScreenHeight() * 0.02f;
 
 		setColWidth(0, badgeW, false);
