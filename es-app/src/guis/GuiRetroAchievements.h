@@ -56,7 +56,7 @@ public:
         std::string lastPlayed;
     };
 
-    enum class SortMode { Recent, Playtime, Achievements, Completion, System };
+    enum class SortMode { Recent, Playtime, Achievements, Completion };
 
 private:
     GuiRetroAchievements(Window* window, RetroAchievementInfo ra);

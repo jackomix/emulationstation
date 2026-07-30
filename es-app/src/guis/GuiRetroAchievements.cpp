@@ -35,6 +35,10 @@ static time_t parseDateTimeHistory(const std::string& dt);
 #define IMAGESIZE (Renderer::getScreenHeight() * (48.0 / 720.0))
 #define IMAGESPACER (Renderer::getScreenHeight() * (10.0 / 720.0))
 
+static GuiRetroAchievements::SortMode sLastSortMode = GuiRetroAchievements::SortMode::Recent;
+static std::string sLastFilterSystem = "All";
+static int sLastFilterMinPlaytime = 0;
+
 class PlayedGameEntry : public ComponentGrid
 {
 public:
@@ -77,7 +81,7 @@ public:
             }
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Playtime) {
-            topRightText = Utils::Time::secondsToString(game->gameTimeSeconds, false, false);
+            topRightText = Utils::Time::secondsToString(game->gameTimeSeconds, false, true);
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Achievements) {
             int won = game->hasRaGame ? game->raGame.wonAchievementsSoftcore : 0;
@@ -85,7 +89,7 @@ public:
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Completion) {
             int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
-            topRightText = std::to_string(percent) + "%";
+            topRightText = std::to_string(percent) + "% " + _("completed");
         } else {
             topRightText = game->lastPlayed;
         }
@@ -128,7 +132,12 @@ public:
         setRowHeightPerc(2, hSub);
         setRowHeightPerc(3, Math::max(0.0f, 1.0f - topPadding - hTxt - hSub));
 
-        float pointsColWidth = Renderer::getScreenHeight() * 0.20f / WINDOW_WIDTH;
+        float textWidth = mPoints->getFont()->sizeText(topRightText).x();
+        if (mPercentage) {
+            float percWidth = mPercentage->getFont()->sizeText(botRightText).x();
+            if (percWidth > textWidth) textWidth = percWidth;
+        }
+        float pointsColWidth = (textWidth + (Renderer::getScreenHeight() * 0.02f)) / WINDOW_WIDTH;
         setColWidthPerc(0, (height - IMAGESPACER) / WINDOW_WIDTH);
         setColWidthPerc(1, IMAGESPACER / WINDOW_WIDTH);
         setColWidthPerc(3, pointsColWidth);
@@ -371,6 +380,9 @@ void RetroAchievementProgress::render(const Transform4x4f& parentTrans)
 GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo ra) 
     : GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 4)), mRaInfo(ra)
 {
+    mSortMode = sLastSortMode;
+    mFilterSystem = sLastFilterSystem;
+    mFilterMinPlaytime = sLastFilterMinPlaytime;
     auto theme = ThemeData::getMenuTheme();
     mBackground.setImagePath(theme->Background.path.empty() ? ":/frame.png" : theme->Background.path);
     mBackground.setEdgeColor(theme->Background.color);
@@ -502,7 +514,7 @@ void GuiRetroAchievements::populateGameList()
 
             std::string cheevosId = file->getMetadata(MetaDataId::CheevosId);
             
-            if (profilePlayCount > 0 || !cheevosId.empty())
+            if (profilePlayCount > 0)
             {
                 GameEntry entry;
                 entry.fileData = file;
@@ -517,16 +529,18 @@ void GuiRetroAchievements::populateGameList()
                     if (AchievementCache::hasGameData(gid)) {
                         GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gid);
                         
-                        bool hasProfileProgress = Utils::FileSystem::exists(Paths::getAchievementProgressPath() + "/" + cheevosId + ".json");
+                        entry.hasRaGame = true;
+                        entry.raGame.id = cheevosId;
+                        entry.raGame.name = prog.Title;
+                        entry.raGame.consoleName = prog.ConsoleName;
+                        entry.raGame.badge = prog.getImageUrl(prog.ImageIcon);
+                        entry.raGame.totalAchievements = prog.NumAchievements;
                         
+                        bool hasProfileProgress = Utils::FileSystem::exists(Paths::getAchievementProgressPath() + "/" + cheevosId + ".json");
                         if (hasProfileProgress) {
-                            entry.hasRaGame = true;
-                            entry.raGame.id = cheevosId;
-                            entry.raGame.name = prog.Title;
-                            entry.raGame.consoleName = prog.ConsoleName;
-                            entry.raGame.badge = prog.getImageUrl(prog.ImageIcon);
                             entry.raGame.wonAchievementsSoftcore = prog.NumAwardedToUser;
-                            entry.raGame.totalAchievements = prog.NumAchievements;
+                        } else {
+                            entry.raGame.wonAchievementsSoftcore = 0;
                         }
                     }
                 }
@@ -594,11 +608,6 @@ void GuiRetroAchievements::applyFilterAndSort()
             float aPercent = a->hasRaGame && a->raGame.totalAchievements > 0 ? (float)a->raGame.wonAchievementsSoftcore / a->raGame.totalAchievements : 0.0f;
             float bPercent = b->hasRaGame && b->raGame.totalAchievements > 0 ? (float)b->raGame.wonAchievementsSoftcore / b->raGame.totalAchievements : 0.0f;
             return aPercent > bPercent;
-        } else if (mSortMode == SortMode::System) {
-            std::string aSys = a->fileData ? a->fileData->getSourceFileData()->getSystem()->getFullName() : (a->hasRaGame ? a->raGame.consoleName : "Unknown");
-            std::string bSys = b->fileData ? b->fileData->getSourceFileData()->getSystem()->getFullName() : (b->hasRaGame ? b->raGame.consoleName : "Unknown");
-            if (aSys == bSys) return a->name < b->name;
-            return aSys < bSys;
         }
         return a->name < b->name;
     });
@@ -615,7 +624,6 @@ void GuiRetroAchievements::openSortFilterMenu()
     sortList->add(_("PLAYTIME"), SortMode::Playtime, mSortMode == SortMode::Playtime);
     sortList->add(_("ACHIEVEMENTS EARNED"), SortMode::Achievements, mSortMode == SortMode::Achievements);
     sortList->add(_("COMPLETION PERCENTAGE"), SortMode::Completion, mSortMode == SortMode::Completion);
-    sortList->add(_("SYSTEM"), SortMode::System, mSortMode == SortMode::System);
     s->addWithLabel(_("SORT BY"), sortList);
 
     auto sysList = std::make_shared<OptionListComponent<std::string>>(mWindow, _("SYSTEM"), false);
@@ -645,6 +653,9 @@ void GuiRetroAchievements::openSortFilterMenu()
         mSortMode = sortList->getSelected();
         mFilterSystem = sysList->getSelected();
         mFilterMinPlaytime = timeList->getSelected();
+        sLastSortMode = mSortMode;
+        sLastFilterSystem = mFilterSystem;
+        sLastFilterMinPlaytime = mFilterMinPlaytime;
         applyFilterAndSort();
     });
 
