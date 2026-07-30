@@ -77,10 +77,11 @@ public:
             }
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Playtime) {
-            topRightText = Utils::Time::secondsToString(game->gameTimeSeconds, false, true);
+            topRightText = Utils::Time::secondsToString(game->gameTimeSeconds, false, false);
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Achievements) {
-            topRightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) : "0";
+            int won = game->hasRaGame ? game->raGame.wonAchievementsSoftcore : 0;
+            topRightText = std::to_string(won) + " " + (won == 1 ? _("achievement") : _("achievements"));
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Completion) {
             int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
@@ -853,8 +854,7 @@ void GuiRetroAchievements::populatePlayHistoryTab()
             isoDate = Utils::String::replace(isoDate, "Z", "");
             std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
             
-            std::string durationStr = Utils::Time::secondsToString(s.durationSeconds, false, true);
-            if (s.durationSeconds < 60) durationStr = std::to_string(s.durationSeconds) + " sec";
+            std::string durationStr = Utils::Time::secondsToString(s.durationSeconds, false, false);
             
             ComponentListRow sessionRow;
             auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate, theme->TextSmall.font, theme->Text.color);
@@ -863,6 +863,10 @@ void GuiRetroAchievements::populatePlayHistoryTab()
             auto valSession = std::make_shared<TextComponent>(mWindow, durationStr, theme->TextSmall.font, theme->Text.color);
             valSession->setHorizontalAlignment(ALIGN_RIGHT);
             valSession->setOpacity(160);
+
+            auto sessionSpacer = std::make_shared<GuiComponent>(mWindow);
+            sessionSpacer->setSize(Renderer::getScreenHeight() * 0.02f, 0);
+            sessionRow.addElement(sessionSpacer, false);
 
             sessionRow.addElement(lblSession, true);
             sessionRow.addElement(valSession, false);
@@ -874,7 +878,7 @@ void GuiRetroAchievements::populatePlayHistoryTab()
                 auto entry = std::make_shared<SessionAchievementEntry>(mWindow, ach, s.startTime);
                 
                 auto spacer = std::make_shared<GuiComponent>(mWindow);
-                spacer->setSize(Renderer::getScreenHeight() * 0.02f, 0);
+                spacer->setSize(Renderer::getScreenHeight() * 0.04f, 0);
                 achRow.addElement(spacer, false);
                 achRow.addElement(entry, true);
                 
