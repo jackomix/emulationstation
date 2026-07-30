@@ -322,6 +322,7 @@ void PlayHistoryManager::stopSession() {
     saveTempSession();
     mergeTempSession();
     
+    mLastSession = mCurrentSession;
     mCurrentGame = nullptr;
 }
 

@@ -940,16 +940,20 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		int timesPlayed = gameToUpdate->getMetadata().getInt(MetaDataId::PlayCount) + 1;
 		gameToUpdate->setMetadata(MetaDataId::PlayCount, std::to_string(static_cast<long long>(timesPlayed)));
 
-		// How long have you played that game? (more than 10 seconds, otherwise
-		// you might have experienced a loading problem)
-		time_t tend = time(NULL);
-		long elapsedSeconds = difftime(tend, tstart);
+		// How long have you played that game?
+		auto lastSession = PlayHistoryManager::getInstance()->getLastSession();
+		long elapsedSeconds = lastSession.durationSeconds;
 		long gameTime = gameToUpdate->getMetadata().getInt(MetaDataId::GameTime) + elapsedSeconds;
 		if (elapsedSeconds >= 10)
 			gameToUpdate->setMetadata(MetaDataId::GameTime, std::to_string(static_cast<long>(gameTime)));
 
-		//update last played time
-		gameToUpdate->setMetadata(MetaDataId::LastPlayed, Utils::Time::DateTime(Utils::Time::now()));
+		//update last played time using exact session start time instead of exit time
+		if (!lastSession.startTime.empty()) {
+			gameToUpdate->setMetadata(MetaDataId::LastPlayed, lastSession.startTime);
+		} else {
+			gameToUpdate->setMetadata(MetaDataId::LastPlayed, Utils::Time::DateTime(Utils::Time::now()));
+		}
+		
 		CollectionSystemManager::get()->refreshCollectionSystems(gameToUpdate);
 		saveToGamelistRecovery(gameToUpdate);
 	}

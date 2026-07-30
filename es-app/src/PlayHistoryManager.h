@@ -24,6 +24,7 @@ public:
     
     void startSession(FileData* game);
     void stopSession();
+    PlaySession getLastSession() const { return mLastSession; }
     
     std::vector<PlaySession> getSessions(FileData* game);
     void saveSessions(FileData* game, const std::vector<PlaySession>& sessions);
@@ -46,6 +47,7 @@ private:
     
     std::mutex mSessionMutex;
     PlaySession mCurrentSession;
+    PlaySession mLastSession;
     FileData* mCurrentGame = nullptr;
     
     void heartbeatLoop();

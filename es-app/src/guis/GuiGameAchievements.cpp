@@ -742,6 +742,9 @@ void GuiGameAchievements::populatePlayHistoryTab()
 				}
 			}
 		}
+		std::sort(sessionAchievements[s.id].begin(), sessionAchievements[s.id].end(), [](const Achievement& a, const Achievement& b) {
+			return parseDateTime(a.DateEarned) > parseDateTime(b.DateEarned);
+		});
 	}
 
 	for (auto& s : sessions) {
