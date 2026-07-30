@@ -182,7 +182,8 @@ void PlayHistoryManager::mergeTempSession() {
     if (doc.HasMember("id") && doc["id"].IsString()) s.id = doc["id"].GetString();
     if (doc.HasMember("startTime") && doc["startTime"].IsString()) s.startTime = doc["startTime"].GetString();
     if (doc.HasMember("durationSeconds") && doc["durationSeconds"].IsInt()) s.durationSeconds = doc["durationSeconds"].GetInt();
-    s.completed = true;
+    if (doc.HasMember("completed") && doc["completed"].IsBool()) s.completed = doc["completed"].GetBool();
+    else s.completed = false;
     if (doc.HasMember("achievementIds") && doc["achievementIds"].IsArray()) {
         for (auto& a : doc["achievementIds"].GetArray()) {
             if (a.IsString()) s.achievementIds.push_back(a.GetString());

@@ -695,9 +695,19 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	if (mFile == nullptr) return;
 	auto theme = ThemeData::getMenuTheme();
 	
+	auto sessions = PlayHistoryManager::getInstance()->getSessions(mFile);
+	std::sort(sessions.begin(), sessions.end(), [](const PlaySession& a, const PlaySession& b) {
+		return a.startTime > b.startTime;
+	});
+
+	long totalPlayTime = 0;
+	for (const auto& s : sessions) {
+		totalPlayTime += s.durationSeconds;
+	}
+
 	ComponentListRow rowTime;
 	auto lblTime = std::make_shared<TextComponent>(mWindow, _("PLAY TIME"), theme->Text.font, theme->Text.color);
-	auto valTime = std::make_shared<TextComponent>(mWindow, Utils::Time::secondsToString(Utils::String::toInteger(mFile->getMetadata(MetaDataId::GameTime)), false, true), theme->Text.font, theme->Text.color);
+	auto valTime = std::make_shared<TextComponent>(mWindow, Utils::Time::secondsToString(totalPlayTime, false, true), theme->Text.font, theme->Text.color);
 	valTime->setHorizontalAlignment(ALIGN_RIGHT);
 	rowTime.addElement(lblTime, true);
 	rowTime.addElement(valTime, false);
@@ -705,7 +715,7 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	
 	ComponentListRow rowCount;
 	auto lblCount = std::make_shared<TextComponent>(mWindow, _("PLAY COUNT"), theme->Text.font, theme->Text.color);
-	auto valCount = std::make_shared<TextComponent>(mWindow, mFile->getMetadata(MetaDataId::PlayCount), theme->Text.font, theme->Text.color);
+	auto valCount = std::make_shared<TextComponent>(mWindow, std::to_string(sessions.size()), theme->Text.font, theme->Text.color);
 	valCount->setHorizontalAlignment(ALIGN_RIGHT);
 	rowCount.addElement(lblCount, true);
 	rowCount.addElement(valCount, false);
@@ -714,10 +724,13 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	ComponentListRow rowLast;
 	auto lblLast = std::make_shared<TextComponent>(mWindow, _("LAST PLAYED"), theme->Text.font, theme->Text.color);
 	
-	std::string lastPlayedRaw = mFile->getMetadata(MetaDataId::LastPlayed);
 	std::string lastPlayedFormatted = _("never");
-	if (lastPlayedRaw != "0" && !lastPlayedRaw.empty()) {
-		lastPlayedFormatted = Utils::Time::DateTime(lastPlayedRaw).toFullString();
+	if (!sessions.empty()) {
+		std::string isoDate = sessions.front().startTime;
+		isoDate = Utils::String::replace(isoDate, "-", "");
+		isoDate = Utils::String::replace(isoDate, ":", "");
+		isoDate = Utils::String::replace(isoDate, "Z", "");
+		lastPlayedFormatted = Utils::Time::DateTime(isoDate).toFullString();
 	}
 	
 	auto valLast = std::make_shared<TextComponent>(mWindow, lastPlayedFormatted, theme->Text.font, theme->Text.color);
@@ -725,11 +738,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 	rowLast.addElement(lblLast, true);
 	rowLast.addElement(valLast, false);
 	mList->addRow(rowLast);
-
-	auto sessions = PlayHistoryManager::getInstance()->getSessions(mFile);
-	std::sort(sessions.begin(), sessions.end(), [](const PlaySession& a, const PlaySession& b) {
-		return a.startTime > b.startTime;
-	});
 
 	std::map<std::string, std::vector<Achievement>> sessionAchievements;
 
@@ -752,7 +760,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 		isoDate = Utils::String::replace(isoDate, "-", "");
 		isoDate = Utils::String::replace(isoDate, ":", "");
 		isoDate = Utils::String::replace(isoDate, "Z", "");
-		isoDate = Utils::String::replace(isoDate, "T", "");
 		std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
 		
 		std::string durationStr = Utils::Time::secondsToString(s.durationSeconds, false, true);
