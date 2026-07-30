@@ -9,6 +9,7 @@
 #include "components/ButtonComponent.h"
 #include "SystemData.h"
 #include "FileData.h"
+#include "Paths.h"
 #include "views/ViewController.h"
 #include "LocaleES.h"
 #include "ThemeData.h"
@@ -24,6 +25,8 @@
 #include "components/WebImageComponent.h"
 #include "utils/HtmlColor.h"
 #include <algorithm>
+
+static time_t parseDateTimeHistory(const std::string& dt);
 
 #define PROGRESSHEIGHT (Renderer::getScreenHeight() * 0.008f)
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
@@ -68,23 +71,20 @@ public:
         if (sortMode == GuiRetroAchievements::SortMode::Recent) {
             if (game->lastPlayed.empty() || game->lastPlayed == "0") topRightText = _("Never");
             else {
-                Utils::Time::DateTime dt(game->lastPlayed);
-                if (dt.isValid() && dt.getTime() > 0) topRightText = Utils::Time::getElapsedSinceString(dt.getTime());
+                time_t time = parseDateTimeHistory(game->lastPlayed);
+                if (time > 0) topRightText = Utils::Time::getElapsedSinceString(time);
                 else topRightText = _("Never");
             }
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Playtime) {
             topRightText = Utils::Time::secondsToString(game->gameTimeSeconds, false, true);
-            botRightText = _("played");
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Achievements) {
             topRightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) : "0";
-            botRightText = _("earned");
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Completion) {
             int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
             topRightText = std::to_string(percent) + "%";
-            botRightText = _("completed");
         } else {
             topRightText = game->lastPlayed;
         }
@@ -93,20 +93,28 @@ public:
         mSubtitle->setOpacity(192);
 
         mPoints = std::make_shared<TextComponent>(mWindow, topRightText, theme->Text.font, theme->Text.color, ALIGN_RIGHT);
-        mPercentage = std::make_shared<TextComponent>(mWindow, botRightText, theme->TextSmall.font, theme->Text.color, ALIGN_RIGHT);
-        mPercentage->setOpacity(192);
+        
+        if (botRightText.empty()) {
+            mPoints->setVerticalAlignment(ALIGN_CENTER);
+            setEntry(mPoints, Vector2i(3, 1), false, true, Vector2i(1, 2));
+        } else {
+            mPercentage = std::make_shared<TextComponent>(mWindow, botRightText, theme->TextSmall.font, theme->Text.color, ALIGN_RIGHT);
+            mPercentage->setOpacity(192);
+            mPoints->setVerticalAlignment(ALIGN_BOTTOM);
+            mPercentage->setVerticalAlignment(ALIGN_TOP);
+            setEntry(mPoints, Vector2i(3, 1), false, true);
+            setEntry(mPercentage, Vector2i(3, 2), false, true);
+        }
 
         if (!game->fileData) {
             mTitle->setOpacity(120);
             mSubtitle->setOpacity(120);
             mPoints->setOpacity(120);
-            mPercentage->setOpacity(120);
+            if (mPercentage) mPercentage->setOpacity(120);
         }
 
         setEntry(mTitle, Vector2i(2, 1), false, true);
         setEntry(mSubtitle, Vector2i(2, 2), false, true);
-        setEntry(mPoints, Vector2i(3, 1), false, true);
-        setEntry(mPercentage, Vector2i(3, 2), false, true);
 
         int height = Math::max(IMAGESIZE + IMAGESPACER, mTitle->getSize().y() + mSubtitle->getSize().y());
         
@@ -507,13 +515,18 @@ void GuiRetroAchievements::populateGameList()
                     int gid = Utils::String::toInteger(cheevosId);
                     if (AchievementCache::hasGameData(gid)) {
                         GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gid);
-                        entry.hasRaGame = true;
-                        entry.raGame.id = cheevosId;
-                        entry.raGame.name = prog.Title;
-                        entry.raGame.consoleName = prog.ConsoleName;
-                        entry.raGame.badge = prog.getImageUrl(prog.ImageIcon);
-                        entry.raGame.wonAchievementsSoftcore = prog.NumAwardedToUser;
-                        entry.raGame.totalAchievements = prog.NumAchievements;
+                        
+                        bool hasProfileProgress = Utils::FileSystem::exists(Paths::getAchievementProgressPath() + "/" + cheevosId + ".json");
+                        
+                        if (hasProfileProgress) {
+                            entry.hasRaGame = true;
+                            entry.raGame.id = cheevosId;
+                            entry.raGame.name = prog.Title;
+                            entry.raGame.consoleName = prog.ConsoleName;
+                            entry.raGame.badge = prog.getImageUrl(prog.ImageIcon);
+                            entry.raGame.wonAchievementsSoftcore = prog.NumAwardedToUser;
+                            entry.raGame.totalAchievements = prog.NumAchievements;
+                        }
                     }
                 }
                 
