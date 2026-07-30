@@ -40,10 +40,8 @@ public:
         auto theme = ThemeData::getMenuTheme();
         
         mImage = std::make_shared<WebImageComponent>(mWindow);
-        
         if (game->hasRaGame && !game->raGame.badge.empty()) {
-            std::string url = "http://media.retroachievements.org/Badge/" + game->raGame.badge + ".png";
-            mImage->setImage(url);
+            mImage->setImage(game->raGame.badge);
         } else if (game->fileData && !game->fileData->getImagePath().empty()) {
             mImage->setImage(game->fileData->getImagePath());
         } else {
@@ -66,15 +64,26 @@ public:
             subText = game->raGame.consoleName;
         }
 
-        if (sortMode == GuiRetroAchievements::SortMode::Recent) topRightText = game->lastPlayed;
-        else if (sortMode == GuiRetroAchievements::SortMode::Playtime) topRightText = Utils::Time::secondsToString(game->gameTimeSeconds);
+        if (sortMode == GuiRetroAchievements::SortMode::Recent) {
+            if (game->lastPlayed.empty() || game->lastPlayed == "0") topRightText = _("Never");
+            else {
+                Utils::Time::DateTime dt(game->lastPlayed);
+                if (dt.isValid() && dt.getTime() > 0) topRightText = Utils::Time::getElapsedSinceString(dt.getTime());
+                else topRightText = _("Never");
+            }
+        }
+        else if (sortMode == GuiRetroAchievements::SortMode::Playtime) {
+            topRightText = Utils::Time::secondsToString(game->gameTimeSeconds, false, true);
+            botRightText = _("played");
+        }
         else if (sortMode == GuiRetroAchievements::SortMode::Achievements) {
             topRightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) : "0";
-            botRightText = "earned";
+            botRightText = _("earned");
         }
         else if (sortMode == GuiRetroAchievements::SortMode::Completion) {
             int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
             topRightText = std::to_string(percent) + "%";
+            botRightText = _("completed");
         } else {
             topRightText = game->lastPlayed;
         }
@@ -410,6 +419,7 @@ GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo 
     });
 
     populateGameList();
+    applyFilterAndSort();
     centerWindow();
     populateTabContent();
 }
@@ -465,7 +475,6 @@ void GuiRetroAchievements::populateGameList()
 
     for (auto sys : SystemData::sSystemVector)
     {
-        if (!sys->isCheevosSupported()) continue;
         for (auto file : sys->getRootFolder()->getFilesRecursive(GAME))
         {
             int playCount = Utils::String::toInteger(file->getMetadata(MetaDataId::PlayCount));
@@ -642,6 +651,7 @@ void GuiRetroAchievements::populateGamesTab()
         
         mList->addRow(row, true, true);
     }
+    mList->setCursorIndex(0);
 }
 
 static time_t parseDateTimeHistory(const std::string& dt)
@@ -748,7 +758,7 @@ void GuiRetroAchievements::populatePlayHistoryTab()
         auto icon = std::make_shared<WebImageComponent>(mWindow);
         icon->setMaxSize(badgeSize, badgeSize);
         if (game->hasRaGame && !game->raGame.badge.empty()) {
-            icon->setImage("http://media.retroachievements.org/Badge/" + game->raGame.badge + ".png");
+            icon->setImage(game->raGame.badge);
         } else if (game->fileData && !game->fileData->getImagePath().empty()) {
             icon->setImage(game->fileData->getImagePath());
         } else {
