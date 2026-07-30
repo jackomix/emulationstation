@@ -193,7 +193,6 @@ private:
 	std::shared_ptr<TextComponent> mText;
 	std::shared_ptr<TextComponent> mSubstring;
 	std::shared_ptr<TextComponent> mPoints;
-	std::shared_ptr<TextComponent> mTimeIn;
 	std::shared_ptr<TextComponent> mPercentage;
 	std::shared_ptr<WebImageComponent> mImage;
 	Achievement mGameInfo;
@@ -293,6 +292,7 @@ private:
 	std::shared_ptr<TextComponent> mTitle;
 	std::shared_ptr<TextComponent> mSeparator;
 	std::shared_ptr<TextComponent> mDesc;
+	std::shared_ptr<TextComponent> mTimeIn;
 	std::shared_ptr<TextComponent> mPoints;
 	std::shared_ptr<WebImageComponent> mImage;
 	Achievement mGameInfo;
