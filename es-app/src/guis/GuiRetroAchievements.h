@@ -46,6 +46,19 @@ public:
 
     static FileData* getFileData(const std::string& cheevosGameId);
 
+    struct GameEntry {
+        FileData* fileData;
+        RetroAchievementGame raGame;
+        bool hasRaGame;
+        std::string name;
+        long gameTimeSeconds;
+        int playCount;
+        std::string lastPlayed;
+    };
+
+    enum class SortMode { Recent, Playtime, Achievements, Completion };
+    enum class FilterMode { Over10Mins, All };
+
 private:
     GuiRetroAchievements(Window* window, RetroAchievementInfo ra);
     void onSizeChanged() override;
@@ -59,19 +72,6 @@ private:
     
     void applyFilterAndSort();
     void openSortFilterMenu();
-
-    struct GameEntry {
-        FileData* fileData;
-        RetroAchievementGame raGame;
-        bool hasRaGame;
-        std::string name;
-        long gameTimeSeconds;
-        int playCount;
-        std::string lastPlayed;
-    };
-
-    enum class SortMode { Recent, Playtime, Achievements, Completion };
-    enum class FilterMode { Over10Mins, All };
 
 private:
     NinePatchComponent mBackground;
