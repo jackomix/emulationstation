@@ -154,6 +154,8 @@ std::string RetroAchievements::getApiUrl(const std::string& method, const std::s
 std::string GameInfoAndUserProgress::getImageUrl(const std::string& image)
 {
 	std::string img = image.empty() ? ImageIcon : image;
+	if (img.empty())
+		return "";
 	std::string filename = Utils::FileSystem::getFileName(img);
 	std::string localPath = "/roms/achievements/images/" + filename;
 	if (Utils::FileSystem::exists(localPath))
