@@ -202,7 +202,7 @@ class SessionAchievementEntry : public ComponentGrid
 {
 public:
 	SessionAchievementEntry(Window* window, Achievement& ra, const std::string& sessionStartTime) :
-		ComponentGrid(window, Vector2i(7, 1))
+		ComponentGrid(window, Vector2i(8, 1))
 	{
 		mGameInfo = ra;
 		auto theme = ThemeData::getMenuTheme();
@@ -237,8 +237,11 @@ public:
 		mDesc->setOpacity(192);
 		mDesc->setAutoScrollDelay(500);
 		
-		mTimeIn = std::make_shared<TextComponent>(mWindow, timeInStr, theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+		mTimeIn = std::make_shared<TextComponent>(mWindow, timeInStr, theme->TextSmall.font, theme->Text.color, ALIGN_RIGHT);
 		mTimeIn->setOpacity(160);
+
+		mTimeSeparator = std::make_shared<TextComponent>(mWindow, timeInStr.empty() ? "" : _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
+		mTimeSeparator->setOpacity(160);
 
 		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
 
@@ -246,12 +249,14 @@ public:
 		setEntry(mSeparator, Vector2i(2, 0), false, true);
 		setEntry(mDesc, Vector2i(3, 0), false, true);
 		setEntry(mTimeIn, Vector2i(4, 0), false, true);
-		setEntry(mPoints, Vector2i(5, 0), false, true);
+		setEntry(mTimeSeparator, Vector2i(5, 0), false, true);
+		setEntry(mPoints, Vector2i(6, 0), false, true);
 
 		float badgeW = badgeSize + Renderer::getScreenHeight() * 0.015f;
 		float titleW = mTitle->getSize().x();
 		float sepW = mSeparator->getSize().x();
-		float timeInW = mTimeIn->getSize().x() > 0 ? (mTimeIn->getSize().x() + Renderer::getScreenHeight() * 0.015f) : 0;
+		float timeInW = mTimeIn->getSize().x() > 0 ? mTimeIn->getSize().x() : 0;
+		float timeSepW = mTimeSeparator->getSize().x() > 0 ? (mTimeSeparator->getSize().x() + Renderer::getScreenHeight() * 0.01f) : 0;
 		float pointsW = mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f;
 		float rightPadW = Renderer::getScreenHeight() * 0.02f;
 
@@ -260,8 +265,9 @@ public:
 		setColWidth(2, sepW, false);
 		// column 3 (Description) is left unset so it auto-sizes to remaining width
 		setColWidth(4, timeInW, false);
-		setColWidth(5, pointsW, false);
-		setColWidth(6, rightPadW, false);
+		setColWidth(5, timeSepW, false);
+		setColWidth(6, pointsW, false);
+		setColWidth(7, rightPadW, false);
 
 		setSize(0, rowHeight);
 	}
@@ -272,6 +278,7 @@ public:
 		mSeparator->setColor(color);
 		mDesc->setColor(color);
 		if (mTimeIn) mTimeIn->setColor(color);
+		if (mTimeSeparator) mTimeSeparator->setColor(color);
 		if (mPoints) mPoints->setColor(color);
 	}
 
@@ -293,6 +300,7 @@ private:
 	std::shared_ptr<TextComponent> mSeparator;
 	std::shared_ptr<TextComponent> mDesc;
 	std::shared_ptr<TextComponent> mTimeIn;
+	std::shared_ptr<TextComponent> mTimeSeparator;
 	std::shared_ptr<TextComponent> mPoints;
 	std::shared_ptr<WebImageComponent> mImage;
 	Achievement mGameInfo;
