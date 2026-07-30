@@ -33,13 +33,13 @@ static std::string formatTimeIn(int seconds)
 	{
 		int m = seconds / 60;
 		int s = seconds % 60;
-		return std::to_string(m) + "m " + std::to_string(s) + "s";
+		return std::to_string(m) + "m" + std::to_string(s) + "s in";
 	}
 	else
 	{
 		int h = seconds / 3600;
 		int m = (seconds % 3600) / 60;
-		return std::to_string(h) + "h " + std::to_string(m) + "m";
+		return std::to_string(h) + "h" + std::to_string(m) + "m in";
 	}
 }
 
@@ -257,9 +257,10 @@ public:
 		float badgeW = badgeSize + Renderer::getScreenHeight() * 0.015f;
 		float titleW = mTitle->getSize().x();
 		float sepW = mSeparator->getSize().x();
-		float timeInW = mTimeIn->getSize().x() > 0 ? mTimeIn->getSize().x() : 0;
+		float spaceW = tinyFont->sizeText(" ").x();
+		float timeInW = mTimeIn->getSize().x() > 0 ? (mTimeIn->getSize().x() + spaceW) : 0;
 		float timeSepW = mTimeSeparator->getSize().x() > 0 ? mTimeSeparator->getSize().x() : 0;
-		float pointsW = mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f;
+		float pointsW = mPoints->getSize().x() + theme->Text.font->sizeText(" ").x();
 		float rightPadW = Renderer::getScreenHeight() * 0.02f;
 
 		setColWidth(0, badgeW, false);
