@@ -224,7 +224,7 @@ public:
 		if (!timeInStr.empty())
 			descText += _U(" \u00b7 ") + timeInStr;
 
-		mSeparator = std::make_shared<TextComponent>(mWindow, _U(" "), theme->TextSmall.font, theme->Text.color);
+		mSeparator = std::make_shared<TextComponent>(mWindow, _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
 		mSeparator->setOpacity(192);
 
 		mDesc = std::make_shared<TextComponent>(mWindow, descText, theme->TextSmall.font, theme->Text.color);
