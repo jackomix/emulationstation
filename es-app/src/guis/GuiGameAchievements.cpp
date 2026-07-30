@@ -238,19 +238,18 @@ public:
 		setEntry(mDesc, Vector2i(3, 0), false, true);
 		setEntry(mPoints, Vector2i(4, 0), false, true);
 
-		float badgeW = (badgeSize + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
-		float titleW = mTitle->getSize().x() / WINDOW_WIDTH;
-		float sepW = mSeparator->getSize().x() / WINDOW_WIDTH;
-		float pointsW = (mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f) / WINDOW_WIDTH;
-		float rightPadW = (Renderer::getScreenHeight() * 0.02f) / WINDOW_WIDTH;
-		float descW = Math::max(0.0f, 1.0f - badgeW - titleW - sepW - pointsW - rightPadW);
+		float badgeW = badgeSize + Renderer::getScreenHeight() * 0.015f;
+		float titleW = mTitle->getSize().x();
+		float sepW = mSeparator->getSize().x();
+		float pointsW = mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f;
+		float rightPadW = Renderer::getScreenHeight() * 0.02f;
 
-		setColWidthPerc(0, badgeW);
-		setColWidthPerc(1, titleW);
-		setColWidthPerc(2, sepW);
-		setColWidthPerc(3, descW);
-		setColWidthPerc(4, pointsW);
-		setColWidthPerc(5, rightPadW);
+		setColWidth(0, badgeW, false);
+		setColWidth(1, titleW, false);
+		setColWidth(2, sepW, false);
+		// column 3 (Description) is left unset so it auto-sizes to remaining width
+		setColWidth(4, pointsW, false);
+		setColWidth(5, rightPadW, false);
 
 		setSize(0, rowHeight);
 	}
