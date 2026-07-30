@@ -119,7 +119,7 @@ public:
         setRowHeightPerc(2, hSub);
         setRowHeightPerc(3, Math::max(0.0f, 1.0f - topPadding - hTxt - hSub));
 
-        float pointsColWidth = Renderer::getScreenHeight() * 0.12f / WINDOW_WIDTH;
+        float pointsColWidth = Renderer::getScreenHeight() * 0.20f / WINDOW_WIDTH;
         setColWidthPerc(0, (height - IMAGESPACER) / WINDOW_WIDTH);
         setColWidthPerc(1, IMAGESPACER / WINDOW_WIDTH);
         setColWidthPerc(3, pointsColWidth);
@@ -476,26 +476,37 @@ void GuiRetroAchievements::populateGameList()
 
     for (auto sys : SystemData::sSystemVector)
     {
+        if (sys->isCollection() || sys->isGroupSystem()) continue;
+
         for (auto file : sys->getRootFolder()->getFilesRecursive(GAME))
         {
-            int playCount = Utils::String::toInteger(file->getMetadata(MetaDataId::PlayCount));
+            auto sessions = PlayHistoryManager::getInstance()->getSessions(file);
+            int profilePlayCount = sessions.size();
+            int profileGameTime = 0;
+            std::string profileLastPlayed = "";
+            for (const auto& s : sessions) {
+                profileGameTime += s.durationSeconds;
+                if (profileLastPlayed.empty() || s.startTime > profileLastPlayed) {
+                    profileLastPlayed = s.startTime;
+                }
+            }
+
             std::string cheevosId = file->getMetadata(MetaDataId::CheevosId);
             
-            if (playCount > 0 || !cheevosId.empty())
+            if (profilePlayCount > 0 || !cheevosId.empty())
             {
                 GameEntry entry;
                 entry.fileData = file;
                 entry.hasRaGame = false;
                 entry.name = file->getName();
-                entry.gameTimeSeconds = Utils::String::toInteger(file->getMetadata(MetaDataId::GameTime));
-                entry.playCount = playCount;
-                entry.lastPlayed = file->getMetadata(MetaDataId::LastPlayed);
+                entry.gameTimeSeconds = profileGameTime;
+                entry.playCount = profilePlayCount;
+                entry.lastPlayed = profileLastPlayed;
                 
                 if (!cheevosId.empty()) {
                     int gid = Utils::String::toInteger(cheevosId);
-                    GameInfoAndUserProgress prog;
-                    if (AchievementCache::loadGameData(gid, prog)) {
-                        AchievementCache::loadUserProgress(gid, prog);
+                    if (AchievementCache::hasGameData(gid)) {
+                        GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gid);
                         entry.hasRaGame = true;
                         entry.raGame.id = cheevosId;
                         entry.raGame.name = prog.Title;
@@ -804,9 +815,8 @@ void GuiRetroAchievements::populatePlayHistoryTab()
 
         if (game->hasRaGame) {
             int gid = Utils::String::toInteger(game->raGame.id);
-            GameInfoAndUserProgress prog;
-            if (AchievementCache::loadGameData(gid, prog)) {
-                AchievementCache::loadUserProgress(gid, prog);
+            if (AchievementCache::hasGameData(gid)) {
+                GameInfoAndUserProgress prog = RetroAchievements::getGameInfoAndUserProgress(gid);
                 for (auto& s : sessions) {
                     for (auto& id : s.achievementIds) {
                         for (auto& ra : prog.Achievements) {
