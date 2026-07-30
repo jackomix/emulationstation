@@ -1,4 +1,5 @@
 #include "guis/GuiRetroAchievements.h"
+#include "AchievementCache.h"
 #include "guis/GuiLoading.h"
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiGameAchievements.h"
@@ -489,6 +490,22 @@ void GuiRetroAchievements::populateGameList()
                 entry.gameTimeSeconds = Utils::String::toInteger(file->getMetadata(MetaDataId::GameTime));
                 entry.playCount = playCount;
                 entry.lastPlayed = file->getMetadata(MetaDataId::LastPlayed);
+                
+                if (!cheevosId.empty()) {
+                    int gid = Utils::String::toInteger(cheevosId);
+                    GameInfoAndUserProgress prog;
+                    if (AchievementCache::loadGameData(gid, prog)) {
+                        AchievementCache::loadUserProgress(gid, prog);
+                        entry.hasRaGame = true;
+                        entry.raGame.id = cheevosId;
+                        entry.raGame.name = prog.Title;
+                        entry.raGame.consoleName = prog.ConsoleName;
+                        entry.raGame.badge = prog.getImageUrl(prog.ImageIcon);
+                        entry.raGame.wonAchievementsSoftcore = prog.NumAwardedToUser;
+                        entry.raGame.totalAchievements = prog.NumAchievements;
+                    }
+                }
+                
                 mAllGames.push_back(entry);
             }
         }
@@ -501,8 +518,10 @@ void GuiRetroAchievements::populateGameList()
         {
             if (entry.fileData && entry.fileData->getMetadata(MetaDataId::CheevosId) == raGame.id)
             {
-                entry.raGame = raGame;
-                entry.hasRaGame = true;
+                if (!entry.hasRaGame) {
+                    entry.raGame = raGame;
+                    entry.hasRaGame = true;
+                }
                 found = true;
                 break;
             }
@@ -783,27 +802,24 @@ void GuiRetroAchievements::populatePlayHistoryTab()
 
         std::map<std::string, std::vector<Achievement>> sessionAchievements;
 
-        if (game->hasRaGame && summary.RecentAchievements.count(game->raGame.id)) {
-            const auto& gameRecent = summary.RecentAchievements[game->raGame.id];
-            for (auto& s : sessions) {
-                for (auto& id : s.achievementIds) {
-                    for (auto& ra : gameRecent) {
-                        if (ra.ID == id) {
-                            Achievement ach;
-                            ach.ID = ra.ID;
-                            ach.Title = ra.Title;
-                            ach.Description = ra.Description;
-                            ach.Points = ra.Points;
-                            ach.BadgeName = ra.BadgeName;
-                            ach.DateEarned = ra.DateAwarded;
-                            sessionAchievements[s.id].push_back(ach);
-                            break;
+        if (game->hasRaGame) {
+            int gid = Utils::String::toInteger(game->raGame.id);
+            GameInfoAndUserProgress prog;
+            if (AchievementCache::loadGameData(gid, prog)) {
+                AchievementCache::loadUserProgress(gid, prog);
+                for (auto& s : sessions) {
+                    for (auto& id : s.achievementIds) {
+                        for (auto& ra : prog.Achievements) {
+                            if (ra.ID == id) {
+                                sessionAchievements[s.id].push_back(ra);
+                                break;
+                            }
                         }
                     }
+                    std::sort(sessionAchievements[s.id].begin(), sessionAchievements[s.id].end(), [](const Achievement& a, const Achievement& b) {
+                        return parseDateTimeHistory(a.DateEarned) > parseDateTimeHistory(b.DateEarned);
+                    });
                 }
-                std::sort(sessionAchievements[s.id].begin(), sessionAchievements[s.id].end(), [](const Achievement& a, const Achievement& b) {
-                    return parseDateTimeHistory(a.DateEarned) > parseDateTimeHistory(b.DateEarned);
-                });
             }
         }
 
