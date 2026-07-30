@@ -224,7 +224,7 @@ public:
 		if (!timeInStr.empty())
 			descText += _U(" \u00b7 ") + timeInStr;
 
-		mSeparator = std::make_shared<TextComponent>(mWindow, _U("\u00b7 "), theme->TextSmall.font, theme->Text.color);
+		mSeparator = std::make_shared<TextComponent>(mWindow, _U(" "), theme->TextSmall.font, theme->Text.color);
 		mSeparator->setOpacity(192);
 
 		mDesc = std::make_shared<TextComponent>(mWindow, descText, theme->TextSmall.font, theme->Text.color);
@@ -725,6 +725,7 @@ void GuiGameAchievements::populatePlayHistoryTab()
 		isoDate = Utils::String::replace(isoDate, "-", "");
 		isoDate = Utils::String::replace(isoDate, ":", "");
 		isoDate = Utils::String::replace(isoDate, "Z", "");
+		isoDate = Utils::String::replace(isoDate, "T", "");
 		std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
 		
 		std::string durationStr = Utils::Time::secondsToString(s.durationSeconds, false, true);
@@ -740,8 +741,6 @@ void GuiGameAchievements::populatePlayHistoryTab()
 		}
 		
 		std::string rightStr = durationStr;
-		if (sessionPoints > 0)
-			rightStr += "   " + std::to_string(sessionPoints) + _U(" \uf091");
 			
 		auto valSession = std::make_shared<TextComponent>(mWindow, rightStr, theme->TextSmall.font, theme->Text.color);
 		valSession->setHorizontalAlignment(ALIGN_RIGHT);

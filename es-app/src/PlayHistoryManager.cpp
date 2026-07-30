@@ -267,10 +267,7 @@ void PlayHistoryManager::startSession(FileData* game) {
     time_t rawtime = Utils::Time::now();
     mCurrentSession.id = std::to_string(rawtime);
     
-    struct tm * ptminfo = gmtime(&rawtime);
-    char buf[128];
-    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", ptminfo);
-    mCurrentSession.startTime = std::string(buf);
+    mCurrentSession.startTime = Utils::Time::timeToString(rawtime, "%Y-%m-%dT%H:%M:%S");
     
     mCurrentSession.durationSeconds = 0;
     mCurrentSession.completed = false;
