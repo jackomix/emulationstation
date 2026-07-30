@@ -17,10 +17,103 @@
 #include "utils/TimeUtil.h"
 #include "PlayHistoryManager.h"
 #include "ProfileManager.h"
+#include "components/OptionListComponent.h"
+#include "guis/GuiSettings.h"
+#include "guis/GuiSettings.h"
+#include "components/WebImageComponent.h"
 #include <algorithm>
 
 #define PROGRESSHEIGHT (Renderer::getScreenHeight() * 0.008f)
 #define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
+#define BADGESIZE (Renderer::getScreenHeight() * (32.0f / 720.0f))
+
+class PlayedGameEntry : public ComponentGrid
+{
+public:
+    PlayedGameEntry(Window* window, GuiRetroAchievements::GameEntry* game, GuiRetroAchievements::SortMode sortMode) : 
+        ComponentGrid(window, Vector2i(4, 2))
+    {
+        auto theme = ThemeData::getMenuTheme();
+        
+        mImage = std::make_shared<WebImageComponent>(mWindow);
+        mImage->setMaxSize(BADGESIZE, BADGESIZE);
+        
+        if (game->hasRaGame && !game->raGame.badge.empty()) {
+            std::string url = "http://media.retroachievements.org/Badge/" + game->raGame.badge + ".png";
+            mImage->setImage(url);
+        } else if (game->fileData && !game->fileData->getImagePath().empty()) {
+            mImage->setImage(game->fileData->getImagePath());
+        } else {
+            mImage->setImage(":/cartridge.svg");
+            mImage->setColorShift(theme->Text.color);
+        }
+        
+        setEntry(mImage, Vector2i(0, 0), false, false, Vector2i(1, 2));
+
+        mTitle = std::make_shared<TextComponent>(mWindow, game->name, theme->Text.font, theme->Text.color);
+        
+        std::string rightText = "";
+        std::string subText = "";
+        
+        if (game->fileData) {
+            subText = game->fileData->getSourceFileData()->getSystem()->getFullName();
+        } else if (game->hasRaGame) {
+            subText = game->raGame.consoleName;
+        }
+
+        if (sortMode == GuiRetroAchievements::SortMode::Recent) rightText = game->lastPlayed;
+        else if (sortMode == GuiRetroAchievements::SortMode::Playtime) rightText = Utils::Time::secondsToString(game->gameTimeSeconds);
+        else if (sortMode == GuiRetroAchievements::SortMode::Achievements) rightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) + " earned" : "0 earned";
+        else if (sortMode == GuiRetroAchievements::SortMode::Completion) {
+            int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
+            rightText = std::to_string(percent) + "%";
+        }
+        
+        mSubtitle = std::make_shared<TextComponent>(mWindow, subText, theme->TextSmall.font, theme->Text.color);
+        mSubtitle->setOpacity(160);
+
+        mRightStat = std::make_shared<TextComponent>(mWindow, rightText, theme->TextSmall.font, theme->Text.color);
+        mRightStat->setHorizontalAlignment(ALIGN_RIGHT);
+        
+        if (!game->fileData) {
+            mTitle->setOpacity(120);
+            mRightStat->setOpacity(120);
+        }
+
+        setEntry(mTitle, Vector2i(2, 0), false, true);
+        setEntry(mSubtitle, Vector2i(2, 1), false, true);
+        setEntry(mRightStat, Vector2i(3, 0), false, true, Vector2i(1, 2));
+
+        float height = Math::max(BADGESIZE + 4.0f, mTitle->getSize().y() + mSubtitle->getSize().y());
+        
+        float hTxt = mTitle->getSize().y() / height;
+        float hSub = mSubtitle->getSize().y() / height;
+        float topPadding = Math::max(0.0f, (height - mTitle->getSize().y() - mSubtitle->getSize().y()) / height / 2.0f);
+
+        setRowHeightPerc(0, topPadding + hTxt);
+        setRowHeightPerc(1, hSub + Math::max(0.0f, 1.0f - topPadding - hTxt - hSub));
+
+        float badgeW = BADGESIZE + Renderer::getScreenHeight() * 0.015f;
+        setColWidth(0, badgeW, false);
+        setColWidth(1, 0, false); // No spacer needed if we just use padding
+        setColWidth(3, mRightStat->getSize().x() > 0 ? mRightStat->getSize().x() : 100, false);
+
+        setSize(0, height);
+    }
+    
+    virtual void setColor(unsigned int color)
+    {
+        mTitle->setColor(color);
+        mSubtitle->setColor(Utils::HtmlColor::applyColorOpacity(color, 160));
+        mRightStat->setColor(color);
+    }
+
+private:
+    std::shared_ptr<WebImageComponent> mImage;
+    std::shared_ptr<TextComponent> mTitle;
+    std::shared_ptr<TextComponent> mSubtitle;
+    std::shared_ptr<TextComponent> mRightStat;
+};
 
 void GuiRetroAchievements::show(Window* window)
 {
@@ -327,33 +420,14 @@ void GuiRetroAchievements::populateGamesTab()
     for (auto* game : mFilteredGames)
     {
         ComponentListRow row;
-        auto text = std::make_shared<TextComponent>(mWindow, game->name, theme->Text.font, theme->Text.color);
-        if (!game->fileData) text->setOpacity(120);
+        auto entry = std::make_shared<PlayedGameEntry>(mWindow, game, mSortMode);
         
-        row.addElement(text, true);
-        
-        auto spacer = std::make_shared<GuiComponent>(mWindow);
-        spacer->setSize(Renderer::getScreenWidth() * 0.015f, 0);
-        row.addElement(spacer, false);
-
-        std::string rightText = "";
-        if (mSortMode == SortMode::Recent) rightText = game->lastPlayed;
-        else if (mSortMode == SortMode::Playtime) rightText = Utils::Time::secondsToString(game->gameTimeSeconds);
-        else if (mSortMode == SortMode::Achievements) rightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) + " earned" : "0 earned";
-        else if (mSortMode == SortMode::Completion) {
-            int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
-            rightText = std::to_string(percent) + "%";
-        }
-        
-        auto rightStat = std::make_shared<TextComponent>(mWindow, rightText, theme->TextSmall.font, theme->Text.color);
-        rightStat->setHorizontalAlignment(ALIGN_RIGHT);
-        row.addElement(rightStat, false);
+        row.addElement(entry, true);
 
         row.makeAcceptInputHandler([this, game] {
             if (game->hasRaGame) {
                 GuiGameAchievements::show(mWindow, Utils::String::toInteger(game->raGame.id));
             } else if (game->fileData) {
-                // If it has no RA game, open the achievements page anyway (which now supports empty pages)
                 GuiGameAchievements::show(mWindow, game->fileData);
             }
         });
@@ -514,15 +588,29 @@ void GuiRetroAchievements::populateOptionsTab()
 
 void GuiRetroAchievements::openSortFilterMenu()
 {
-    // Simple mock, ideally open a GuiSettings or a custom Gui component.
-    mFilterMode = (mFilterMode == FilterMode::All) ? FilterMode::Over10Mins : FilterMode::All;
-    
-    if (mSortMode == SortMode::Recent) mSortMode = SortMode::Playtime;
-    else if (mSortMode == SortMode::Playtime) mSortMode = SortMode::Achievements;
-    else if (mSortMode == SortMode::Achievements) mSortMode = SortMode::Completion;
-    else mSortMode = SortMode::Recent;
+    auto s = new GuiSettings(mWindow, _("SORT & FILTER"));
 
-    applyFilterAndSort();
+    auto sortList = std::make_shared<OptionListComponent<SortMode>>(mWindow, _("SORT BY"), false);
+    sortList->add(_("RECENTLY PLAYED"), SortMode::Recent, mSortMode == SortMode::Recent);
+    sortList->add(_("MOST PLAYTIME"), SortMode::Playtime, mSortMode == SortMode::Playtime);
+    sortList->add(_("MOST ACHIEVEMENTS"), SortMode::Achievements, mSortMode == SortMode::Achievements);
+    sortList->add(_("COMPLETION %"), SortMode::Completion, mSortMode == SortMode::Completion);
+    
+    s->addWithLabel(_("SORT BY"), sortList);
+
+    auto filterList = std::make_shared<OptionListComponent<FilterMode>>(mWindow, _("FILTER"), false);
+    filterList->add(_("> 10 MINS PLAYTIME"), FilterMode::Over10Mins, mFilterMode == FilterMode::Over10Mins);
+    filterList->add(_("ALL GAMES"), FilterMode::All, mFilterMode == FilterMode::All);
+
+    s->addWithLabel(_("FILTER"), filterList);
+
+    s->addSaveFunc([this, sortList, filterList] {
+        mSortMode = sortList->getSelected();
+        mFilterMode = filterList->getSelected();
+        applyFilterAndSort();
+    });
+
+    mWindow->pushGui(s);
 }
 
 void GuiRetroAchievements::update(int deltaTime)
@@ -547,8 +635,24 @@ bool GuiRetroAchievements::input(InputConfig* config, Input input)
             mWindow->postToUiThread([this]() { delete this; });
             return true;
         }
+        if (config->isMappedTo("pageup", input) || config->isMappedTo("l1", input))
+        {
+            mTabs->setCursorIndex(mTabs->getCursorIndex() - 1);
+            return true;
+        }
+        if (config->isMappedTo("pagedown", input) || config->isMappedTo("r1", input))
+        {
+            mTabs->setCursorIndex(mTabs->getCursorIndex() + 1);
+            return true;
+        }
     }
     
+    if (mGrid.isCursorTo(mList))
+    {
+        if (mTabs->input(config, input))
+            return true;
+    }
+
     return GuiComponent::input(config, input);
 }
 
