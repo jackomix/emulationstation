@@ -388,9 +388,9 @@ void GuiRetroAchievements::populatePlayHistoryTab()
     auto theme = ThemeData::getMenuTheme();
     std::vector<PlaySession> allSessions;
 
-    for (auto* game : mAllGames) {
-        if (game->fileData) {
-            auto sessions = PlayHistoryManager::getInstance()->getSessions(game->fileData);
+    for (auto& game : mAllGames) {
+        if (game.fileData) {
+            auto sessions = PlayHistoryManager::getInstance()->getSessions(game.fileData);
             allSessions.insert(allSessions.end(), sessions.begin(), sessions.end());
         }
     }
