@@ -43,16 +43,11 @@ When creating or modifying `GuiComponent` subclasses, you must adhere to these r
 - **Avatar & Icon Sizing**: Default menu icons scale to `theme->Text.font->getLetterHeight() * 1.25f`. For prominent visual components (e.g., profile avatars in headers), scale up to `2.5f` times the letter height.
 
 ## 10. Deployment & R36S Device Sync Workflow
-When required to build and deploy changes to the R36S device, use the following lock-free sequence to upload the binary without encountering "Text file busy" errors:
+When required to build and deploy changes to the R36S device, use the deployment script:
 1. **Push**: Commit and push changes to the active branch (e.g. `attempt2`) to trigger the GitHub Actions (GHA) build.
-2. **Build**: Monitor the GHA build (`gh run list --branch <branch>`). Average build duration is **211 seconds (~3.5 minutes)**. When waiting for builds, schedule a single timer for 210 seconds. If build not done yet, wait 20 seconds more. Once complete, download the artifact locally: 
-   `rm -rf /tmp/es-artifact && gh run download <run_id> --name emulationstation-r36s --dir /tmp/es-artifact`
-3. **Upload**: Upload the new binary to the `/tmp` directory on the device via SCP (which avoids lock issues since `/tmp/emulationstation` is not running):
-   `scp -i ~/.ssh/id_ed25519_antigravity -o StrictHostKeyChecking=no /tmp/es-artifact/EmulationStation/emulationstation ark@192.168.18.20:/tmp/emulationstation`
-4. **Deploy**: Move the binary to its destination on the ROMs partition (which unlinks the running file safely) and make it executable:
-   `ssh -i ~/.ssh/id_ed25519_antigravity -o StrictHostKeyChecking=no ark@192.168.18.20 "mv /tmp/emulationstation /roms/EmulationStation/emulationstation && chmod +x /roms/EmulationStation/emulationstation"`
-5. **Restart**: The user can restart EmulationStation via the UI menu, or you can trigger a restart remotely by killing the process:
-   `ssh -i ~/.ssh/id_ed25519_antigravity -o StrictHostKeyChecking=no ark@192.168.18.20 "killall emulationstation"`
+2. **Deploy**: Run the deploy script with the branch name as the argument:
+   `./deploy.sh attempt2`
+3. **Monitor**: The script will automatically wait for the GitHub Actions build, download the artifact, upload it to the R36S device via SCP, and restart EmulationStation. Simply wait for the script to finish.
 
 ## 11. Smart Session & Context Management (Keep Agent Smart)
 - **Limit Scope**: Limit sessions to 3–10 files. Avoid editing files > 500 lines if possible.

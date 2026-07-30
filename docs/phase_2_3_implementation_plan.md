@@ -39,9 +39,18 @@ Small edit to existing achievement screen. Screen is now accessible even if the 
 ### 4. Profile Details Screen (`GuiRetroAchievements`) - Build Second
 Completely replace/rewrite current profile details screen design. Copy per-game page's tab structure, then adapt.
 - **Tab System**: Switched via L1/R1.
-  - **Played Games Tab**: Scrollable list of games. Game icon/box art on the left, game title with "14h 32m · 23/47 achievements" underneath in smaller text. For games with no RA support/no achievements, just show playtime, omit achievement mention entirely. Pressing A on a game row goes to that game's per-game page.
-  - **Profile Stats Tab**: Aggregate info — total playtime, total points, games played, etc.
-- **Filtering/Sorting**: Handled in a separate submenu/window, not inline. Includes a minimum playtime filter with discrete steps (default 15 minutes, settable to 0 for all games).
+  - **Games Tab**: Scrollable list of all games played.
+    - **First Row**: An interactive row that opens a sorting and filtering menu.
+    - **Filters**: By default, filters out games with less than 10 minutes of playtime. Can also filter by System.
+    - **Sorting Options**: Recently played (default), Most playtime, Most achievements, Achievement completion percentage.
+    - **Dynamic Stats**: The stat displayed on the right-side of each game row dynamically changes based on the selected sort option (e.g., if sorting by playtime, playtime is shown).
+    - Pressing A on a game row goes to that game's per-game page.
+  - **Play History Tab**: Global timeline showing all sessions of everything done.
+    - **Global Header Stats**: At the top, display total time playing games in general, total times a game was opened, and the last time a game was played.
+    - **Session Rows**: Similar to the existing Game Play History tab. To reduce clutter, do not include the game name or icon in the session row itself.
+  - **Options Tab**: Profile management actions.
+    - Contains settings to Rename Profile, Change Profile Picture, and Delete Profile.
+    - (Note: We are intentionally skipping the "Info" tab).
 
 ### Phase 3 Milestones
 
@@ -55,16 +64,16 @@ Completely replace/rewrite current profile details screen design. Copy per-game 
 - Fetch play history (start times and durations) for the selected game.
 - Populate the Play History Tab with a clean vertical list of past sessions.
 
-#### Milestone 3.3: Profile Details Screen & Played Games Tab
+#### Milestone 3.3: Profile Details Screen (Games Tab)
 - Set up the tab layout container in `GuiRetroAchievements`.
-- Implement the Played Games Tab: list of played games matching the profile, displaying icon, title, playtime, and achievement count.
-- Handle fallback layout (playtime only) for games without achievement support.
-- Map the "A" button action on a game row to push `GuiGameAchievements` for that game.
+- Implement the Games Tab: list of played games matching the profile.
+- Implement the interactive first row that triggers the Sorting/Filtering submenu.
+- Implement filtering (< 10 mins playtime, filter by system) and sorting options (recent, playtime, achievements, completion %).
+- Ensure the right-aligned stat dynamically updates based on the active sort mode.
 
-#### Milestone 3.4: Profile Details Screen Stats Tab & Filters Submenu
-- Implement the Profile Stats Tab showing aggregates: total playtime, total points, and games played.
-- Create the sorting/filtering submenu overlay (triggered by option buttons).
-- Implement the minimum playtime filter with discrete steps (default 15 mins, min 0 mins).
+#### Milestone 3.4: Profile Details Screen (Play History & Options Tabs)
+- Implement the Play History Tab: global session list without game icons/names, including the global header stats (total time, total launches, last played).
+- Implement the Options Tab: Rename profile, Change profile picture, Delete profile.
 
 ### Emerging Conventions
 - **L1/R1**: Tab switching wherever a screen has tabs.

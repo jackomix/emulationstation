@@ -125,6 +125,8 @@ private:
     std::shared_ptr<TextComponent> mRightStat;
 };
 
+static time_t parseDateTimeHistory(const std::string& dt);
+
 static std::string formatTimeIn2(int seconds)
 {
 	if (seconds < 0) seconds = 0;
