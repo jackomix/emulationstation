@@ -43,19 +43,27 @@ static std::string formatTimeIn(int seconds)
 	}
 }
 
-// Parse "YYYY-MM-DD HH:MM:SS" or ISO 8601 "YYYY-MM-DDTHH:MM:SSZ" to time_t
 static time_t parseDateTime(const std::string& dt)
 {
 	if (dt.empty()) return 0;
+	
+	// Check if it's the EmulationStation local time format (e.g., "20260730T123456")
+	if (dt.find("T") != std::string::npos && dt.find("-") == std::string::npos)
+	{
+		// stringToTime parses it as Local Time and returns the correct UTC epoch
+		return Utils::Time::stringToTime(dt);
+	}
+	
 	struct tm t = {};
-	// Try "YYYY-MM-DD HH:MM:SS"
+	// Try RetroAchievements API UTC format "YYYY-MM-DD HH:MM:SS"
 	if (sscanf(dt.c_str(), "%d-%d-%d %d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) == 6)
 	{
 		t.tm_year -= 1900;
 		t.tm_mon -= 1;
+		// timegm parses it directly as UTC and returns the correct UTC epoch
 		return timegm(&t);
 	}
-	// Try ISO 8601 "YYYY-MM-DDTHH:MM:SSZ"
+	// Try ISO 8601 "YYYY-MM-DDTHH:MM:SSZ" (just in case)
 	if (sscanf(dt.c_str(), "%d-%d-%dT%d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) == 6)
 	{
 		t.tm_year -= 1900;
