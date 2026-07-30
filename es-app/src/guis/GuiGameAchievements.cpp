@@ -193,6 +193,7 @@ private:
 	std::shared_ptr<TextComponent> mText;
 	std::shared_ptr<TextComponent> mSubstring;
 	std::shared_ptr<TextComponent> mPoints;
+	std::shared_ptr<TextComponent> mTimeIn;
 	std::shared_ptr<TextComponent> mPercentage;
 	std::shared_ptr<WebImageComponent> mImage;
 	Achievement mGameInfo;
@@ -202,7 +203,7 @@ class SessionAchievementEntry : public ComponentGrid
 {
 public:
 	SessionAchievementEntry(Window* window, Achievement& ra, const std::string& sessionStartTime) :
-		ComponentGrid(window, Vector2i(6, 1))
+		ComponentGrid(window, Vector2i(7, 1))
 	{
 		mGameInfo = ra;
 		auto theme = ThemeData::getMenuTheme();
@@ -229,8 +230,6 @@ public:
 		}
 
 		std::string descText = mGameInfo.Description;
-		if (!timeInStr.empty())
-			descText += _U(" \u00b7 ") + timeInStr;
 
 		mSeparator = std::make_shared<TextComponent>(mWindow, _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
 		mSeparator->setOpacity(192);
@@ -238,17 +237,22 @@ public:
 		mDesc = std::make_shared<TextComponent>(mWindow, descText, theme->TextSmall.font, theme->Text.color);
 		mDesc->setOpacity(192);
 		mDesc->setAutoScrollDelay(500);
+		
+		mTimeIn = std::make_shared<TextComponent>(mWindow, timeInStr, theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+		mTimeIn->setOpacity(160);
 
 		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
 
 		setEntry(mTitle, Vector2i(1, 0), false, true);
 		setEntry(mSeparator, Vector2i(2, 0), false, true);
 		setEntry(mDesc, Vector2i(3, 0), false, true);
-		setEntry(mPoints, Vector2i(4, 0), false, true);
+		setEntry(mTimeIn, Vector2i(4, 0), false, true);
+		setEntry(mPoints, Vector2i(5, 0), false, true);
 
 		float badgeW = badgeSize + Renderer::getScreenHeight() * 0.015f;
 		float titleW = mTitle->getSize().x();
 		float sepW = mSeparator->getSize().x();
+		float timeInW = mTimeIn->getSize().x() > 0 ? (mTimeIn->getSize().x() + Renderer::getScreenHeight() * 0.015f) : 0;
 		float pointsW = mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f;
 		float rightPadW = Renderer::getScreenHeight() * 0.02f;
 
@@ -256,8 +260,9 @@ public:
 		setColWidth(1, titleW, false);
 		setColWidth(2, sepW, false);
 		// column 3 (Description) is left unset so it auto-sizes to remaining width
-		setColWidth(4, pointsW, false);
-		setColWidth(5, rightPadW, false);
+		setColWidth(4, timeInW, false);
+		setColWidth(5, pointsW, false);
+		setColWidth(6, rightPadW, false);
 
 		setSize(0, rowHeight);
 	}
@@ -267,6 +272,7 @@ public:
 		mTitle->setColor(color);
 		mSeparator->setColor(color);
 		mDesc->setColor(color);
+		if (mTimeIn) mTimeIn->setColor(color);
 		if (mPoints) mPoints->setColor(color);
 	}
 
