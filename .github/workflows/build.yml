@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: build-essential cmake git libsdl2-dev libsdl2-mixer-dev libfreeimage-dev libfreetype6-dev libcurl4-openssl-dev rapidjson-dev libasound2-dev libvlc-dev libvlccore-dev vlc-bin libboost-all-dev libeigen3-dev libgles2-mesa-dev libcec-dev libudev-dev gettext ca-certificates ccache ninja-build lld
+          packages: build-essential cmake git libsdl2-dev libsdl2-mixer-dev libfreeimage-dev libfreetype6-dev libcurl4-openssl-dev rapidjson-dev libasound2-dev libvlc-dev libvlccore-dev vlc-bin libboost-all-dev libeigen3-dev libgles2-mesa-dev libcec-dev libudev-dev gettext ca-certificates ccache ninja-build
           version: 1.0
 
       - name: Setup ccache
@@ -41,8 +41,6 @@ jobs:
             -DRG351P=ON \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
-            -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld" \
             ..
           ninja -j$(nproc)
           cd ..
