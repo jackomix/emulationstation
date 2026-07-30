@@ -826,8 +826,16 @@ void GuiRetroAchievements::populatePlayHistoryTab()
         spacer->setSize(Renderer::getScreenHeight() * 0.015f, 0);
         gameRow.addElement(spacer, false);
 
-        auto gameTitle = std::make_shared<TextComponent>(mWindow, game->name, theme->Text.font, theme->Text.color);
+        auto gameTitle = std::make_shared<TextComponent>(mWindow, game->hasRaGame ? game->raGame.name : game->name, theme->Text.font, theme->Text.color);
         gameRow.addElement(gameTitle, true);
+        
+        auto launchGameAchievements = [this, game](const std::string& achId) {
+            if (game->fileData && game->hasRaGame) {
+                GuiGameAchievements::show(mWindow, game->fileData, achId);
+            }
+        };
+
+        gameRow.makeAcceptInputHandler([launchGameAchievements] { launchGameAchievements(""); });
         
         mList->addRow(gameRow);
 
@@ -881,6 +889,7 @@ void GuiRetroAchievements::populatePlayHistoryTab()
 
             sessionRow.addElement(lblSession, true);
             sessionRow.addElement(valSession, false);
+            sessionRow.makeAcceptInputHandler([launchGameAchievements] { launchGameAchievements(""); });
             mList->addRow(sessionRow);
 
             for (auto ach : sessionAchievements[s.id]) {
@@ -892,6 +901,9 @@ void GuiRetroAchievements::populatePlayHistoryTab()
                 spacer->setSize(Renderer::getScreenHeight() * 0.04f, 0);
                 achRow.addElement(spacer, false);
                 achRow.addElement(entry, true);
+                
+                std::string achId = ach.ID;
+                achRow.makeAcceptInputHandler([launchGameAchievements, achId] { launchGameAchievements(achId); });
                 
                 mList->addRow(achRow);
             }

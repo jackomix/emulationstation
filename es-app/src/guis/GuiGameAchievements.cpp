@@ -73,9 +73,9 @@ static time_t parseDateTime(const std::string& dt)
 	return 0;
 }
 
-void GuiGameAchievements::show(Window* window, FileData* game)
+void GuiGameAchievements::show(Window* window, FileData* game, const std::string& targetAchId)
 {
-	window->pushGui(new GuiGameAchievements(window, GameInfoAndUserProgress(), game));
+	window->pushGui(new GuiGameAchievements(window, GameInfoAndUserProgress(), game, targetAchId));
 }
 
 void GuiGameAchievements::show(Window* window, int gameId)
@@ -499,8 +499,8 @@ public:
 	std::function<void(int)> mBoundaryCallback;
 };
 
-GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game) : 
-	GuiComponent(window), mGrid(window, Vector2i(1, 4)), mBackground(window, ":/frame.png")
+GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra, FileData* game, const std::string& targetAchId) : 
+	GuiComponent(window), mGrid(window, Vector2i(1, 4)), mBackground(window, ":/frame.png"), mTargetAchievementId(targetAchId)
 {
 	mRaInfo = ra;
 	mActiveTab = 0;
@@ -681,12 +681,20 @@ void GuiGameAchievements::populateTabContent()
 
 void GuiGameAchievements::populateAchievementsTab()
 {
+	int targetIndex = -1;
+	int currentIndex = 0;
 	for (auto game : mRaInfo.Achievements)
 	{
 		ComponentListRow row;
 		auto itstring = std::make_shared<GameAchievementEntry>(mWindow, mRaInfo, game);
 		row.addElement(itstring, true);
-		mList->addRow(row);
+		
+		bool setCursor = !mTargetAchievementId.empty() && game.ID == mTargetAchievementId;
+		mList->addRow(row, setCursor);
+		if (setCursor) mTargetAchievementId = "";
+		
+		if (setCursor) targetIndex = currentIndex;
+		currentIndex++;
 	}
 }
 

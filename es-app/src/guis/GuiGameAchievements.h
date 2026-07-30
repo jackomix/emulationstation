@@ -21,7 +21,7 @@ class GuiGameAchievements : public GuiComponent
 {
 public:
 	static void show(Window* window, int gameId);
-	static void show(Window* window, FileData* game);
+	static void show(Window* window, FileData* game, const std::string& targetAchId = "");
 
 	friend class ScrollableDescription;
 
@@ -33,7 +33,7 @@ public:
 	std::vector<HelpPrompt> getHelpPrompts() override;
 
 protected:
-	GuiGameAchievements(Window *window, GameInfoAndUserProgress ra, FileData* game = nullptr);
+	GuiGameAchievements(Window *window, GameInfoAndUserProgress ra, FileData* game = nullptr, const std::string& targetAchId = "");
 
 	void	centerWindow();
 
@@ -54,6 +54,7 @@ protected:
 	int mUpTime = 0;
 	int mDownTime = 0;
 	int mManualScrollAccum = 0;
+	std::string mTargetAchievementId;
 
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;
