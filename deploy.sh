@@ -66,10 +66,7 @@ echo "Build succeeded."
 # Download artifact
 echo "Downloading artifact..."
 rm -rf "$LOCAL_ARTIFACT_DIR"
-gh run download "$RUN_ID" \
-  --repo "$REPO" \
-  --name "$ARTIFACT_NAME" \
-  --dir "$LOCAL_ARTIFACT_DIR"
+gh run download "$RUN_ID" --repo "$REPO" --name "$ARTIFACT_NAME" --dir "$LOCAL_ARTIFACT_DIR"
 
 BINARY="$LOCAL_ARTIFACT_DIR/EmulationStation/emulationstation"
 if [ ! -f "$BINARY" ]; then
