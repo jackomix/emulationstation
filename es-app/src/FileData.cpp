@@ -949,7 +949,11 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 
 		//update last played time using exact session start time instead of exit time
 		if (!lastSession.startTime.empty()) {
-			gameToUpdate->setMetadata(MetaDataId::LastPlayed, lastSession.startTime);
+			std::string isoDate = lastSession.startTime;
+			isoDate = Utils::String::replace(isoDate, "-", "");
+			isoDate = Utils::String::replace(isoDate, ":", "");
+			isoDate = Utils::String::replace(isoDate, "Z", "");
+			gameToUpdate->setMetadata(MetaDataId::LastPlayed, isoDate);
 		} else {
 			gameToUpdate->setMetadata(MetaDataId::LastPlayed, Utils::Time::DateTime(Utils::Time::now()));
 		}
