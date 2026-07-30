@@ -697,10 +697,10 @@ void GuiRetroAchievements::populateGamesTab()
         row.addElement(entry, true);
 
         row.makeAcceptInputHandler([this, game] {
-            if (game->hasRaGame) {
-                GuiGameAchievements::show(mWindow, Utils::String::toInteger(game->raGame.id));
-            } else if (game->fileData) {
+            if (game->fileData) {
                 GuiGameAchievements::show(mWindow, game->fileData);
+            } else if (game->hasRaGame) {
+                GuiGameAchievements::show(mWindow, Utils::String::toInteger(game->raGame.id));
             }
         });
         
@@ -830,8 +830,10 @@ void GuiRetroAchievements::populatePlayHistoryTab()
         gameRow.addElement(gameTitle, true);
         
         auto launchGameAchievements = [this, game](const std::string& achId) {
-            if (game->fileData && game->hasRaGame) {
+            if (game->fileData) {
                 GuiGameAchievements::show(mWindow, game->fileData, achId);
+            } else if (game->hasRaGame) {
+                GuiGameAchievements::show(mWindow, Utils::String::toInteger(game->raGame.id));
             }
         };
 
