@@ -56,7 +56,8 @@ public:
         mTitle = std::make_shared<TextComponent>(mWindow, game->name, theme->Text.font, theme->Text.color);
         mTitle->setVerticalAlignment(ALIGN_TOP);
         
-        std::string rightText = "";
+        std::string topRightText = "";
+        std::string botRightText = "";
         std::string subText = "";
         
         if (game->fileData) {
@@ -65,43 +66,50 @@ public:
             subText = game->raGame.consoleName;
         }
 
-        if (sortMode == GuiRetroAchievements::SortMode::Recent) rightText = game->lastPlayed;
-        else if (sortMode == GuiRetroAchievements::SortMode::Playtime) rightText = Utils::Time::secondsToString(game->gameTimeSeconds);
-        else if (sortMode == GuiRetroAchievements::SortMode::Achievements) rightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) + " earned" : "0 earned";
+        if (sortMode == GuiRetroAchievements::SortMode::Recent) topRightText = game->lastPlayed;
+        else if (sortMode == GuiRetroAchievements::SortMode::Playtime) topRightText = Utils::Time::secondsToString(game->gameTimeSeconds);
+        else if (sortMode == GuiRetroAchievements::SortMode::Achievements) {
+            topRightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) : "0";
+            botRightText = "earned";
+        }
         else if (sortMode == GuiRetroAchievements::SortMode::Completion) {
             int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
-            rightText = std::to_string(percent) + "%";
+            topRightText = std::to_string(percent) + "%";
+        } else {
+            topRightText = game->lastPlayed;
         }
         
         mSubtitle = std::make_shared<TextComponent>(mWindow, subText, theme->TextSmall.font, theme->Text.color);
         mSubtitle->setOpacity(192);
 
-        mRightStat = std::make_shared<TextComponent>(mWindow, rightText, theme->TextSmall.font, theme->Text.color, ALIGN_RIGHT);
-        mRightStat->setOpacity(192);
+        mPoints = std::make_shared<TextComponent>(mWindow, topRightText, theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+        mPercentage = std::make_shared<TextComponent>(mWindow, botRightText, theme->TextSmall.font, theme->Text.color, ALIGN_RIGHT);
+        mPercentage->setOpacity(192);
 
         if (!game->fileData) {
             mTitle->setOpacity(120);
             mSubtitle->setOpacity(120);
-            mRightStat->setOpacity(120);
+            mPoints->setOpacity(120);
+            mPercentage->setOpacity(120);
         }
 
         setEntry(mTitle, Vector2i(2, 1), false, true);
         setEntry(mSubtitle, Vector2i(2, 2), false, true);
-        setEntry(mRightStat, Vector2i(3, 2), false, true);
+        setEntry(mPoints, Vector2i(3, 1), false, true);
+        setEntry(mPercentage, Vector2i(3, 2), false, true);
 
         int height = Math::max(IMAGESIZE + IMAGESPACER, mTitle->getSize().y() + mSubtitle->getSize().y());
         
         float hTxt = mTitle->getSize().y() / height;
         float hSub = mSubtitle->getSize().y() / height;
         float topPadding = Math::max(0.0f, (height - mTitle->getSize().y() - mSubtitle->getSize().y()) / height / 2.0f);
-        float bottomPadding = Math::max(0.0f, 1.0f - topPadding - hTxt - hSub);
 
         setRowHeightPerc(0, topPadding);
         setRowHeightPerc(1, hTxt);
         setRowHeightPerc(2, hSub);
-        setRowHeightPerc(3, bottomPadding);
+        setRowHeightPerc(3, Math::max(0.0f, 1.0f - topPadding - hTxt - hSub));
 
-        float pointsColWidth = Renderer::getScreenHeight() * 0.20f / WINDOW_WIDTH;
+        float pointsColWidth = Renderer::getScreenHeight() * 0.12f / WINDOW_WIDTH;
         setColWidthPerc(0, (height - IMAGESPACER) / WINDOW_WIDTH);
         setColWidthPerc(1, IMAGESPACER / WINDOW_WIDTH);
         setColWidthPerc(3, pointsColWidth);
@@ -115,144 +123,145 @@ public:
     {
         mTitle->setColor(color);
         mSubtitle->setColor(color);
-        mRightStat->setColor(color);
+        mPoints->setColor(color);
+        mPercentage->setColor(color);
     }
 
 private:
     std::shared_ptr<WebImageComponent> mImage;
     std::shared_ptr<TextComponent> mTitle;
     std::shared_ptr<TextComponent> mSubtitle;
-    std::shared_ptr<TextComponent> mRightStat;
+    std::shared_ptr<TextComponent> mPoints;
+    std::shared_ptr<TextComponent> mPercentage;
 };
 
 static time_t parseDateTimeHistory(const std::string& dt);
 
 static std::string formatTimeIn2(int seconds)
 {
-	if (seconds < 0) seconds = 0;
-	if (seconds < 3600)
-	{
-		int m = seconds / 60;
-		int s = seconds % 60;
-		return std::to_string(m) + "m" + std::to_string(s) + "s in";
-	}
-	else
-	{
-		int h = seconds / 3600;
-		int m = (seconds % 3600) / 60;
-		return std::to_string(h) + "h" + std::to_string(m) + "m in";
-	}
+    if (seconds < 0) seconds = 0;
+    if (seconds < 3600)
+    {
+        int m = seconds / 60;
+        int s = seconds % 60;
+        return std::to_string(m) + "m" + std::to_string(s) + "s in";
+    }
+    else
+    {
+        int h = seconds / 3600;
+        int m = (seconds % 3600) / 60;
+        return std::to_string(h) + "h" + std::to_string(m) + "m in";
+    }
 }
 
 class SessionAchievementEntry : public ComponentGrid
 {
 public:
-	SessionAchievementEntry(Window* window, Achievement& ra, const std::string& sessionStartTime) :
-		ComponentGrid(window, Vector2i(8, 1))
-	{
-		mGameInfo = ra;
-		auto theme = ThemeData::getMenuTheme();
+    SessionAchievementEntry(Window* window, Achievement& ra, const std::string& sessionStartTime) :
+        ComponentGrid(window, Vector2i(8, 1))
+    {
+        mGameInfo = ra;
+        auto theme = ThemeData::getMenuTheme();
 
-		float badgeSize = Renderer::getScreenHeight() * (24.0f / 720.0f);
-		float rowHeight = badgeSize * 1.5f;
+        float badgeSize = Renderer::getScreenHeight() * (24.0f / 720.0f);
+        float rowHeight = badgeSize * 1.5f;
 
-		mImage = std::make_shared<WebImageComponent>(mWindow);
-		mImage->setMaxSize(badgeSize, badgeSize);
-		mImage->setImage(mGameInfo.getBadgeUrl());
-		setEntry(mImage, Vector2i(0, 0), false, false);
+        mImage = std::make_shared<WebImageComponent>(mWindow);
+        mImage->setMaxSize(badgeSize, badgeSize);
+        mImage->setImage(mGameInfo.getBadgeUrl());
+        setEntry(mImage, Vector2i(0, 0), false, false);
 
-		auto boldFont = theme->Text.font;
-		mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, boldFont, theme->Text.color);
+        auto boldFont = theme->Text.font;
+        mTitle = std::make_shared<TextComponent>(mWindow, mGameInfo.Title, boldFont, theme->Text.color);
 
-		std::string timeInStr;
-		if (!sessionStartTime.empty() && !mGameInfo.DateEarned.empty())
-		{
-			time_t sessionT = parseDateTimeHistory(sessionStartTime);
-			time_t earnedT  = parseDateTimeHistory(mGameInfo.DateEarned);
-			if (sessionT > 0 && earnedT > 0 && earnedT >= sessionT)
-				timeInStr = formatTimeIn2((int)(earnedT - sessionT));
-		}
+        std::string timeInStr;
+        if (!sessionStartTime.empty() && !mGameInfo.DateEarned.empty())
+        {
+            time_t sessionT = parseDateTimeHistory(sessionStartTime);
+            time_t earnedT  = parseDateTimeHistory(mGameInfo.DateEarned);
+            if (sessionT > 0 && earnedT > 0 && earnedT >= sessionT)
+                timeInStr = formatTimeIn2((int)(earnedT - sessionT));
+        }
 
-		std::string descText = mGameInfo.Description;
+        std::string descText = mGameInfo.Description;
 
-		mSeparator = std::make_shared<TextComponent>(mWindow, _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
-		mSeparator->setOpacity(192);
+        mSeparator = std::make_shared<TextComponent>(mWindow, _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
+        mSeparator->setOpacity(192);
 
-		mDesc = std::make_shared<TextComponent>(mWindow, descText, theme->TextSmall.font, theme->Text.color);
-		mDesc->setOpacity(192);
-		mDesc->setAutoScrollDelay(500);
-		
-		auto tinyFont = Font::get((int)(theme->TextSmall.font->getSize() * 0.85f), theme->TextSmall.font->getPath());
-		
-		mTimeIn = std::make_shared<TextComponent>(mWindow, timeInStr, tinyFont, theme->Text.color, ALIGN_RIGHT);
-		mTimeIn->setOpacity(160);
+        mDesc = std::make_shared<TextComponent>(mWindow, descText, theme->TextSmall.font, theme->Text.color);
+        mDesc->setOpacity(192);
+        mDesc->setAutoScrollDelay(500);
+        
+        auto tinyFont = Font::get((int)(theme->TextSmall.font->getSize() * 0.85f), theme->TextSmall.font->getPath());
+        
+        mTimeIn = std::make_shared<TextComponent>(mWindow, timeInStr, tinyFont, theme->Text.color, ALIGN_RIGHT);
+        mTimeIn->setOpacity(160);
 
-		mTimeSeparator = std::make_shared<TextComponent>(mWindow, timeInStr.empty() ? "" : _U(" \u00b7 "), tinyFont, theme->Text.color);
-		mTimeSeparator->setOpacity(160);
+        mTimeSeparator = std::make_shared<TextComponent>(mWindow, timeInStr.empty() ? "" : _U(" \u00b7 "), tinyFont, theme->Text.color);
+        mTimeSeparator->setOpacity(160);
 
-		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
+        mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
 
-		setEntry(mTitle, Vector2i(1, 0), false, true);
-		setEntry(mSeparator, Vector2i(2, 0), false, true);
-		setEntry(mDesc, Vector2i(3, 0), false, true);
-		setEntry(mTimeIn, Vector2i(4, 0), false, true);
-		setEntry(mTimeSeparator, Vector2i(5, 0), false, true);
-		setEntry(mPoints, Vector2i(6, 0), false, true);
+        setEntry(mTitle, Vector2i(1, 0), false, true);
+        setEntry(mSeparator, Vector2i(2, 0), false, true);
+        setEntry(mDesc, Vector2i(3, 0), false, true);
+        setEntry(mTimeIn, Vector2i(4, 0), false, true);
+        setEntry(mTimeSeparator, Vector2i(5, 0), false, true);
+        setEntry(mPoints, Vector2i(6, 0), false, true);
 
-		float badgeW = badgeSize + Renderer::getScreenHeight() * 0.015f;
-		float titleW = mTitle->getSize().x();
-		float sepW = mSeparator->getSize().x();
-		float descPadding = theme->TextSmall.font->sizeText(" ").x();
-		float timeInW = mTimeIn->getSize().x() > 0 ? (mTimeIn->getSize().x() + descPadding) : 0;
-		float timeSepW = mTimeSeparator->getSize().x() > 0 ? mTimeSeparator->getSize().x() : 0;
-		float pointsW = mPoints->getSize().x();
-		float rightPadW = Renderer::getScreenHeight() * 0.02f;
+        float badgeW = badgeSize + Renderer::getScreenHeight() * 0.015f;
+        float titleW = mTitle->getSize().x();
+        float sepW = mSeparator->getSize().x();
+        float descPadding = theme->TextSmall.font->sizeText(" ").x();
+        float timeInW = mTimeIn->getSize().x() > 0 ? (mTimeIn->getSize().x() + descPadding) : 0;
+        float timeSepW = mTimeSeparator->getSize().x() > 0 ? mTimeSeparator->getSize().x() : 0;
+        float pointsW = mPoints->getSize().x();
+        float rightPadW = Renderer::getScreenHeight() * 0.02f;
 
-		setColWidth(0, badgeW, false);
-		setColWidth(1, titleW, false);
-		setColWidth(2, sepW, false);
-		setColWidth(4, timeInW, false);
-		setColWidth(5, timeSepW, false);
-		setColWidth(6, pointsW, false);
-		setColWidth(7, rightPadW, false);
+        setColWidth(0, badgeW, false);
+        setColWidth(1, titleW, false);
+        setColWidth(2, sepW, false);
+        setColWidth(4, timeInW, false);
+        setColWidth(5, timeSepW, false);
+        setColWidth(6, pointsW, false);
+        setColWidth(7, rightPadW, false);
 
-		setSize(0, rowHeight);
-	}
+        setSize(0, rowHeight);
+    }
 
-	virtual void setColor(unsigned int color)
-	{
-		mTitle->setColor(color);
-		mSeparator->setColor(color);
-		mDesc->setColor(color);
-		if (mTimeIn) mTimeIn->setColor(color);
-		if (mTimeSeparator) mTimeSeparator->setColor(color);
-		if (mPoints) mPoints->setColor(color);
-	}
+    virtual void setColor(unsigned int color)
+    {
+        mTitle->setColor(color);
+        mSeparator->setColor(color);
+        mDesc->setColor(color);
+        if (mTimeIn) mTimeIn->setColor(color);
+        if (mTimeSeparator) mTimeSeparator->setColor(color);
+        if (mPoints) mPoints->setColor(color);
+    }
 
-	void onFocusLost() override
-	{
-		mDesc->setAutoScroll(TextComponent::NONE);
-		ComponentGrid::onFocusLost();
-	}
+    void onFocusLost() override
+    {
+        mDesc->setAutoScroll(TextComponent::NONE);
+        ComponentGrid::onFocusLost();
+    }
 
-	void onFocusGained() override
-	{
-		mDesc->setAutoScroll(TextComponent::HORIZONTAL);
-		mDesc->onShow();
-		ComponentGrid::onFocusGained();
-	}
+    void onFocusGained() override
+    {
+        mDesc->setAutoScroll(TextComponent::HORIZONTAL);
+        mDesc->onShow();
+        ComponentGrid::onFocusGained();
+    }
 
 private:
-	std::shared_ptr<TextComponent> mTitle;
-	std::shared_ptr<TextComponent> mSeparator;
-	std::shared_ptr<TextComponent> mDesc;
-	std::shared_ptr<TextComponent> mTimeIn;
-	std::shared_ptr<TextComponent> mTimeSeparator;
-	std::shared_ptr<TextComponent> mPoints;
-	std::shared_ptr<WebImageComponent> mImage;
-	Achievement mGameInfo;
+    std::shared_ptr<TextComponent> mTitle;
+    std::shared_ptr<TextComponent> mSeparator;
+    std::shared_ptr<TextComponent> mDesc;
+    std::shared_ptr<TextComponent> mTimeIn;
+    std::shared_ptr<TextComponent> mTimeSeparator;
+    std::shared_ptr<TextComponent> mPoints;
+    std::shared_ptr<WebImageComponent> mImage;
+    Achievement mGameInfo;
 };
-
 
 void GuiRetroAchievements::show(Window* window)
 {
@@ -384,6 +393,11 @@ GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo 
     mList = std::make_shared<ComponentList>(mWindow);
     mList->setUpdateType(ComponentListFlags::UPDATE_ALWAYS);
     mGrid.setEntry(mList, Vector2i(0, 2), true, true);
+
+    std::vector<std::shared_ptr<ButtonComponent>> buttons;
+    buttons.push_back(std::make_shared<ButtonComponent>(mWindow, _("BACK"), _("go back"), [this] { delete this; }));
+    mButtonGrid = makeButtonGrid(mWindow, buttons);
+    mGrid.setEntry(mButtonGrid, Vector2i(0, 3), true, false);
 
     mGrid.setUnhandledInputCallback([this](InputConfig* config, Input input) -> bool {
         if (config->isMappedLike("down", input)) { 
@@ -729,11 +743,27 @@ void GuiRetroAchievements::populatePlayHistoryTab()
 
     for (auto game : gamesWithSessions) {
         ComponentListRow gameRow;
-        auto gameEntry = std::make_shared<PlayedGameEntry>(mWindow, game, SortMode::Recent);
-        gameRow.addElement(gameEntry, true);
-        gameRow.makeAcceptInputHandler([this, game] {
-            // Option to launch or view game info? We'll let it be for now.
-        });
+        float badgeSize = Renderer::getScreenHeight() * (24.0f / 720.0f);
+        
+        auto icon = std::make_shared<WebImageComponent>(mWindow);
+        icon->setMaxSize(badgeSize, badgeSize);
+        if (game->hasRaGame && !game->raGame.badge.empty()) {
+            icon->setImage("http://media.retroachievements.org/Badge/" + game->raGame.badge + ".png");
+        } else if (game->fileData && !game->fileData->getImagePath().empty()) {
+            icon->setImage(game->fileData->getImagePath());
+        } else {
+            icon->setImage(":/cartridge.svg");
+            icon->setColorShift(theme->Text.color);
+        }
+        gameRow.addElement(icon, false);
+
+        auto spacer = std::make_shared<GuiComponent>(mWindow);
+        spacer->setSize(Renderer::getScreenHeight() * 0.015f, 0);
+        gameRow.addElement(spacer, false);
+
+        auto gameTitle = std::make_shared<TextComponent>(mWindow, game->name, theme->Text.font, theme->Text.color);
+        gameRow.addElement(gameTitle, true);
+        
         mList->addRow(gameRow);
 
         auto sessions = PlayHistoryManager::getInstance()->getSessions(game->fileData);
