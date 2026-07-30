@@ -8,29 +8,13 @@
 #include "components/ImageComponent.h"
 #include "components/WebImageComponent.h"
 #include "components/TextComponent.h"
+#include "components/ComponentTab.h"
 #include <memory>
 #include <vector>
+#include <map>
 
 class FileData;
 class Window;
-
-class RetroAchievementProgress : public GuiComponent
-{
-public:
-	RetroAchievementProgress(Window* window, int valueSoftcore, int valueHardcore, int max, const std::string& label);
-
-	void onSizeChanged() override;
-	void render(const Transform4x4f& parentTrans) override;
-	void setColor(unsigned int color) override;
-	void setValues(int valueSoftcore, int valueHardcore, int max, const std::string& label);
-
-private:
-	int mValueSoftCore;
-	int mValueHardCore;
-	int mMax;
-
-	std::shared_ptr<TextComponent> mText;
-};
 
 class GuiRetroAchievements : public GuiComponent
 {
@@ -46,27 +30,32 @@ public:
 
 private:
     GuiRetroAchievements(Window* window, RetroAchievementInfo ra);
+    void onSizeChanged() override;
     void centerWindow();
+    
     void populateGameList();
-    void updateDetailPanel();
-    void cycleSort();
-    void cycleFilter();
+    void populateTabContent();
+    void populateGamesTab();
+    void populatePlayHistoryTab();
+    void populateOptionsTab();
+    
     void applyFilterAndSort();
+    void openSortFilterMenu();
 
     NinePatchComponent mBackground;
     ComponentGrid mGrid;
-    std::shared_ptr<ComponentGrid> mRightPanel;
 
+    std::shared_ptr<ComponentGrid> mHeaderGrid;
+    std::shared_ptr<TextComponent> mTitle;
+    std::shared_ptr<TextComponent> mSubtitle;
+    std::shared_ptr<WebImageComponent> mTitleImage;
+
+    std::shared_ptr<ComponentTab> mTabs;
     std::shared_ptr<ComponentList> mList;
+    std::shared_ptr<ComponentGrid> mButtonGrid;
 
-    std::shared_ptr<ImageComponent> mBoxArt;
-    std::shared_ptr<WebImageComponent> mBadge;
-    std::shared_ptr<TextComponent> mGameTitle;
-    std::shared_ptr<TextComponent> mPlayTime;
-    std::shared_ptr<TextComponent> mPlayCount;
-    std::shared_ptr<TextComponent> mLastPlayed;
-    std::shared_ptr<RetroAchievementProgress> mProgress;
-    std::shared_ptr<TextComponent> mSortFilterLabel;
+    int mActiveTab = 0;
+    std::map<int, int> mTabCursors;
 
     struct GameEntry {
         FileData* fileData;
@@ -80,10 +69,11 @@ private:
     std::vector<GameEntry> mAllGames;
     std::vector<GameEntry*> mFilteredGames;
 
-    enum class SortMode { MostPlayed, LastPlayed, Title };
-    enum class FilterMode { All, WithAchievements, Completed };
-    SortMode mSortMode = SortMode::MostPlayed;
-    FilterMode mFilterMode = FilterMode::All;
+    enum class SortMode { Recent, Playtime, Achievements, Completion };
+    enum class FilterMode { Over10Mins, All };
+    
+    SortMode mSortMode = SortMode::Recent;
+    FilterMode mFilterMode = FilterMode::Over10Mins;
 
     RetroAchievementInfo mRaInfo;
 };

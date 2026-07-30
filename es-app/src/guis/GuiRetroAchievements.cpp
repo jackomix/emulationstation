@@ -2,7 +2,10 @@
 #include "guis/GuiLoading.h"
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiGameAchievements.h"
+#include "guis/GuiTextEditPopupKeyboard.h"
+#include "guis/GuiTextEditPopup.h"
 #include "components/MultiLineMenuEntry.h"
+#include "components/ButtonComponent.h"
 #include "SystemData.h"
 #include "FileData.h"
 #include "views/ViewController.h"
@@ -12,9 +15,12 @@
 #include "Settings.h"
 #include "utils/StringUtil.h"
 #include "utils/TimeUtil.h"
+#include "PlayHistoryManager.h"
+#include "ProfileManager.h"
 #include <algorithm>
 
 #define PROGRESSHEIGHT (Renderer::getScreenHeight() * 0.008f)
+#define WINDOW_WIDTH (float)Math::min(Renderer::getScreenHeight() * 1.125f, Renderer::getScreenWidth() * 0.90f)
 
 void GuiRetroAchievements::show(Window* window)
 {
@@ -103,44 +109,109 @@ void RetroAchievementProgress::render(const Transform4x4f& parentTrans)
 }
 
 GuiRetroAchievements::GuiRetroAchievements(Window* window, RetroAchievementInfo ra) 
-    : GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(2, 1)), mRaInfo(ra)
+    : GuiComponent(window), mBackground(window, ":/frame.png"), mGrid(window, Vector2i(1, 4)), mRaInfo(ra)
 {
     auto theme = ThemeData::getMenuTheme();
     mBackground.setImagePath(theme->Background.path.empty() ? ":/frame.png" : theme->Background.path);
     mBackground.setEdgeColor(theme->Background.color);
-    mBackground.setCenterColor(theme->Background.color);
-
-    mList = std::make_shared<ComponentList>(mWindow);
-    mList->setUpdateType(ComponentListFlags::UPDATE_ALWAYS);
-    mList->setCursorChangedCallback([this](const CursorState& state) { updateDetailPanel(); });
-
-    mBoxArt = std::make_shared<ImageComponent>(mWindow);
-    mBadge = std::make_shared<WebImageComponent>(mWindow);
-    mGameTitle = std::make_shared<TextComponent>(mWindow, "", theme->Text.font, theme->Text.color, Alignment::ALIGN_CENTER);
-    mPlayTime = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, Alignment::ALIGN_CENTER);
-    mPlayCount = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, Alignment::ALIGN_CENTER);
-    mLastPlayed = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, Alignment::ALIGN_CENTER);
-    mSortFilterLabel = std::make_shared<TextComponent>(mWindow, "", theme->TextSmall.font, theme->Text.color, Alignment::ALIGN_CENTER);
-    mProgress = std::make_shared<RetroAchievementProgress>(mWindow, 0, 0, 0, ""); 
-
-    mRightPanel = std::make_shared<ComponentGrid>(mWindow, Vector2i(1, 8));
-    mRightPanel->setEntry(mBoxArt, Vector2i(0, 0), false, true);
-    mRightPanel->setEntry(mBadge, Vector2i(0, 1), false, true);
-    mRightPanel->setEntry(mGameTitle, Vector2i(0, 2), false, true);
-    mRightPanel->setEntry(mPlayTime, Vector2i(0, 3), false, true);
-    mRightPanel->setEntry(mPlayCount, Vector2i(0, 4), false, true);
-    mRightPanel->setEntry(mLastPlayed, Vector2i(0, 5), false, true);
-    mRightPanel->setEntry(mProgress, Vector2i(0, 6), false, true);
-    mRightPanel->setEntry(mSortFilterLabel, Vector2i(0, 7), false, true);
-
-    mGrid.setEntry(mList, Vector2i(0, 0), true, true);
-    mGrid.setEntry(mRightPanel, Vector2i(1, 0), false, true);
+    mBackground.setCenterColor(theme->Background.centerColor);
+    mBackground.setCornerSize(theme->Background.cornerSize);
+    mBackground.setPostProcessShader(theme->Background.menuShader);
 
     addChild(&mBackground);
     addChild(&mGrid);
 
+    mHeaderGrid = std::make_shared<ComponentGrid>(mWindow, Vector2i(2, 2));
+
+    mTitle = std::make_shared<TextComponent>(mWindow, ra.username, theme->Title.font, theme->Title.color, ALIGN_LEFT);
+    mSubtitle = std::make_shared<TextComponent>(mWindow, ra.points + " Points", theme->TextSmall.font, theme->Text.color, ALIGN_LEFT);
+    mTitleImage = std::make_shared<WebImageComponent>(mWindow);
+    mTitleImage->setImage(ra.userpic);
+
+    mHeaderGrid->setEntry(mTitle, Vector2i(0, 0), false, true);
+    mHeaderGrid->setEntry(mSubtitle, Vector2i(0, 1), false, true);
+    mHeaderGrid->setEntry(mTitleImage, Vector2i(1, 0), false, false, Vector2i(1, 2));
+
+    mGrid.setEntry(mHeaderGrid, Vector2i(0, 0), false, true);
+
+    mTabs = std::make_shared<ComponentTab>(mWindow);
+    mTabs->addTab(_("GAMES"));
+    mTabs->addTab(_("PLAY HISTORY"));
+    mTabs->addTab(_("OPTIONS"));
+
+    mTabs->setCursorChangedCallback([this](const CursorState& state) {
+        if (mActiveTab != mTabs->getCursorIndex()) {
+            mTabCursors[mActiveTab] = mList->getCursorIndex();
+            mActiveTab = mTabs->getCursorIndex();
+            populateTabContent();
+        }
+    });
+
+    mGrid.setEntry(mTabs, Vector2i(1, 0), false, true);
+    mGrid.setEntry(mTabs, Vector2i(0, 1), false, true); // Corrected row
+
+    mList = std::make_shared<ComponentList>(mWindow);
+    mList->setUpdateType(ComponentListFlags::UPDATE_ALWAYS);
+    mGrid.setEntry(mList, Vector2i(0, 2), true, true);
+
+    mGrid.setUnhandledInputCallback([this](InputConfig* config, Input input) -> bool {
+        if (config->isMappedLike("down", input)) { 
+            mGrid.setCursorTo(mList); mList->setCursorIndex(0); return true; 
+        }
+        if (config->isMappedLike("up", input)) { 
+            mList->setCursorIndex(mList->size() - 1); mGrid.moveCursor(Vector2i(0, 1)); return true; 
+        }
+        return false;
+    });
+
     populateGameList();
     centerWindow();
+    populateTabContent();
+}
+
+void GuiRetroAchievements::onSizeChanged()
+{
+	GuiComponent::onSizeChanged();
+
+	mBackground.fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
+	mGrid.setSize(mSize);
+
+	const float titleHeight = mTitle ? mTitle->getFont()->getLetterHeight() * 1.5f : 0;
+	const float subtitleHeight = mSubtitle ? mSubtitle->getFont()->getLetterHeight() * 1.5f : 0;
+
+	if (mTabs)
+		mTabs->setSize(mGrid.getSize().x(), Renderer::getScreenHeight() * 0.06f);
+
+	if (mHeaderGrid)
+	{
+		mHeaderGrid->setRowHeight(0, titleHeight);
+		mHeaderGrid->setRowHeight(1, subtitleHeight);
+
+		float imageWidth = Renderer::getScreenHeight() * 0.15f;
+		float headerWidth = mGrid.getSize().x();
+		float textWidth = headerWidth - imageWidth;
+
+		mHeaderGrid->setColWidth(0, textWidth);
+		mHeaderGrid->setColWidth(1, imageWidth);
+
+		if (mTitleImage) mTitleImage->setMaxSize(imageWidth, titleHeight + subtitleHeight);
+	}
+
+	float headerTotalHeight = titleHeight + subtitleHeight + (Renderer::getScreenHeight() * 0.02f);
+	mGrid.setRowHeight(0, headerTotalHeight);
+	mGrid.setRowHeight(1, Renderer::getScreenHeight() * 0.06f);
+	if (mButtonGrid)
+		mGrid.setRowHeight(3, mButtonGrid->getSize().y());
+}
+
+void GuiRetroAchievements::centerWindow()
+{
+	if (Renderer::ScreenSettings::fullScreenMenus())
+		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+	else
+		setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.901f);
+
+	setPosition((Renderer::getScreenWidth() - getSize().x()) / 2, (Renderer::getScreenHeight() - getSize().y()) / 2);
 }
 
 void GuiRetroAchievements::populateGameList()
@@ -196,8 +267,6 @@ void GuiRetroAchievements::populateGameList()
             mAllGames.push_back(entry);
         }
     }
-
-    applyFilterAndSort();
 }
 
 void GuiRetroAchievements::applyFilterAndSort()
@@ -205,22 +274,55 @@ void GuiRetroAchievements::applyFilterAndSort()
     mFilteredGames.clear();
     for (auto& game : mAllGames)
     {
-        if (mFilterMode == FilterMode::WithAchievements && !game.hasRaGame) continue;
-        if (mFilterMode == FilterMode::Completed)
-        {
-            if (!game.hasRaGame || game.raGame.wonAchievementsSoftcore < game.raGame.totalAchievements || game.raGame.totalAchievements == 0) continue;
-        }
+        if (mFilterMode == FilterMode::Over10Mins && game.gameTimeSeconds < 600) continue;
         mFilteredGames.push_back(&game);
     }
     
     std::sort(mFilteredGames.begin(), mFilteredGames.end(), [this](GameEntry* a, GameEntry* b) {
-        if (mSortMode == SortMode::MostPlayed) return a->gameTimeSeconds > b->gameTimeSeconds;
-        if (mSortMode == SortMode::LastPlayed) return a->lastPlayed > b->lastPlayed;
-        return Utils::String::toUpper(a->name) < Utils::String::toUpper(b->name);
+        if (mSortMode == SortMode::Recent) return a->lastPlayed > b->lastPlayed;
+        if (mSortMode == SortMode::Playtime) return a->gameTimeSeconds > b->gameTimeSeconds;
+        if (mSortMode == SortMode::Achievements) {
+            int aAch = a->hasRaGame ? a->raGame.wonAchievementsSoftcore : 0;
+            int bAch = b->hasRaGame ? b->raGame.wonAchievementsSoftcore : 0;
+            return aAch > bAch;
+        }
+        if (mSortMode == SortMode::Completion) {
+            float aComp = a->hasRaGame && a->raGame.totalAchievements > 0 ? (float)a->raGame.wonAchievementsSoftcore / a->raGame.totalAchievements : 0;
+            float bComp = b->hasRaGame && b->raGame.totalAchievements > 0 ? (float)b->raGame.wonAchievementsSoftcore / b->raGame.totalAchievements : 0;
+            return aComp > bComp;
+        }
+        return a->lastPlayed > b->lastPlayed;
     });
 
+    if (mActiveTab == 0) populateGamesTab();
+}
+
+void GuiRetroAchievements::populateTabContent()
+{
+	mList->clear();
+
+	if (mActiveTab == 0) populateGamesTab();
+	else if (mActiveTab == 1) populatePlayHistoryTab();
+	else if (mActiveTab == 2) populateOptionsTab();
+
+	if (mTabCursors.find(mActiveTab) != mTabCursors.end() && mList->size() > 0) {
+		int cursorIndex = mTabCursors[mActiveTab];
+		if (cursorIndex >= mList->size()) cursorIndex = mList->size() - 1;
+		if (cursorIndex < 0) cursorIndex = 0;
+		mList->setCursorIndex(cursorIndex);
+	}
+}
+
+void GuiRetroAchievements::populateGamesTab()
+{
     mList->clear();
     auto theme = ThemeData::getMenuTheme();
+
+    ComponentListRow filterRow;
+    auto filterText = std::make_shared<TextComponent>(mWindow, _("Sort & Filter..."), theme->Text.font, theme->Text.color);
+    filterRow.addElement(filterText, true);
+    filterRow.makeAcceptInputHandler([this] { openSortFilterMenu(); });
+    mList->addRow(filterRow);
 
     for (auto* game : mFilteredGames)
     {
@@ -233,103 +335,194 @@ void GuiRetroAchievements::applyFilterAndSort()
         auto spacer = std::make_shared<GuiComponent>(mWindow);
         spacer->setSize(Renderer::getScreenWidth() * 0.015f, 0);
         row.addElement(spacer, false);
-        
-        mList->addRow(row, false, true);
-    }
 
-    if (!mFilteredGames.empty()) updateDetailPanel();
+        std::string rightText = "";
+        if (mSortMode == SortMode::Recent) rightText = game->lastPlayed;
+        else if (mSortMode == SortMode::Playtime) rightText = Utils::Time::secondsToString(game->gameTimeSeconds);
+        else if (mSortMode == SortMode::Achievements) rightText = game->hasRaGame ? std::to_string(game->raGame.wonAchievementsSoftcore) + " earned" : "0 earned";
+        else if (mSortMode == SortMode::Completion) {
+            int percent = game->hasRaGame && game->raGame.totalAchievements > 0 ? Math::round((float)game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements) : 0;
+            rightText = std::to_string(percent) + "%";
+        }
+        
+        auto rightStat = std::make_shared<TextComponent>(mWindow, rightText, theme->TextSmall.font, theme->Text.color);
+        rightStat->setHorizontalAlignment(ALIGN_RIGHT);
+        row.addElement(rightStat, false);
+
+        row.makeAcceptInputHandler([this, game] {
+            if (game->hasRaGame) {
+                GuiGameAchievements::show(mWindow, Utils::String::toInteger(game->raGame.id));
+            } else if (game->fileData) {
+                // If it has no RA game, open the achievements page anyway (which now supports empty pages)
+                GuiGameAchievements::show(mWindow, game->fileData);
+            }
+        });
+        
+        mList->addRow(row, true, true);
+    }
 }
 
-void GuiRetroAchievements::cycleFilter()
+static time_t parseDateTimeHistory(const std::string& dt)
 {
-    if (mFilterMode == FilterMode::All) mFilterMode = FilterMode::WithAchievements;
-    else if (mFilterMode == FilterMode::WithAchievements) mFilterMode = FilterMode::Completed;
-    else mFilterMode = FilterMode::All;
+	if (dt.empty()) return 0;
+	if (dt.find("T") != std::string::npos && dt.find("-") == std::string::npos)
+		return Utils::Time::stringToTime(dt);
+	struct tm t = {};
+	if (sscanf(dt.c_str(), "%d-%d-%d %d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) == 6)
+	{
+		t.tm_year -= 1900;
+		t.tm_mon -= 1;
+		return timegm(&t);
+	}
+	if (sscanf(dt.c_str(), "%d-%d-%dT%d:%d:%d", &t.tm_year, &t.tm_mon, &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) == 6)
+	{
+		t.tm_year -= 1900;
+		t.tm_mon -= 1;
+		return timegm(&t);
+	}
+	return 0;
+}
+
+void GuiRetroAchievements::populatePlayHistoryTab()
+{
+    auto theme = ThemeData::getMenuTheme();
+    std::vector<PlaySession> allSessions;
+
+    for (auto* game : mAllGames) {
+        if (game->fileData) {
+            auto sessions = PlayHistoryManager::getInstance()->getSessions(game->fileData);
+            allSessions.insert(allSessions.end(), sessions.begin(), sessions.end());
+        }
+    }
+
+    std::sort(allSessions.begin(), allSessions.end(), [](const PlaySession& a, const PlaySession& b) {
+        return parseDateTimeHistory(a.startTime) > parseDateTimeHistory(b.startTime);
+    });
+
+    long totalPlayTime = 0;
+    for (const auto& s : allSessions) {
+        totalPlayTime += s.durationSeconds;
+    }
+
+    ComponentListRow rowTime;
+    auto lblTime = std::make_shared<TextComponent>(mWindow, _("TOTAL PLAY TIME"), theme->Text.font, theme->Text.color);
+    auto valTime = std::make_shared<TextComponent>(mWindow, Utils::Time::secondsToString(totalPlayTime, false, true), theme->Text.font, theme->Text.color);
+    valTime->setHorizontalAlignment(ALIGN_RIGHT);
+    rowTime.addElement(lblTime, true);
+    rowTime.addElement(valTime, false);
+    mList->addRow(rowTime);
     
+    ComponentListRow rowCount;
+    auto lblCount = std::make_shared<TextComponent>(mWindow, _("TOTAL LAUNCHES"), theme->Text.font, theme->Text.color);
+    auto valCount = std::make_shared<TextComponent>(mWindow, std::to_string(allSessions.size()), theme->Text.font, theme->Text.color);
+    valCount->setHorizontalAlignment(ALIGN_RIGHT);
+    rowCount.addElement(lblCount, true);
+    rowCount.addElement(valCount, false);
+    mList->addRow(rowCount);
+    
+    ComponentListRow rowLast;
+    auto lblLast = std::make_shared<TextComponent>(mWindow, _("LAST PLAYED"), theme->Text.font, theme->Text.color);
+    
+    std::string lastPlayedFormatted = _("never");
+    if (!allSessions.empty()) {
+        std::string isoDate = allSessions.front().startTime;
+        isoDate = Utils::String::replace(isoDate, "-", "");
+        isoDate = Utils::String::replace(isoDate, ":", "");
+        isoDate = Utils::String::replace(isoDate, "Z", "");
+        lastPlayedFormatted = Utils::Time::DateTime(isoDate).toFullString();
+    }
+    
+    auto valLast = std::make_shared<TextComponent>(mWindow, lastPlayedFormatted, theme->Text.font, theme->Text.color);
+    valLast->setHorizontalAlignment(ALIGN_RIGHT);
+    rowLast.addElement(lblLast, true);
+    rowLast.addElement(valLast, false);
+    mList->addRow(rowLast);
+
+    for (auto& s : allSessions) {
+        std::string isoDate = s.startTime;
+        isoDate = Utils::String::replace(isoDate, "-", "");
+        isoDate = Utils::String::replace(isoDate, ":", "");
+        isoDate = Utils::String::replace(isoDate, "Z", "");
+        std::string formattedDate = Utils::Time::DateTime(isoDate).toFullString();
+        
+        std::string durationStr = Utils::Time::secondsToString(s.durationSeconds, false, true);
+        if (s.durationSeconds < 60) durationStr = std::to_string(s.durationSeconds) + " sec";
+        
+        ComponentListRow sessionRow;
+        auto lblSession = std::make_shared<TextComponent>(mWindow, formattedDate, theme->TextSmall.font, theme->Text.color);
+        lblSession->setOpacity(160);
+            
+        auto valSession = std::make_shared<TextComponent>(mWindow, durationStr, theme->TextSmall.font, theme->Text.color);
+        valSession->setHorizontalAlignment(ALIGN_RIGHT);
+        valSession->setOpacity(160);
+
+        sessionRow.addElement(lblSession, true);
+        sessionRow.addElement(valSession, false);
+        mList->addRow(sessionRow);
+    }
+}
+
+void GuiRetroAchievements::populateOptionsTab()
+{
+    auto theme = ThemeData::getMenuTheme();
+
+    ComponentListRow renameRow;
+    auto renameText = std::make_shared<TextComponent>(mWindow, _("RENAME PROFILE"), theme->Text.font, theme->Text.color);
+    renameRow.addElement(renameText, true);
+    renameRow.makeAcceptInputHandler([this] {
+        std::string active = ProfileManager::getInstance()->getActiveProfileName();
+        auto updateVal = [this, active](const std::string& newVal) {
+            if (newVal != active && !newVal.empty()) {
+                if (ProfileManager::getInstance()->renameProfile(active, newVal)) {
+                    ProfileManager::getInstance()->setActiveProfile(newVal);
+                } else {
+                    mWindow->pushGui(new GuiMsgBox(mWindow, _("FAILED TO RENAME PROFILE"), _("OK")));
+                }
+            }
+        };
+        mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, _("Enter Profile Name"), active, updateVal, false));
+    });
+    mList->addRow(renameRow);
+
+    ComponentListRow pictureRow;
+    auto pictureText = std::make_shared<TextComponent>(mWindow, _("CHANGE PROFILE PICTURE"), theme->Text.font, theme->Text.color);
+    pictureRow.addElement(pictureText, true);
+    pictureRow.makeAcceptInputHandler([this] {
+        mWindow->pushGui(new GuiMsgBox(mWindow, _("NOT IMPLEMENTED YET"), _("OK")));
+    });
+    mList->addRow(pictureRow);
+
+    ComponentListRow deleteRow;
+    auto deleteText = std::make_shared<TextComponent>(mWindow, _("DELETE PROFILE"), theme->Text.font, theme->Text.color);
+    deleteRow.addElement(deleteText, true);
+    deleteRow.makeAcceptInputHandler([this] {
+        std::string active = ProfileManager::getInstance()->getActiveProfileName();
+        mWindow->pushGui(new GuiMsgBox(mWindow, _("DELETE PROFILE '") + active + _("'?"), _("YES"), [this, active]() {
+            if (ProfileManager::getInstance()->deleteProfile(active)) {
+                auto profiles = ProfileManager::getInstance()->getProfiles();
+                if (!profiles.empty()) {
+                    ProfileManager::getInstance()->setActiveProfile(profiles.front().name);
+                }
+                mWindow->postToUiThread([this]() { delete this; });
+            } else {
+                mWindow->pushGui(new GuiMsgBox(mWindow, _("FAILED TO DELETE PROFILE"), _("OK")));
+            }
+        }, _("NO"), nullptr));
+    });
+    mList->addRow(deleteRow);
+}
+
+void GuiRetroAchievements::openSortFilterMenu()
+{
+    // Simple mock, ideally open a GuiSettings or a custom Gui component.
+    mFilterMode = (mFilterMode == FilterMode::All) ? FilterMode::Over10Mins : FilterMode::All;
+    
+    if (mSortMode == SortMode::Recent) mSortMode = SortMode::Playtime;
+    else if (mSortMode == SortMode::Playtime) mSortMode = SortMode::Achievements;
+    else if (mSortMode == SortMode::Achievements) mSortMode = SortMode::Completion;
+    else mSortMode = SortMode::Recent;
+
     applyFilterAndSort();
-}
-
-void GuiRetroAchievements::cycleSort()
-{
-    if (mSortMode == SortMode::MostPlayed) mSortMode = SortMode::LastPlayed;
-    else if (mSortMode == SortMode::LastPlayed) mSortMode = SortMode::Title;
-    else mSortMode = SortMode::MostPlayed;
-    
-    applyFilterAndSort();
-}
-
-void GuiRetroAchievements::updateDetailPanel()
-{
-    if (mFilteredGames.empty()) return;
-    int idx = mList->getCursorId();
-    if (idx < 0 || idx >= (int)mFilteredGames.size()) return;
-    
-    auto* game = mFilteredGames[idx];
-    
-    if (game->fileData) {
-        mBoxArt->setImage(game->fileData->getImagePath());
-        mRightPanel->setRowHeightPerc(0, 0.35f);
-        mRightPanel->setRowHeightPerc(1, 0.0f);
-        mBoxArt->setVisible(true);
-        mBadge->setVisible(false);
-    } else {
-        mBoxArt->setImage("");
-        mRightPanel->setRowHeightPerc(0, 0.0f);
-        mRightPanel->setRowHeightPerc(1, 0.35f);
-        mBoxArt->setVisible(false);
-        mBadge->setVisible(true);
-        
-        if (game->hasRaGame && !game->raGame.badge.empty())
-            mBadge->setImage(game->raGame.badge);
-        else
-            mBadge->setImage("");
-    }
-    
-    mRightPanel->setRowHeightPerc(2, 0.12f);
-    mRightPanel->setRowHeightPerc(3, 0.10f);
-    mRightPanel->setRowHeightPerc(4, 0.10f);
-    mRightPanel->setRowHeightPerc(5, 0.10f);
-    mRightPanel->setRowHeightPerc(6, 0.13f);
-    mRightPanel->setRowHeightPerc(7, 0.10f);
-
-    mGameTitle->setText(game->name);
-    mPlayTime->setText(_("Play Time") + ": " + Utils::Time::secondsToString(game->gameTimeSeconds));
-    mPlayCount->setText(_("Play Count") + ": " + std::to_string(game->playCount));
-    mLastPlayed->setText(_("Last Played") + ": " + game->lastPlayed);
-    
-    std::string filterStr = (mFilterMode == FilterMode::All) ? _("All") : (mFilterMode == FilterMode::WithAchievements ? _("With Achievements") : _("Completed"));
-    std::string sortStr = (mSortMode == SortMode::MostPlayed) ? _("Most Played") : (mSortMode == SortMode::LastPlayed ? _("Last Played") : _("Title"));
-    mSortFilterLabel->setText(_("Filter") + ": " + filterStr + " | " + _("Sort") + ": " + sortStr);
-    
-    if (game->hasRaGame)
-    {
-        mProgress->setVisible(true);
-        int percent = game->raGame.totalAchievements == 0 ? 0 : Math::round(game->raGame.wonAchievementsSoftcore * 100.0f / game->raGame.totalAchievements);
-        std::string progStr = std::to_string(percent) + "% (" + std::to_string(game->raGame.wonAchievementsSoftcore) + " of " + std::to_string(game->raGame.totalAchievements) + ")";
-        mProgress->setValues(game->raGame.wonAchievementsSoftcore, game->raGame.wonAchievementsHardcore, game->raGame.totalAchievements, progStr);
-    }
-    else
-    {
-        mProgress->setVisible(false);
-    }
-}
-
-void GuiRetroAchievements::centerWindow()
-{
-    float width = (float)Math::min((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.90f));
-    
-    mGrid.setColWidthPerc(0, 0.45f);
-    mGrid.setColWidthPerc(1, 0.55f);
-
-    if (Renderer::ScreenSettings::fullScreenMenus())
-        setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
-    else
-        setSize(width, Renderer::getScreenHeight() * 0.901f);
-        
-    mBackground.setSize(mSize);
-    mGrid.setSize(mSize);
-    
-    setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
 }
 
 void GuiRetroAchievements::update(int deltaTime)
@@ -354,44 +547,6 @@ bool GuiRetroAchievements::input(InputConfig* config, Input input)
             mWindow->postToUiThread([this]() { delete this; });
             return true;
         }
-        else if (config->isMappedTo(BUTTON_OK, input))
-        {
-            if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < (int)mFilteredGames.size())
-            {
-                auto game = mFilteredGames[mList->getCursorId()];
-                if (game->hasRaGame)
-                {
-                    GuiGameAchievements::show(mWindow, Utils::String::toInteger(game->raGame.id));
-                }
-            }
-            return true;
-        }
-        else if (config->isMappedTo("x", input))
-        {
-            if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < (int)mFilteredGames.size())
-            {
-                auto game = mFilteredGames[mList->getCursorId()];
-                if (game->fileData)
-                {
-                    Window* window = mWindow;
-                    while (window->peekGui() && window->peekGui() != ViewController::get())
-                        delete window->peekGui();
-
-                    ViewController::get()->launch(game->fileData);
-                }
-            }
-            return true;
-        }
-        else if (config->isMappedTo("pageup", input) || config->isMappedTo("pagedown", input))
-        {
-            cycleFilter();
-            return true;
-        }
-        else if (config->isMappedTo("l2", input) || config->isMappedTo("r2", input))
-        {
-            cycleSort();
-            return true;
-        }
     }
     
     return GuiComponent::input(config, input);
@@ -401,21 +556,7 @@ std::vector<HelpPrompt> GuiRetroAchievements::getHelpPrompts()
 {
     std::vector<HelpPrompt> prompts;
     prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK")));
-    prompts.push_back(HelpPrompt(BUTTON_OK, _("VIEW DETAILS")));
-    
-    if (!mFilteredGames.empty() && mList->getCursorId() >= 0 && mList->getCursorId() < (int)mFilteredGames.size())
-    {
-        auto game = mFilteredGames[mList->getCursorId()];
-        if (game->fileData)
-            prompts.push_back(HelpPrompt("x", _("LAUNCH")));
-    }
-    
-    std::string filterStr = (mFilterMode == FilterMode::All) ? _("All") : (mFilterMode == FilterMode::WithAchievements ? _("With Achievements") : _("Completed"));
-    prompts.push_back(HelpPrompt("pageup", filterStr));
-    
-    std::string sortStr = (mSortMode == SortMode::MostPlayed) ? _("Most Played") : (mSortMode == SortMode::LastPlayed ? _("Last Played") : _("Title"));
-    prompts.push_back(HelpPrompt("l2", sortStr));
-
+    prompts.push_back(HelpPrompt(BUTTON_OK, _("SELECT")));
     return prompts;
 }
 
