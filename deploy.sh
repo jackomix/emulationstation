@@ -15,7 +15,7 @@ SSH_OPTS="-i $SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=5"
 echo "=== EmulationStation deploy script ==="
 
 # Get latest commit SHA on the branch
-LATEST_SHA=$(gh api repos/$REPO/commits/$BRANCH --jq '.sha')
+LATEST_SHA=$(git rev-parse HEAD)
 SHORT_SHA="${LATEST_SHA:0:7}"
 echo "Latest commit on $BRANCH: $SHORT_SHA"
 
