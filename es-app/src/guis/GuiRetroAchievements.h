@@ -16,6 +16,24 @@
 class FileData;
 class Window;
 
+class RetroAchievementProgress : public GuiComponent
+{
+public:
+	RetroAchievementProgress(Window* window, int valueSoftcore, int valueHardcore, int max, const std::string& label);
+
+	void onSizeChanged() override;
+	void render(const Transform4x4f& parentTrans) override;
+	void setColor(unsigned int color) override;
+	void setValues(int valueSoftcore, int valueHardcore, int max, const std::string& label);
+
+private:
+	int mValueSoftCore;
+	int mValueHardCore;
+	int mMax;
+
+	std::shared_ptr<TextComponent> mText;
+};
+
 class GuiRetroAchievements : public GuiComponent
 {
 public:
