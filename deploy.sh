@@ -87,8 +87,8 @@ while true; do
     echo "Upload successful."
     break
   else
-    echo "SCP failed. Make sure the device is on and connected."
-    read -r -p "Press Enter to retry, or Ctrl+C to abort..."
+    echo "SCP failed. Make sure the device is on and connected. Retrying in 5 seconds..."
+    sleep 5
   fi
 done
 
