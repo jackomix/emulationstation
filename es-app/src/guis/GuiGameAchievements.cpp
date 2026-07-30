@@ -542,7 +542,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	mGrid.setEntry(mHeaderGrid, Vector2i(0, 0), false, true);
 
 	mTabs = std::make_shared<ComponentTab>(mWindow);
-	mTabs->addTab(_("ACHIEVEMENTS"));
+	if (mRaInfo.Achievements.size() > 0) mTabs->addTab(_("ACHIEVEMENTS"));
 	mTabs->addTab(_("PLAY HISTORY"));
 	mTabs->addTab(_("INFO"));
 	mTabs->addTab(_("OPTIONS"));
@@ -557,7 +557,8 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mTabs->setCursorChangedCallback([this](const CursorState& state) {
 		if (mActiveTab != mTabs->getCursorIndex()) {
-			if (mActiveTab != 3) mTabCursors[mActiveTab] = mList->getCursorIndex();
+			int oldTabIdx = mRaInfo.Achievements.size() > 0 ? mActiveTab : mActiveTab + 1;
+			if (oldTabIdx != 3) mTabCursors[mActiveTab] = mList->getCursorIndex();
 			mActiveTab = mTabs->getCursorIndex();
 			populateTabContent();
 		}
@@ -587,13 +588,14 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 
 	mGrid.setUnhandledInputCallback([this](InputConfig* config, Input input) -> bool
 		{
+			int tabIdx = mRaInfo.Achievements.size() > 0 ? mActiveTab : mActiveTab + 1;
 			if (config->isMappedLike("down", input)) { 
-                if (mActiveTab == 3 && mOptionsUI) { mGrid.setCursorTo(mOptionsUI->getMenu()->getList()); mOptionsUI->getMenu()->getList()->setCursorIndex(0); }
+                if (tabIdx == 3 && mOptionsUI) { mGrid.setCursorTo(mOptionsUI->getMenu()->getList()); mOptionsUI->getMenu()->getList()->setCursorIndex(0); }
                 else { mGrid.setCursorTo(mList); mList->setCursorIndex(0); }
                 return true; 
             }
 			if (config->isMappedLike("up", input)) { 
-                if (mActiveTab == 3 && mOptionsUI) { mOptionsUI->getMenu()->getList()->setCursorIndex(mOptionsUI->getMenu()->getList()->size() - 1); mGrid.moveCursor(Vector2i(0, 1)); }
+                if (tabIdx == 3 && mOptionsUI) { mOptionsUI->getMenu()->getList()->setCursorIndex(mOptionsUI->getMenu()->getList()->size() - 1); mGrid.moveCursor(Vector2i(0, 1)); }
                 else { mList->setCursorIndex(mList->size() - 1); mGrid.moveCursor(Vector2i(0, 1)); }
                 return true; 
             }
@@ -660,13 +662,14 @@ void GuiGameAchievements::populateTabContent()
 	mGrid.removeEntry(mList);
 	if (mOptionsUI) mGrid.removeEntry(mOptionsUI->getMenu()->getList());
 
-	if (mActiveTab == 3 && mOptionsUI) {
+	int tabIdx = mRaInfo.Achievements.size() > 0 ? mActiveTab : mActiveTab + 1;
+	if (tabIdx == 3 && mOptionsUI) {
 		mGrid.setEntry(mOptionsUI->getMenu()->getList(), Vector2i(0, 2), true, true);
 	} else {
 		mGrid.setEntry(mList, Vector2i(0, 2), true, true);
-		if (mActiveTab == 0) populateAchievementsTab();
-		else if (mActiveTab == 1) populatePlayHistoryTab();
-		else if (mActiveTab == 2) populateInfoTab();
+		if (tabIdx == 0) populateAchievementsTab();
+		else if (tabIdx == 1) populatePlayHistoryTab();
+		else if (tabIdx == 2) populateInfoTab();
 
 		if (mTabCursors.find(mActiveTab) != mTabCursors.end() && mList->size() > 0) {
 			int cursorIndex = mTabCursors[mActiveTab];
@@ -925,7 +928,7 @@ void GuiGameAchievements::updateAchievementsHeader()
 	if (mIsLoadingAchievements)
 		subtitleText = _("LOADING ACHIEVEMENTS...");
 	else if (mRaInfo.Achievements.size() == 0)
-		subtitleText = _("THIS GAME HAS NO ACHIEVEMENTS YET");
+		subtitleText = "";
 	else
 	{
 		subtitleText = std::to_string(mRaInfo.NumAwardedToUser) + "/" + std::to_string(mRaInfo.NumAchievements) + " " + _("achievements");
@@ -934,8 +937,14 @@ void GuiGameAchievements::updateAchievementsHeader()
 
 	mSubtitle->setText(subtitleText);
 	
-	if (!mRaInfo.getImageUrl().empty())
+	if (!mRaInfo.getImageUrl().empty()) {
 		mTitleImage->setImage(mRaInfo.getImageUrl());
+	} else if (mFile && !mFile->getImagePath().empty()) {
+		mTitleImage->setImage(mFile->getImagePath());
+	} else {
+		mTitleImage->setImage(":/cartridge.svg");
+		mTitleImage->setColorShift(theme->Text.color);
+	}
 
 	if (mRaInfo.Achievements.size() > 0)
 	{
