@@ -56,8 +56,7 @@ public:
         std::string lastPlayed;
     };
 
-    enum class SortMode { Recent, Playtime, Achievements, Completion };
-    enum class FilterMode { Over10Mins, All };
+    enum class SortMode { Recent, Playtime, Achievements, Completion, System };
 
 private:
     GuiRetroAchievements(Window* window, RetroAchievementInfo ra);
@@ -93,7 +92,8 @@ private:
     std::vector<GameEntry*> mFilteredGames;
     
     SortMode mSortMode = SortMode::Recent;
-    FilterMode mFilterMode = FilterMode::Over10Mins;
+    std::string mFilterSystem = "All";
+    int mFilterMinPlaytime = 0;
 
     RetroAchievementInfo mRaInfo;
 };

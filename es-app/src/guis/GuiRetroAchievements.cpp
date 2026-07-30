@@ -853,32 +853,7 @@ void GuiRetroAchievements::populateOptionsTab()
     mList->addRow(deleteRow);
 }
 
-void GuiRetroAchievements::openSortFilterMenu()
-{
-    auto s = new GuiSettings(mWindow, _("SORT & FILTER"));
 
-    auto sortList = std::make_shared<OptionListComponent<SortMode>>(mWindow, _("SORT BY"), false);
-    sortList->add(_("RECENTLY PLAYED"), SortMode::Recent, mSortMode == SortMode::Recent);
-    sortList->add(_("MOST PLAYTIME"), SortMode::Playtime, mSortMode == SortMode::Playtime);
-    sortList->add(_("MOST ACHIEVEMENTS"), SortMode::Achievements, mSortMode == SortMode::Achievements);
-    sortList->add(_("COMPLETION %"), SortMode::Completion, mSortMode == SortMode::Completion);
-    
-    s->addWithLabel(_("SORT BY"), sortList);
-
-    auto filterList = std::make_shared<OptionListComponent<FilterMode>>(mWindow, _("FILTER"), false);
-    filterList->add(_("ALL GAMES"), FilterMode::All, mFilterMode == FilterMode::All);
-    filterList->add(_("> 10 MINS PLAYTIME"), FilterMode::Over10Mins, mFilterMode == FilterMode::Over10Mins);
-
-    s->addWithLabel(_("FILTER"), filterList);
-
-    s->addSaveFunc([this, sortList, filterList] {
-        mSortMode = sortList->getSelected();
-        mFilterMode = filterList->getSelected();
-        applyFilterAndSort();
-    });
-
-    mWindow->pushGui(s);
-}
 
 void GuiRetroAchievements::update(int deltaTime)
 {
