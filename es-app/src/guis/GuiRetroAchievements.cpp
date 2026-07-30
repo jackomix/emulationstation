@@ -59,7 +59,7 @@ public:
         
         setEntry(mImage, Vector2i(0, 0), false, false, Vector2i(1, 4));
 
-        mTitle = std::make_shared<TextComponent>(mWindow, game->name, theme->Text.font, theme->Text.color);
+        mTitle = std::make_shared<TextComponent>(mWindow, game->hasRaGame ? game->raGame.name : game->name, theme->Text.font, theme->Text.color);
         mTitle->setVerticalAlignment(ALIGN_TOP);
         
         std::string topRightText = "";
