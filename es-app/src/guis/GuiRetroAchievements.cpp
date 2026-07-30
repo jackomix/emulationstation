@@ -142,7 +142,7 @@ public:
         mTitle->setColor(color);
         mSubtitle->setColor(color);
         mPoints->setColor(color);
-        mPercentage->setColor(color);
+        if (mPercentage) mPercentage->setColor(color);
     }
 
 private:
