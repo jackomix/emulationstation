@@ -19,13 +19,12 @@ LATEST_SHA=$(git rev-parse HEAD)
 SHORT_SHA="${LATEST_SHA:0:7}"
 echo "Latest commit on $BRANCH: $SHORT_SHA"
 
-# Check if there's already a completed successful build for this exact commit
+# Check if there's already a build (in-progress, queued, or finished) for this exact commit
 echo "Checking for existing build of $SHORT_SHA..."
 RUN_ID=$(gh run list \
   --repo "$REPO" \
   --branch "$BRANCH" \
   --commit "$LATEST_SHA" \
-  --status success \
   --limit 1 \
   --json databaseId \
   --jq '.[0].databaseId')
@@ -48,17 +47,18 @@ if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
     --jq '.[0].databaseId')
 
   echo "Build triggered. Run ID: $RUN_ID"
-  echo "Waiting for build to complete (typically ~3.5 min)..."
-
-  gh run watch "$RUN_ID" \
-    --repo "$REPO" \
-    --exit-status \
-    --interval 20
-
-  echo "Build succeeded."
 else
   echo "Found existing build. Run ID: $RUN_ID"
 fi
+
+echo "Waiting for build to complete (typically ~1 min)..."
+
+gh run watch "$RUN_ID" \
+  --repo "$REPO" \
+  --exit-status \
+  --interval 20
+
+echo "Build succeeded."
 
 # Download artifact
 echo "Downloading artifact..."
