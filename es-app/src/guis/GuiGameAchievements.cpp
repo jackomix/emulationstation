@@ -33,13 +33,13 @@ static std::string formatTimeIn(int seconds)
 	{
 		int m = seconds / 60;
 		int s = seconds % 60;
-		return std::to_string(m) + "m " + std::to_string(s) + "s in";
+		return std::to_string(m) + "m " + std::to_string(s) + "s";
 	}
 	else
 	{
 		int h = seconds / 3600;
 		int m = (seconds % 3600) / 60;
-		return std::to_string(h) + "h " + std::to_string(m) + "m in";
+		return std::to_string(h) + "h " + std::to_string(m) + "m";
 	}
 }
 
@@ -237,10 +237,12 @@ public:
 		mDesc->setOpacity(192);
 		mDesc->setAutoScrollDelay(500);
 		
-		mTimeIn = std::make_shared<TextComponent>(mWindow, timeInStr, theme->TextSmall.font, theme->Text.color, ALIGN_RIGHT);
+		auto tinyFont = Font::get((int)(theme->TextSmall.font->getSize() * 0.85f), theme->TextSmall.font->getPath());
+		
+		mTimeIn = std::make_shared<TextComponent>(mWindow, timeInStr, tinyFont, theme->Text.color, ALIGN_RIGHT);
 		mTimeIn->setOpacity(160);
 
-		mTimeSeparator = std::make_shared<TextComponent>(mWindow, timeInStr.empty() ? "" : _U(" \u00b7 "), theme->TextSmall.font, theme->Text.color);
+		mTimeSeparator = std::make_shared<TextComponent>(mWindow, timeInStr.empty() ? "" : _U(" \u00b7 "), tinyFont, theme->Text.color);
 		mTimeSeparator->setOpacity(160);
 
 		mPoints = std::make_shared<TextComponent>(mWindow, mGameInfo.Points + _U(" \uf091"), theme->Text.font, theme->Text.color, ALIGN_RIGHT);
@@ -256,7 +258,7 @@ public:
 		float titleW = mTitle->getSize().x();
 		float sepW = mSeparator->getSize().x();
 		float timeInW = mTimeIn->getSize().x() > 0 ? mTimeIn->getSize().x() : 0;
-		float timeSepW = mTimeSeparator->getSize().x() > 0 ? (mTimeSeparator->getSize().x() + Renderer::getScreenHeight() * 0.01f) : 0;
+		float timeSepW = mTimeSeparator->getSize().x() > 0 ? mTimeSeparator->getSize().x() : 0;
 		float pointsW = mPoints->getSize().x() + Renderer::getScreenHeight() * 0.015f;
 		float rightPadW = Renderer::getScreenHeight() * 0.02f;
 
