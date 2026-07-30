@@ -21,6 +21,7 @@
 #include "guis/GuiSettings.h"
 #include "guis/GuiSettings.h"
 #include "components/WebImageComponent.h"
+#include "utils/HtmlColor.h"
 #include <algorithm>
 
 #define PROGRESSHEIGHT (Renderer::getScreenHeight() * 0.008f)

@@ -60,6 +60,20 @@ private:
     void applyFilterAndSort();
     void openSortFilterMenu();
 
+    struct GameEntry {
+        FileData* fileData;
+        RetroAchievementGame raGame;
+        bool hasRaGame;
+        std::string name;
+        long gameTimeSeconds;
+        int playCount;
+        std::string lastPlayed;
+    };
+
+    enum class SortMode { Recent, Playtime, Achievements, Completion };
+    enum class FilterMode { Over10Mins, All };
+
+private:
     NinePatchComponent mBackground;
     ComponentGrid mGrid;
 
@@ -75,20 +89,8 @@ private:
     int mActiveTab = 0;
     std::map<int, int> mTabCursors;
 
-    struct GameEntry {
-        FileData* fileData;
-        RetroAchievementGame raGame;
-        bool hasRaGame;
-        std::string name;
-        long gameTimeSeconds;
-        int playCount;
-        std::string lastPlayed;
-    };
     std::vector<GameEntry> mAllGames;
     std::vector<GameEntry*> mFilteredGames;
-
-    enum class SortMode { Recent, Playtime, Achievements, Completion };
-    enum class FilterMode { Over10Mins, All };
     
     SortMode mSortMode = SortMode::Recent;
     FilterMode mFilterMode = FilterMode::Over10Mins;
