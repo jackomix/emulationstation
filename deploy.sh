@@ -53,10 +53,13 @@ fi
 
 echo "Waiting for build to complete (typically ~1 min)..."
 
-gh run watch "$RUN_ID" \
+if ! gh run watch "$RUN_ID" \
   --repo "$REPO" \
   --exit-status \
-  --interval 20
+  --interval 20; then
+  echo "❌ Build failed on GitHub Actions! Exiting deploy script."
+  exit 1
+fi
 
 echo "Build succeeded."
 
