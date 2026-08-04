@@ -19,6 +19,9 @@ ProfileManager* ProfileManager::getInstance()
 
 ProfileManager::ProfileManager() : mActiveProfileName("")
 {
+	if (sInstance == nullptr)
+		sInstance = this;
+
 	loadProfiles();
 }
 
