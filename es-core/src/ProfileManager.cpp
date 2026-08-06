@@ -16,12 +16,9 @@ ProfileManager* ProfileManager::getInstance()
 
 	return sInstance;
 }
-
 ProfileManager::ProfileManager() : mActiveProfileName("")
 {
-	if (sInstance == nullptr)
-		sInstance = this;
-
+	sInstance = this;
 	loadProfiles();
 }
 
@@ -145,8 +142,9 @@ void ProfileManager::saveProfiles()
 		node.append_attribute("name").set_value(p.name.c_str());
 		node.append_attribute("avatar").set_value(p.avatarPath.c_str());
 	}
-
-	doc.save_file(WINSTRINGW(path).c_str());
+	std::string tmpPath = path + ".tmp";
+	doc.save_file(WINSTRINGW(tmpPath).c_str());
+	Utils::FileSystem::renameFile(tmpPath, path);
 }
 
 bool ProfileManager::createProfile(const std::string& name, const std::string& avatarPath)

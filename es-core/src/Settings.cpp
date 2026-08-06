@@ -496,8 +496,9 @@ bool Settings::saveFile()
 		node.append_attribute("name").set_value(iter->first.c_str());
 		node.append_attribute("value").set_value(iter->second.c_str());
 	}
-
-	pDoc.save_file(WINSTRINGW(pPath).c_str());
+	std::string tmpPath = pPath + ".tmp";
+	pDoc.save_file(WINSTRINGW(tmpPath).c_str());
+	Utils::FileSystem::renameFile(tmpPath, pPath);
 
 	Scripting::fireEvent("config-changed");
 	Scripting::fireEvent("settings-changed");
